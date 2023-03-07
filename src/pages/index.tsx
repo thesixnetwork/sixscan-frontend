@@ -252,7 +252,7 @@ export default function Home({
                         <Td>
                           <Flex direction="column">
                             <Text>
-                              Fee Recipient{`" "`}
+                              Fee Recipient{` `}
                               <Clickable
                                 underline
                                 href={`/address/${getBlockRewardValidator(
@@ -271,7 +271,7 @@ export default function Home({
                               </Clickable>
                             </Text>
                             <Text fontSize="xs" color="medium">
-                              Txns{`" "`}
+                              Txns{` `}
                               <Clickable href="/" underline>
                                 {block.num_txs}
                               </Clickable>

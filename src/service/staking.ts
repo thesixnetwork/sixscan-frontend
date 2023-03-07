@@ -2,11 +2,7 @@ import axios from "axios";
 import ENV from "../utils/ENV";
 import { Validator } from "../types/Staking";
 // -------- CosmJS --------
-import { fromBase64, toBech32, toHex } from "@cosmjs/encoding";
-import { anyToSinglePubkey } from "@cosmjs/proto-signing";
-// import { pubkeyToAddress, Tendermint34Client } from "@cosmjs/tendermint-rpc";
-import { fromBech32 } from "@cosmjs/encoding";
-
+import { fromBech32, toBech32, toHex } from "@cosmjs/encoding";
 export const getValidators = async (): Promise<Validator[]> => {
   try {
     const res = await axios.get(
