@@ -27,10 +27,21 @@ export const Footer = () => {
             gap={4}
           >
             <Image src="/sixprotocol-logo.png" alt="logo" height={6} />
-            <Text fontSize={"sm"} color={"darkest"} fontWeight={"bold"}>
-              Powered By SIX Protocol | © 2022 SIX Network PTE. LTD.
+            <Text fontSize={"sm"} color={"dark"} fontWeight={"bold"}>
+              Powered By SIX Protocol
             </Text>
           </Flex>
+          <Flex
+            direction="row"
+            alignItems="center"
+            justifyContent="center"
+            gap={4}
+          >
+            <Text fontSize={"sm"} color={"medium"} fontWeight={"bold"}>
+              © 2022 SIX Network PTE. LTD.
+            </Text>
+          </Flex>
+
           <Flex direction="row" align="center">
             {MENU_ITEMS.map((item, index) => (
               <Flex

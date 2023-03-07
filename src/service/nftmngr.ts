@@ -1,7 +1,10 @@
+import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
 import ENV from "../utils/ENV";
 
-export const getSchema = async (schemaCode: string): Promise<string | null> => {
+export const getSchema = async (
+  schemaCode: string
+): Promise<NFTSchema | null> => {
   try {
     const res = await axios.get(
       `${ENV.FIVENET_API}thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
