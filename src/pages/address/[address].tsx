@@ -38,6 +38,7 @@ import {
   PopoverCloseButton,
   PopoverAnchor,
   Input,
+  Tooltip,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -51,7 +52,6 @@ import {
   FaCopy,
   FaDollarSign,
   FaExpand,
-  FaQrcode,
   FaScroll,
   FaSortAmountDown,
   FaSortNumericDown,
@@ -59,6 +59,9 @@ import {
   FaCheck,
   FaSpinner,
   FaBalanceScale,
+  FaRegStopCircle,
+  FaRegWindowClose,
+  FaCheckCircle,
 } from "react-icons/fa";
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
@@ -68,9 +71,9 @@ import CustomTable from "@/components/CustomTable";
 import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
-import { useState } from "react";
-import { getValidator } from "@/service/staking";
-import { Validator } from "@/types/Staking";
+import { useEffect, useState } from "react";
+import { getDelegationsFromValidator, getValidator } from "@/service/staking";
+import { Delegation, Validator } from "@/types/Staking";
 import { Balance } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
 import moment from "moment";
@@ -81,12 +84,17 @@ import {
   formatNumber,
   convertUsixToSix,
   convertDecimalToPercent,
-  validateAddress,
 } from "@/utils/format";
+
+import { validateAddress } from "@/utils/validate";
 
 import { pubkeyToAddress } from "@cosmjs/tendermint-rpc";
 import { anyToSinglePubkey } from "@cosmjs/proto-signing";
 import { fromBase64, toHex } from "@cosmjs/encoding";
+import { getPriceFromCoingecko } from "@/service/coingecko";
+import { CoinGeckoPrice } from "@/types/Coingecko";
+import { getTxsFromAddress } from "@/service/txs";
+import { AccountTxs } from "@/types/Txs";
 
 // create a tokens map
 
@@ -105,15 +113,40 @@ export default function Address({
   account,
   balance,
   balances,
+  price,
+  accountTxs,
+  delegations,
 }: {
   address: string;
   validator: Validator | null;
   account: Account | null;
   balance: Balance | null;
   balances: Balance[] | null;
+  price: CoinGeckoPrice | null;
+  accountTxs: AccountTxs;
+  delegations: Delegation[] | null;
 }) {
-  const [isShowMore, setIsShowMore] = useState(false);
-  // console.log("validator.status: ", validator.status)
+  const [isCopied, setIsCopied] = useState(false);
+  const [totalValue, setTotalValue] = useState(0);
+  let totalValueTmp = 0;
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(address);
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  };
+
+  const addValueToTotalValue = (value: number) => {
+    totalValueTmp += value;
+    return value;
+  };
+
+  useEffect(() => {
+    setTotalValue(totalValueTmp);
+  }, [totalValue]);
+
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -135,12 +168,17 @@ export default function Address({
                 <Text fontWeight="bold" color={address ? "medium" : "error"}>
                   {address ? address : "Invalid Address"}
                 </Text>
-                <Box bgColor="light" p={1.5} rounded="full">
-                  <FaCopy fontSize={12} />
-                </Box>
-                <Box bgColor="light" p={1.5} rounded="full">
-                  <FaQrcode fontSize={12} />
-                </Box>
+                <Tooltip label={isCopied ? "Copied" : "Copy"} placement="top">
+                  <Box
+                    bgColor="light"
+                    p={1.5}
+                    rounded="full"
+                    onClick={handleCopyClick}
+                    cursor="pointer"
+                  >
+                    <FaCopy fontSize={12} />
+                  </Box>
+                </Tooltip>
               </Flex>
               <Flex direction="row" align="center" gap={4}>
                 {validator && <Badge>Validators</Badge>}
@@ -186,7 +224,16 @@ export default function Address({
                             <Text>SIX Value:</Text>
                           </Td>
                           <Td>
-                            <Text fontSize={"sm"}>$657 (@ $6.57/SIX)</Text>
+                            {price && price !== null && balance !== null ? (
+                              <Text fontSize={"sm"}>{`$${formatNumber(
+                                convertUsixToSix(parseInt(balance.amount)) *
+                                  price["six-network"].usd
+                              )} (@ $${formatNumber(
+                                price["six-network"].usd
+                              )}/SIX)`}</Text>
+                            ) : (
+                              <Text fontSize={"sm"}>{`$0`}</Text>
+                            )}
                           </Td>
                         </Tr>
                         <Tr>
@@ -213,7 +260,7 @@ export default function Address({
                                 >
                                   <Flex direction="row" gap={2} align="center">
                                     <Text color={"dark"} fontSize="sm">
-                                      $123.12
+                                      ${formatNumber(totalValue)}
                                     </Text>
                                     <Badge
                                       rounded={"md"}
@@ -277,12 +324,33 @@ export default function Address({
                                           </Flex>
                                         </Flex>
                                         <Flex direction="column">
-                                          <Text fontSize={"sm"} color={"dark"}>
-                                            $
-                                          </Text>
-                                          <Text fontSize={"xs"} color={"dark"}>
-                                            @
-                                          </Text>
+                                          {price &&
+                                            price !== null &&
+                                            balance !== null && (
+                                              <Text
+                                                fontSize={"sm"}
+                                                color={"dark"}
+                                              >
+                                                $
+                                                {formatNumber(
+                                                  addValueToTotalValue(
+                                                    convertUsixToSix(
+                                                      parseInt(balance.amount)
+                                                    ) * price["six-network"].usd
+                                                  )
+                                                )}
+                                              </Text>
+                                            )}
+                                          {price && price !== null && (
+                                            <Text
+                                              fontSize={"xs"}
+                                              color={"dark"}
+                                            >
+                                              {`@ $${formatNumber(
+                                                price["six-network"].usd
+                                              )}`}
+                                            </Text>
+                                          )}
                                         </Flex>
                                       </Flex>
                                     ))
@@ -322,7 +390,10 @@ export default function Address({
                               <Text>Account Address:</Text>
                             </Td>
                             <Td>
-                              <Clickable href={`/address/${address}`} underline>
+                              <Clickable
+                                href={`/address/${validator.account_address}`}
+                                underline
+                              >
                                 <Text fontSize={"xs"}>
                                   {validator.account_address}
                                 </Text>
@@ -336,21 +407,28 @@ export default function Address({
                               <Text>Status:</Text>
                             </Td>
                             <Td>
-                              {validator.status === "BOND_STATUS_BONDED" ? (
-                                <Badge colorScheme={"green"}>
-                                  <Flex direction="row" align="center" gap={2}>
+                              <Badge
+                                colorScheme={
+                                  validator.status.split("BOND_STATUS_")[1] ==
+                                  "BONDED"
+                                    ? "green"
+                                    : "red"
+                                }
+                              >
+                                <Flex direction="row" align="center" gap={2}>
+                                  {validator.status.split("BOND_STATUS_")[1] ==
+                                  "BONDED" ? (
                                     <FaCheck />
-                                    Bonded
-                                  </Flex>
-                                </Badge>
-                              ) : (
-                                <Badge colorScheme={"red"}>
-                                  <Flex direction="row" align="center" gap={2}>
+                                  ) : validator.status.split(
+                                      "BOND_STATUS_"
+                                    )[1] == "UNBONDED" ? (
+                                    <FaRegWindowClose />
+                                  ) : (
                                     <FaSpinner />
-                                    Unbonding
-                                  </Flex>
-                                </Badge>
-                              )}
+                                  )}
+                                  {validator.status.split("BOND_STATUS_")[1]}
+                                </Flex>
+                              </Badge>
                             </Td>
                           </Tr>
                         )}
@@ -450,7 +528,8 @@ export default function Address({
                     <TabList>
                       <Tab>Txns (All)</Tab>
                       <Tab>Txns (Data Layer)</Tab>
-                      <Tab>Proposed Blocks</Tab>
+                      {validator && <Tab>Proposed Blocks</Tab>}
+                      {validator && <Tab>Individual Nodes</Tab>}
                     </TabList>
                     <TabPanels>
                       <TabPanel>
@@ -462,9 +541,9 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
+                            {`Latest ${accountTxs.count} from a total of `}
+                            <Clickable underline href={`/txs/${address}`}>
+                              {accountTxs.total_count}
                             </Clickable>{" "}
                             transactions
                           </Text>
@@ -488,8 +567,12 @@ export default function Address({
                                 <Td>
                                   <Text>From</Text>
                                 </Td>
+                                <Td></Td>
                                 <Td>
                                   <Text>To</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Value</Text>
                                 </Td>
                                 <Td>
                                   <Text>Gas Fee</Text>
@@ -497,46 +580,102 @@ export default function Address({
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {ACTIONS.map((action, index) => (
+                              {accountTxs.txs.map((tx, index) => (
                                 <Tr key={index}>
                                   <Td>
+                                    <Flex
+                                      direction="row"
+                                      gap={1}
+                                      align="center"
+                                    >
+                                      {tx.code !== 0 && (
+                                        <FaRegWindowClose
+                                          color="red"
+                                          fontSize={12}
+                                        />
+                                      )}
+                                      <Text>
+                                        <Clickable
+                                          href={`/tx/${tx.txhash}`}
+                                          underline
+                                        >
+                                          {formatHex(tx.txhash)}
+                                        </Clickable>
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Badge>
+                                        {tx.type
+                                          .split(".")
+                                          [tx.type.split(".").length - 1].slice(
+                                            3
+                                          )}
+                                      </Badge>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      {moment(tx.time_stamp).fromNow()}
+                                    </Text>
+                                  </Td>
+                                  <Td>
                                     <Text>
                                       <Clickable href="/" underline>
-                                        {formatHex(action.txhash)}
+                                        {tx.block_height}
                                       </Clickable>
                                     </Text>
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Badge>{action.method}</Badge>
+                                      {tx.decode_tx.toAddress && (
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.fromAddress}`}
+                                          underline
+                                        >
+                                          {formatHex(tx.decode_tx.fromAddress)}
+                                        </Clickable>
+                                      )}
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>{action.age}</Text>
+                                    {tx.decode_tx.toAddress === address ? (
+                                      <Badge colorScheme="green">IN</Badge>
+                                    ) : tx.decode_tx.fromAddress === address ? (
+                                      <Badge colorScheme="orange">OUT</Badge>
+                                    ) : null}
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Clickable href="/" underline>
-                                        {action.block}
-                                      </Clickable>
+                                      {tx.decode_tx.toAddress && (
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.toAddress}`}
+                                          underline
+                                        >
+                                          {formatHex(tx.decode_tx.toAddress)}
+                                        </Clickable>
+                                      )}
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
+                                    {tx.decode_tx.amount &&
+                                      tx.decode_tx.amount[0]?.amount && (
+                                        <Text>{`${formatNumber(
+                                          convertUsixToSix(
+                                            parseInt(
+                                              tx.decode_tx.amount[0].amount
+                                            )
+                                          )
+                                        )} SIX`}</Text>
+                                      )}
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${action.gasfee} SIX`}</Text>
+                                    <Text>{`${formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(tx.decode_tx.fee_amount)
+                                      )
+                                    )} SIX`}</Text>
                                   </Td>
                                 </Tr>
                               ))}
@@ -650,71 +789,147 @@ export default function Address({
                           </Table>
                         </TableContainer>
                       </TabPanel>
-                      <TabPanel>
-                        <Flex
-                          direction="row"
-                          gap={2}
-                          align="center"
-                          color={"dark"}
-                        >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
-                            </Clickable>{" "}
-                            transactions
-                          </Text>
-                        </Flex>
-                        <TableContainer>
-                          <Table variant="simple">
-                            <Thead>
-                              <Tr>
-                                <Td>
-                                  <Text>Block Height</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Age</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Txns</Text>
-                                </Td>
-                                <Td isNumeric>
-                                  <Text>Reward</Text>
-                                </Td>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              {blocks.map((block, index) => (
-                                <Tr key={index}>
+                      {validator && (
+                        <TabPanel>
+                          <Flex
+                            direction="row"
+                            gap={2}
+                            align="center"
+                            color={"dark"}
+                          >
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              Latest 25 from a total of{" "}
+                              <Clickable underline href="/">
+                                92
+                              </Clickable>{" "}
+                              transactions
+                            </Text>
+                          </Flex>
+                          <TableContainer>
+                            <Table variant="simple">
+                              <Thead>
+                                <Tr>
                                   <Td>
-                                    <Text>
-                                      <Clickable underline href="/">
-                                        {block.blockHeight}
-                                      </Clickable>
-                                    </Text>
+                                    <Text>Block Height</Text>
                                   </Td>
                                   <Td>
-                                    <Text>{block.time}</Text>
+                                    <Text>Age</Text>
                                   </Td>
                                   <Td>
-                                    <Text>{block.txns}</Text>
+                                    <Text>Txns</Text>
                                   </Td>
                                   <Td isNumeric>
-                                    <Badge>
-                                      Reward{" "}
-                                      <Clickable href="/">
-                                        {block.fee}
-                                      </Clickable>{" "}
-                                      SIX
-                                    </Badge>
+                                    <Text>Reward</Text>
                                   </Td>
                                 </Tr>
-                              ))}
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
+                              </Thead>
+                              <Tbody>
+                                {blocks.map((block, index) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Text>
+                                        <Clickable underline href="/">
+                                          {block.blockHeight}
+                                        </Clickable>
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>{block.time}</Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>{block.txns}</Text>
+                                    </Td>
+                                    <Td isNumeric>
+                                      <Badge>
+                                        Reward{" "}
+                                        <Clickable href="/">
+                                          {block.fee}
+                                        </Clickable>{" "}
+                                        SIX
+                                      </Badge>
+                                    </Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+                          </TableContainer>
+                        </TabPanel>
+                      )}
+                      {validator && delegations && (
+                        <TabPanel>
+                          <Flex
+                            direction="row"
+                            gap={2}
+                            align="center"
+                            color={"dark"}
+                          >
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              Total of{" "}
+                              <Clickable underline href="/">
+                                {delegations.length}
+                              </Clickable>{" "}
+                              individual nodes
+                            </Text>
+                          </Flex>
+                          <TableContainer>
+                            <Table variant="simple">
+                              <Thead>
+                                <Tr>
+                                  <Td>
+                                    <Text>Address</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>Shares</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>Licenses</Text>
+                                  </Td>
+                                </Tr>
+                              </Thead>
+                              <Tbody>
+                                {delegations.map((delegation, index) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Text>
+                                        <Clickable underline href="/">
+                                          {formatHex(
+                                            delegation.delegation
+                                              .delegator_address
+                                          )}
+                                        </Clickable>
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        {formatNumber(
+                                          convertUsixToSix(
+                                            parseInt(
+                                              delegation.delegation.shares
+                                            )
+                                          )
+                                        )}{" "}
+                                        SIX
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        {parseInt(
+                                          delegation.delegation.shares
+                                        ) /
+                                          parseInt(
+                                            validator.delegation_increment
+                                          )}
+                                      </Text>
+                                    </Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+                          </TableContainer>
+                        </TabPanel>
+                      )}
                     </TabPanels>
                   </Tabs>
                 </CustomCard>
@@ -742,6 +957,8 @@ export const getServerSideProps = async (context: {
         account: null,
         balance: null,
         balances: null,
+        price: null,
+        txs: null,
       },
     };
   }
@@ -749,6 +966,9 @@ export const getServerSideProps = async (context: {
   const account = await getAccount(address);
   const balance = await getBalance(address);
   const balances = await getBalances(address);
+  const price = await getPriceFromCoingecko("six-network");
+  const accountTxs = await getTxsFromAddress(address, "1", "20");
+  const delegations = await getDelegationsFromValidator(address);
   return {
     props: {
       address,
@@ -756,6 +976,9 @@ export const getServerSideProps = async (context: {
       account,
       balance,
       balances,
+      price,
+      accountTxs,
+      delegations,
     },
   };
 };

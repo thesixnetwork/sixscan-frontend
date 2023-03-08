@@ -1,5 +1,6 @@
 export const formatNumber = (num: number) => {
-  return num.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+  const roundedNum = Math.ceil(num * 100) / 100; // round up to two decimal places
+  return roundedNum.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
 };
 
 export const formatHex = (hash: string) => {
@@ -20,9 +21,4 @@ export const convertDecimalToPercent = (decimal: number) => {
 
 export const convertUsixToSix = (usix: number) => {
   return usix / 1000000;
-};
-
-export const validateAddress = (address: string) => {
-  const pattern = /^6x(1[a-zA-Z0-9]{38}|valoper1[a-zA-Z0-9]{38})$/;
-  return pattern.test(address);
 };

@@ -1,6 +1,6 @@
 import axios from "axios";
 import ENV from "../utils/ENV";
-import { Validator } from "../types/Staking";
+import { Delegation, Pool, Validator } from "../types/Staking";
 // -------- CosmJS --------
 import { fromBech32, toBech32, toHex } from "@cosmjs/encoding";
 export const getValidators = async (): Promise<Validator[]> => {
@@ -40,7 +40,7 @@ export const getValidator = async (
   }
 };
 
-export const getPool = async (): Promise<any> => {
+export const getPool = async (): Promise<Pool | null> => {
   try {
     const res = await axios.get(
       `${ENV.FIVENET_API}cosmos/staking/v1beta1/pool`
@@ -50,6 +50,27 @@ export const getPool = async (): Promise<any> => {
       return null;
     }
     return pool;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getDelegationsFromValidator = async (
+  address: string
+): Promise<Delegation[] | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.FIVENET_API}cosmos/staking/v1beta1/validators/${address}/delegations`
+    );
+    const delegation_responses = res.data.delegation_responses;
+    if (!delegation_responses) {
+      return null;
+    }
+    return delegation_responses.sort(
+      (a: Delegation, b: Delegation) =>
+        parseInt(b.delegation.shares) - parseInt(a.delegation.shares)
+    );
   } catch (error) {
     console.error(error);
     return null;

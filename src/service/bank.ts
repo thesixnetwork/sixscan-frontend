@@ -50,9 +50,11 @@ export const getCoinMetadata = async (denom: string): Promise<any> => {
   }
 };
 
-export const getSupply = async (): Promise<any> => {
+export const getSupply = async (denom: string): Promise<any> => {
   try {
-    const res = await axios.get(`${ENV.FIVENET_API}cosmos/bank/v1beta1/supply`);
+    const res = await axios.get(
+      `${ENV.FIVENET_API}cosmos/bank/v1beta1/supply/${denom}`
+    );
     const amount = res.data.amount;
     if (!amount) {
       return null;

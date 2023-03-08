@@ -84,15 +84,15 @@ const MENU_ITEMS = [
   },
   {
     label: "Validators",
-    href: "/",
+    href: "/validators",
   },
   {
     label: "Blocks",
-    href: "/",
+    href: "/blocks",
   },
   {
     label: "Blocks",
     icon: FaTwitter,
-    href: "/",
+    href: "https://twitter.com/theSIXnetwork",
   },
 ];
