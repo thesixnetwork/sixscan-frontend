@@ -1,8 +1,9 @@
 const ENV = {
-  FIVENET_API: process.env.FIVENET_API || "",
-  FIVENET_RPC: process.env.FIVENET_RPC || "",
-  FIVENET_ARCH_RPC: process.env.FIVENET_ARCH_RPC || "",
-  FIVENET_ARCH_API: process.env.FIVENET_ARCH_API || "",
+  API_URL: process.env.API_URL || "",
+  RPC_URL: process.env.RPC_URL || "",
+  ARCH_API_URL: process.env.ARCH_API_URL || process.env.API_URL || "",
+  ARCH_RPC_URL: process.env.ARCH_RPC_URL || process.env.RPC_URL || "",
+  CHAIN_NAME: process.env.CHAIN_NAME || "",
 };
 
 export default ENV;

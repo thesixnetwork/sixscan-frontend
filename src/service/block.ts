@@ -9,7 +9,7 @@ import ENV from "../utils/ENV";
 
 export const getLatestBlock = async (): Promise<Block | null> => {
   try {
-    const res = await axios.get(`${ENV.FIVENET_ARCH_RPC}block`);
+    const res = await axios.get(`${ENV.ARCH_RPC_URL}block`);
     const result = res.data.result;
     if (!result) {
       return null;
@@ -27,7 +27,7 @@ export const getLatestBlocks = async (
 ): Promise<BlockchainResult | null> => {
   try {
     const res = await axios.get(
-      `${ENV.FIVENET_ARCH_RPC}blockchain?minHeight=${minHeight}&maxHeight=${maxHeight}`
+      `${ENV.ARCH_RPC_URL}blockchain?minHeight=${minHeight}&maxHeight=${maxHeight}`
     );
     const result = res.data.result;
     if (!result) {
@@ -48,9 +48,7 @@ export const getBlocksResult = async (
     const promises = [];
     for (let i = minHeight; i <= maxHeight; i++) {
       promises.push(
-        axios.get<BlockResponse>(
-          `${ENV.FIVENET_ARCH_RPC}block_results?height=${i}`
-        )
+        axios.get<BlockResponse>(`${ENV.ARCH_RPC_URL}block_results?height=${i}`)
       );
     }
     const results = await Promise.all(promises);
@@ -64,9 +62,7 @@ export const getBlocksResult = async (
 
 export const getBlock = async (height: string): Promise<Block | null> => {
   try {
-    const res = await axios.get(
-      `${ENV.FIVENET_ARCH_RPC}block?height=${height}`
-    );
+    const res = await axios.get(`${ENV.ARCH_RPC_URL}block?height=${height}`);
     const result = res.data.result;
     if (!result) {
       return null;
