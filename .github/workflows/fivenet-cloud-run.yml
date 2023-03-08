@@ -48,4 +48,5 @@ jobs:
           --platform managed \
           --region $CLOUD_RUN_REGION \
           --allow-unauthenticated \
+          --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL \
           --quiet
