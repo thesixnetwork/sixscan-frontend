@@ -21,6 +21,11 @@ import {
   Spacer,
   Image,
   Circle,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -145,9 +150,10 @@ export default function Validators({
                     {validators.map(
                       (validator, index) =>
                         // show if moniker includes SIX NETWORK
-                        validator.description.moniker.includes(
-                          "SIX Network"
-                        ) && (
+                        validator.description.moniker
+                          .toLowerCase()
+                          .includes("six network") &&
+                        !validator.jailed && (
                           <Tr key={validator.operator_address}>
                             <Td>
                               <Flex gap={2} alignItems="center">
@@ -269,151 +275,342 @@ export default function Validators({
         <Container maxW="container.xl">
           <Flex direction={"column"} gap={6}>
             <CustomCard>
-              <TableContainer>
-                <Table>
-                  <Tbody>
-                    <Tr>
-                      <Td>
-                        <Text fontWeight={"bold"}>Rank</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Address</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Voting Power</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>First Block</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Last Block</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Validated Blocks</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Active</Text>
-                      </Td>
-                    </Tr>
-                    {validators.map((validator, index) => (
-                      <Tr key={validator.operator_address}>
-                        <Td>
-                          <Flex direction="column">
-                            <Text>
-                              {index + 1 === 1
-                                ? `🥇 ${index + 1}`
-                                : index + 1 === 2
-                                ? `🥈 ${index + 1}`
-                                : index + 1 === 3
-                                ? `🥉 ${index + 1}`
-                                : index + 1}
-                            </Text>
-                          </Flex>
-                        </Td>
-                        <Td>
-                          <Flex gap={2} alignItems="center">
-                            {getImageFromDetails(
-                              validator.description.details
-                            ) !== "" ? (
-                              <Image
-                                border="1px solid"
-                                borderColor={"light"}
-                                borderRadius="full"
-                                alt={validator.description.moniker}
-                                src={`https://imgur.com/${getImageFromDetails(
-                                  validator.description.details
-                                )}.png`}
-                                height={10}
-                              />
-                            ) : (
-                              <Circle
-                                border="1px solid"
-                                size={10}
-                                borderColor={"light"}
-                              />
-                            )}
-                            <Flex direction="column">
-                              <Text>
-                                <Clickable
-                                  underline
-                                  href={`/address/${validator.operator_address}`}
-                                >
-                                  {validator.description.moniker}
-                                </Clickable>
-                              </Text>
-                              <Text fontSize="sm" color="medium">
-                                {getNameFromDetails(
-                                  validator.description.details
-                                ) !== ""
-                                  ? getNameFromDetails(
-                                      validator.description.details
-                                    )
-                                  : ""}
-                              </Text>
-                            </Flex>
-                          </Flex>
-                        </Td>
-                        <Td>
-                          <Flex direction="column">
-                            <Text>
-                              {formatNumber(
-                                parseInt(validator.tokens) / 10 ** 6
-                              ) + " SIX"}
-                            </Text>
-                          </Flex>
-                        </Td>
-                        <Td>
-                          <Text>
-                            <Clickable href="/">0</Clickable>
-                          </Text>
-                        </Td>
-                        <Td>
-                          <Text>
-                            <Clickable href="/">0</Clickable>
-                          </Text>
-                        </Td>
-                        <Td>
-                          <Text>0</Text>
-                        </Td>
-                        <Td>
-                          {!validator.jailed ? (
-                            validator.status === "BOND_STATUS_BONDED" ? (
-                              <Badge colorScheme={"green"} variant={"subtle"}>
-                                <Flex
-                                  direction="row"
-                                  gap={1}
-                                  alignItems="center"
-                                >
-                                  <FaCheckCircle />
-                                  <Text>Yes</Text>
-                                </Flex>
-                              </Badge>
-                            ) : (
-                              <Badge colorScheme={"red"} variant={"subtle"}>
-                                <Flex
-                                  direction="row"
-                                  gap={1}
-                                  alignItems="center"
-                                >
-                                  <FaUnlink />
-                                  <Text>No</Text>
-                                </Flex>
-                              </Badge>
-                            )
-                          ) : (
-                            <Badge colorScheme={"red"} variant={"subtle"}>
-                              <Flex direction="row" gap={1} alignItems="center">
-                                <FaUnlink />
-                                <Text>Jailed</Text>
-                              </Flex>
-                            </Badge>
+              <Tabs>
+                <TabList>
+                  <Tab>Active</Tab>
+                  <Tab>Inactive</Tab>
+                </TabList>
+                <TabPanels>
+                  <TabPanel>
+                    <TableContainer>
+                      <Table>
+                        <Tbody>
+                          <Tr>
+                            <Td>
+                              <Text fontWeight={"bold"}>Rank</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Address</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Voting Power</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>First Block</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Last Block</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Validated Blocks</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Active</Text>
+                            </Td>
+                          </Tr>
+                          {validators.map(
+                            (validator, index) =>
+                              !validator.jailed && (
+                                <Tr key={validator.operator_address}>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>
+                                        {index + 1 === 1
+                                          ? `🥇 ${index + 1}`
+                                          : index + 1 === 2
+                                          ? `🥈 ${index + 1}`
+                                          : index + 1 === 3
+                                          ? `🥉 ${index + 1}`
+                                          : index + 1}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex gap={2} alignItems="center">
+                                      {getImageFromDetails(
+                                        validator.description.details
+                                      ) !== "" ? (
+                                        <Image
+                                          border="1px solid"
+                                          borderColor={"light"}
+                                          borderRadius="full"
+                                          alt={validator.description.moniker}
+                                          src={`https://imgur.com/${getImageFromDetails(
+                                            validator.description.details
+                                          )}.png`}
+                                          height={10}
+                                        />
+                                      ) : (
+                                        <Circle
+                                          border="1px solid"
+                                          size={10}
+                                          borderColor={"light"}
+                                        />
+                                      )}
+                                      <Flex direction="column">
+                                        <Text>
+                                          <Clickable
+                                            underline
+                                            href={`/address/${validator.operator_address}`}
+                                          >
+                                            {validator.description.moniker}
+                                          </Clickable>
+                                        </Text>
+                                        <Text fontSize="sm" color="medium">
+                                          {getNameFromDetails(
+                                            validator.description.details
+                                          ) !== ""
+                                            ? getNameFromDetails(
+                                                validator.description.details
+                                              )
+                                            : ""}
+                                        </Text>
+                                      </Flex>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>
+                                        {formatNumber(
+                                          parseInt(validator.tokens) / 10 ** 6
+                                        ) + " SIX"}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/">0</Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/">0</Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>0</Text>
+                                  </Td>
+                                  <Td>
+                                    {!validator.jailed ? (
+                                      validator.status ===
+                                      "BOND_STATUS_BONDED" ? (
+                                        <Badge
+                                          colorScheme={"green"}
+                                          variant={"subtle"}
+                                        >
+                                          <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="center"
+                                          >
+                                            <FaCheckCircle />
+                                            <Text>Yes</Text>
+                                          </Flex>
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          colorScheme={"red"}
+                                          variant={"subtle"}
+                                        >
+                                          <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="center"
+                                          >
+                                            <FaUnlink />
+                                            <Text>No</Text>
+                                          </Flex>
+                                        </Badge>
+                                      )
+                                    ) : (
+                                      <Badge
+                                        colorScheme={"red"}
+                                        variant={"subtle"}
+                                      >
+                                        <Flex
+                                          direction="row"
+                                          gap={1}
+                                          alignItems="center"
+                                        >
+                                          <FaUnlink />
+                                          <Text>Jailed</Text>
+                                        </Flex>
+                                      </Badge>
+                                    )}
+                                  </Td>
+                                </Tr>
+                              )
                           )}
-                        </Td>
-                      </Tr>
-                    ))}
-                  </Tbody>
-                </Table>
-              </TableContainer>
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                  </TabPanel>
+                  <TabPanel>
+                    <TableContainer>
+                      <Table>
+                        <Tbody>
+                          <Tr>
+                            <Td>
+                              <Text fontWeight={"bold"}>Rank</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Address</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Voting Power</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>First Block</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Last Block</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Validated Blocks</Text>
+                            </Td>
+                            <Td>
+                              <Text fontWeight={"bold"}>Active</Text>
+                            </Td>
+                          </Tr>
+                          {validators.map(
+                            (validator, index) =>
+                              validator.jailed && (
+                                <Tr key={validator.operator_address}>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>
+                                        {index + 1 === 1
+                                          ? `🥇 ${index + 1}`
+                                          : index + 1 === 2
+                                          ? `🥈 ${index + 1}`
+                                          : index + 1 === 3
+                                          ? `🥉 ${index + 1}`
+                                          : index + 1}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex gap={2} alignItems="center">
+                                      {getImageFromDetails(
+                                        validator.description.details
+                                      ) !== "" ? (
+                                        <Image
+                                          border="1px solid"
+                                          borderColor={"light"}
+                                          borderRadius="full"
+                                          alt={validator.description.moniker}
+                                          src={`https://imgur.com/${getImageFromDetails(
+                                            validator.description.details
+                                          )}.png`}
+                                          height={10}
+                                        />
+                                      ) : (
+                                        <Circle
+                                          border="1px solid"
+                                          size={10}
+                                          borderColor={"light"}
+                                        />
+                                      )}
+                                      <Flex direction="column">
+                                        <Text>
+                                          <Clickable
+                                            underline
+                                            href={`/address/${validator.operator_address}`}
+                                          >
+                                            {validator.description.moniker}
+                                          </Clickable>
+                                        </Text>
+                                        <Text fontSize="sm" color="medium">
+                                          {getNameFromDetails(
+                                            validator.description.details
+                                          ) !== ""
+                                            ? getNameFromDetails(
+                                                validator.description.details
+                                              )
+                                            : ""}
+                                        </Text>
+                                      </Flex>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>
+                                        {formatNumber(
+                                          parseInt(validator.tokens) / 10 ** 6
+                                        ) + " SIX"}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/">0</Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/">0</Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>0</Text>
+                                  </Td>
+                                  <Td>
+                                    {!validator.jailed ? (
+                                      validator.status ===
+                                      "BOND_STATUS_BONDED" ? (
+                                        <Badge
+                                          colorScheme={"green"}
+                                          variant={"subtle"}
+                                        >
+                                          <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="center"
+                                          >
+                                            <FaCheckCircle />
+                                            <Text>Yes</Text>
+                                          </Flex>
+                                        </Badge>
+                                      ) : (
+                                        <Badge
+                                          colorScheme={"red"}
+                                          variant={"subtle"}
+                                        >
+                                          <Flex
+                                            direction="row"
+                                            gap={1}
+                                            alignItems="center"
+                                          >
+                                            <FaUnlink />
+                                            <Text>No</Text>
+                                          </Flex>
+                                        </Badge>
+                                      )
+                                    ) : (
+                                      <Badge
+                                        colorScheme={"red"}
+                                        variant={"subtle"}
+                                      >
+                                        <Flex
+                                          direction="row"
+                                          gap={1}
+                                          alignItems="center"
+                                        >
+                                          <FaUnlink />
+                                          <Text>Jailed</Text>
+                                        </Flex>
+                                      </Badge>
+                                    )}
+                                  </Td>
+                                </Tr>
+                              )
+                          )}
+                        </Tbody>
+                      </Table>
+                    </TableContainer>
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
             </CustomCard>
           </Flex>
         </Container>
@@ -438,146 +635,3 @@ export const getServerSideProps = async () => {
     },
   };
 };
-
-// const VALIDATORS = [
-//     {
-//         operator_address: "6xvaloper1fl9ypcr9al7w2294adtla42njc0qnws66gdv73",
-//         consensus_pubkey: {
-//             "@type": "/cosmos.crypto.ed25519.PubKey",
-//             key: "gQ1Yk7GzGU0dm6jv6RoHTweh+PsOQhABYi/7yRs9k8Y=",
-//         },
-//         jailed: false,
-//         status: "BOND_STATUS_BONDED",
-//         tokens: "20000000000",
-//         delegator_shares: "20000000000.000000000000000000",
-//         description: {
-//             moniker: "SIX NETWORK 2",
-//             identity: "",
-//             website: "",
-//             security_contact: "",
-//             details: "",
-//         },
-//         unbonding_height: "0",
-//         unbonding_time: "1970-01-01T00:00:00Z",
-//         commission: {
-//             commission_rates: {
-//                 rate: "0.100000000000000000",
-//                 max_rate: "0.500000000000000000",
-//                 max_change_rate: "0.100000000000000000",
-//             },
-//             update_time: "2022-09-28T12:27:09.245957877Z",
-//         },
-//         min_self_delegation: "20000000000",
-//         min_delegation: "20000000000",
-//         delegation_increment: "20000000000",
-//         max_license: "100",
-//         license_count: "1",
-//         license_mode: true,
-//         enable_redelegation: false,
-//     },
-//     {
-//         operator_address: "6xvaloper1fl9ypcr9al7w2294adtla42njc0qnws66gdv73",
-//         consensus_pubkey: {
-//             "@type": "/cosmos.crypto.ed25519.PubKey",
-//             key: "gQ1Yk7GzGU0dm6jv6RoHTweh+PsOQhABYi/7yRs9k8Y=",
-//         },
-//         jailed: false,
-//         status: "BOND_STATUS_BONDED",
-//         tokens: "20000000000",
-//         delegator_shares: "20000000000.000000000000000000",
-//         description: {
-//             moniker: "SIX NETWORK 2",
-//             identity: "",
-//             website: "",
-//             security_contact: "",
-//             details: "",
-//         },
-//         unbonding_height: "0",
-//         unbonding_time: "1970-01-01T00:00:00Z",
-//         commission: {
-//             commission_rates: {
-//                 rate: "0.100000000000000000",
-//                 max_rate: "0.500000000000000000",
-//                 max_change_rate: "0.100000000000000000",
-//             },
-//             update_time: "2022-09-28T12:27:09.245957877Z",
-//         },
-//         min_self_delegation: "20000000000",
-//         min_delegation: "20000000000",
-//         delegation_increment: "20000000000",
-//         max_license: "100",
-//         license_count: "1",
-//         license_mode: true,
-//         enable_redelegation: false,
-//     },
-//     {
-//         operator_address: "6xvaloper1fl9ypcr9al7w2294adtla42njc0qnws66gdv73",
-//         consensus_pubkey: {
-//             "@type": "/cosmos.crypto.ed25519.PubKey",
-//             key: "gQ1Yk7GzGU0dm6jv6RoHTweh+PsOQhABYi/7yRs9k8Y=",
-//         },
-//         jailed: false,
-//         status: "BOND_STATUS_BONDED",
-//         tokens: "20000000000",
-//         delegator_shares: "20000000000.000000000000000000",
-//         description: {
-//             moniker: "SIX NETWORK 2",
-//             identity: "",
-//             website: "",
-//             security_contact: "",
-//             details: "",
-//         },
-//         unbonding_height: "0",
-//         unbonding_time: "1970-01-01T00:00:00Z",
-//         commission: {
-//             commission_rates: {
-//                 rate: "0.100000000000000000",
-//                 max_rate: "0.500000000000000000",
-//                 max_change_rate: "0.100000000000000000",
-//             },
-//             update_time: "2022-09-28T12:27:09.245957877Z",
-//         },
-//         min_self_delegation: "20000000000",
-//         min_delegation: "20000000000",
-//         delegation_increment: "20000000000",
-//         max_license: "100",
-//         license_count: "1",
-//         license_mode: true,
-//         enable_redelegation: false,
-//     },
-//     {
-//         operator_address: "6xvaloper1fl9ypcr9al7w2294adtla42njc0qnws66gdv73",
-//         consensus_pubkey: {
-//             "@type": "/cosmos.crypto.ed25519.PubKey",
-//             key: "gQ1Yk7GzGU0dm6jv6RoHTweh+PsOQhABYi/7yRs9k8Y=",
-//         },
-//         jailed: false,
-//         status: "BOND_STATUS_BONDED",
-//         tokens: "20000000000",
-//         delegator_shares: "20000000000.000000000000000000",
-//         description: {
-//             moniker: "SIX NETWORK 2",
-//             identity: "",
-//             website: "",
-//             security_contact: "",
-//             details: "",
-//         },
-//         unbonding_height: "0",
-//         unbonding_time: "1970-01-01T00:00:00Z",
-//         commission: {
-//             commission_rates: {
-//                 rate: "0.100000000000000000",
-//                 max_rate: "0.500000000000000000",
-//                 max_change_rate: "0.100000000000000000",
-//             },
-//             update_time: "2022-09-28T12:27:09.245957877Z",
-//         },
-//         min_self_delegation: "20000000000",
-//         min_delegation: "20000000000",
-//         delegation_increment: "20000000000",
-//         max_license: "100",
-//         license_count: "1",
-//         license_mode: true,
-//         enable_redelegation: false,
-//     },
-// ];
