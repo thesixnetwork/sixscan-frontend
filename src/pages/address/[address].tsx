@@ -227,10 +227,8 @@ export default function Address({
                             {price && price !== null && balance !== null ? (
                               <Text fontSize={"sm"}>{`$${formatNumber(
                                 convertUsixToSix(parseInt(balance.amount)) *
-                                  price["six-network"].usd
-                              )} (@ $${formatNumber(
-                                price["six-network"].usd
-                              )}/SIX)`}</Text>
+                                  price?.usd
+                              )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
                             ) : (
                               <Text fontSize={"sm"}>{`$0`}</Text>
                             )}
@@ -336,7 +334,7 @@ export default function Address({
                                                   addValueToTotalValue(
                                                     convertUsixToSix(
                                                       parseInt(balance.amount)
-                                                    ) * price["six-network"].usd
+                                                    ) * price?.usd
                                                   )
                                                 )}
                                               </Text>
@@ -346,9 +344,7 @@ export default function Address({
                                               fontSize={"xs"}
                                               color={"dark"}
                                             >
-                                              {`@ $${formatNumber(
-                                                price["six-network"].usd
-                                              )}`}
+                                              {`@ $${formatNumber(price?.usd)}`}
                                             </Text>
                                           )}
                                         </Flex>
