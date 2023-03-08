@@ -25,6 +25,7 @@ import { FaChevronDown, FaChevronUp, FaCircle, FaWallet } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef } from "react";
 import SearchBar from "./SearchBar";
+import ENV from "@/utils/ENV";
 
 export default function WithSubnavigation({ variant }: { variant?: string }) {
   const { isOpen, onToggle } = useDisclosure();
