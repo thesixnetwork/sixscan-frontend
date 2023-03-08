@@ -85,8 +85,8 @@ export default function Home({
   const data = [
     {
       title: "PRICE",
-      value: price ? `$${formatNumber(price["six-network"].usd)}` : "$0",
-      badge: price ? `${formatNumber(price["six-network"].usd)}%` : "0%",
+      value: price && price.usd ? `$${formatNumber(price.usd)}` : "$0",
+      badge: price ? `${formatNumber(price?.usd)}%` : "0%",
       icon: FaDollarSign,
     },
     {
@@ -101,7 +101,7 @@ export default function Home({
     },
     {
       title: "MARKET CAP",
-      value: price ? `$${formatNumber(price["six-network"].usd)}` : "$0",
+      value: price ? `$${formatNumber(price?.usd)}` : "$0",
       icon: FaMoneyBillWave,
     },
     {
