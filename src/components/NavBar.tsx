@@ -184,19 +184,39 @@ const DesktopNav = () => {
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
-              <Link
-                p={2}
-                href={navItem.href ?? "#"}
-                fontSize={"sm"}
-                fontWeight={500}
-                color={linkColor}
-                _hover={{
-                  textDecoration: "none",
-                  color: linkHoverColor,
-                }}
-              >
-                {navItem.label}
-              </Link>
+              {navItem.children ? (
+                <Flex alignItems="center" direction={"row"} gap={1}>
+                  <Link
+                    p={2}
+                    fontSize={"sm"}
+                    fontWeight={500}
+                    color={linkColor}
+                    _hover={{
+                      textDecoration: "none",
+                      color: linkHoverColor,
+                    }}
+                  >
+                    {navItem.label}
+                  </Link>
+                  <FaChevronDown fontSize={8} />
+                </Flex>
+              ) : (
+                <Flex alignItems="center" direction={"row"} gap={1}>
+                  <Link
+                    p={2}
+                    href={navItem.href}
+                    fontSize={"sm"}
+                    fontWeight={500}
+                    color={linkColor}
+                    _hover={{
+                      textDecoration: "none",
+                      color: linkHoverColor,
+                    }}
+                  >
+                    {navItem.label}
+                  </Link>
+                </Flex>
+              )}
             </PopoverTrigger>
 
             {navItem.children && (

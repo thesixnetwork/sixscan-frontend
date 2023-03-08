@@ -61,48 +61,9 @@ import {
 } from "@/utils/block";
 // ------------------------- Helper Libs -------------------------
 // import moment from "moment";
-
-const formatNumber = (num: number) => {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-};
-
-const blocks = [
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-];
+import { formatNumber } from "@/utils/format";
+import { getPriceFromCoingecko } from "@/service/coingecko";
+import { CoinGeckoPrice } from "@/types/Coingecko";
 
 export default function Home({
   pool,
@@ -111,6 +72,7 @@ export default function Home({
   latestBlocks,
   blocksResult,
   validators,
+  price,
 }: {
   pool: Pool;
   inflation: string;
@@ -118,13 +80,13 @@ export default function Home({
   latestBlocks: BlockchainResult;
   blocksResult: BlockResult[];
   validators: Validator[];
+  price: CoinGeckoPrice | null;
 }) {
-  console.log("blocksResult:", blocksResult);
   const data = [
     {
       title: "PRICE",
-      value: 0,
-      badge: "1.5%",
+      value: price ? `$${formatNumber(price["six-network"].usd)}` : "$0",
+      badge: price ? `${formatNumber(price["six-network"].usd)}%` : "0%",
       icon: FaDollarSign,
     },
     {
@@ -132,23 +94,22 @@ export default function Home({
       value: `${formatNumber(
         convertUsixToSix(parseInt(pool.bonded_tokens))
       )} SIX`,
-      badge: "65%",
+      badge: `${convertDecimalToPercent(
+        parseInt(pool.bonded_tokens) / parseInt(supply.amount)
+      )}%`,
       icon: FaPiggyBank,
     },
     {
       title: "MARKET CAP",
-      value: 0,
-      badge: "1.5%",
+      value: price ? `$${formatNumber(price["six-network"].usd)}` : "$0",
       icon: FaMoneyBillWave,
     },
     {
       title: "INFLATION",
       value: `${convertDecimalToPercent(parseFloat(inflation))}%`,
-      badge: "1.5%",
       icon: FaPrint,
     },
   ];
-  // console.log("latestBlocks:", latestBlocks)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       <Head>
@@ -216,9 +177,11 @@ export default function Home({
                             >
                               {item.value}
                             </Text>
-                            <Text fontSize="sm" color={"success"}>
-                              {`(${item.badge})`}
-                            </Text>
+                            {item.badge && (
+                              <Text fontSize="sm" color={"success"}>
+                                {`(${item.badge})`}
+                              </Text>
+                            )}
                           </Flex>
                         </Flex>
                       </Flex>
@@ -305,9 +268,8 @@ export default function Home({
 export const getServerSideProps = async () => {
   const pool = await getPool();
   const inflation = await getInflation();
-  const supply = await getSupply();
+  const supply = await getSupply("usix");
   const latestBlock = await getLatestBlock();
-  // console.log("latestBlock.result: ", latestBlock || null);
   const latestBlockHeight = latestBlock
     ? parseInt(latestBlock.block.header.height)
     : null;
@@ -320,9 +282,17 @@ export const getServerSideProps = async () => {
     latestBlockHeight && minBlockHeight
       ? await getBlocksResult(minBlockHeight, latestBlockHeight)
       : null;
-  // const blockRewards = latestBlockHeight && minBlockHeight ? await getBlockRewards(blocksResult) : null;
   const validators = await getValidators();
+  const price = await getPriceFromCoingecko("six-network");
   return {
-    props: { pool, inflation, supply, latestBlocks, blocksResult, validators },
+    props: {
+      pool,
+      inflation,
+      supply,
+      latestBlocks,
+      blocksResult,
+      validators,
+      price,
+    },
   };
 };

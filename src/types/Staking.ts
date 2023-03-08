@@ -1,3 +1,15 @@
+export interface Delegation {
+  delegation: {
+    delegator_address: string;
+    validator_address: string;
+    shares: string;
+  };
+  balance: {
+    denom: string;
+    amount: string;
+  };
+}
+
 interface ConsensusPubkey {
   "@type": string;
   key: string;
