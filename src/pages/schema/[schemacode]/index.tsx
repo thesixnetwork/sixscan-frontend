@@ -23,6 +23,7 @@ import {
   Textarea,
   Button,
   Spacer,
+  Tooltip,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -106,7 +107,18 @@ export default function Schema({
   const [page, setPage] = useState(1);
   const perPage = 12;
   const totalPages = nftCollection.pagination.total / perPage;
+
+  const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
+
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(JSON.stringify(schema, null, 2));
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  };
+
   useEffect(() => {
     // sort by token_id
     nftCollection.nftCollection.sort(
@@ -344,12 +356,20 @@ export default function Schema({
                               <Text>Schema Source Code</Text>
                             </Flex>
                             <Spacer />
-                            <Button size="sm" colorScheme={"gray"}>
-                              <FaExpand fontSize={12} />
-                            </Button>
-                            <Button size="sm" colorScheme={"gray"}>
-                              <FaCopy fontSize={12} />
-                            </Button>
+                            <Tooltip
+                              label={isCopied ? "Copied" : "Copy"}
+                              placement="top"
+                            >
+                              <Box
+                                bgColor="light"
+                                p={1.5}
+                                rounded="full"
+                                onClick={handleCopyClick}
+                                cursor="pointer"
+                              >
+                                <FaCopy fontSize={12} />
+                              </Box>
+                            </Tooltip>
                           </Flex>
                           <Textarea
                             value={JSON.stringify(schema, null, 2)}
