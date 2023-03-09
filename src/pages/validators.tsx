@@ -4,13 +4,6 @@ import {
   Flex,
   Text,
   Container,
-  Card,
-  CardBody,
-  Grid,
-  GridItem,
-  Icon,
-  Stack,
-  Link,
   Divider,
   Table,
   TableContainer,
@@ -30,27 +23,15 @@ import {
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 // ------------------------- Styles -------------------------
-import styles from "@/styles/Home.module.css";
-import {
-  FaArrowRight,
-  FaCheck,
-  FaCheckCircle,
-  FaDollarSign,
-  FaUnlink,
-} from "react-icons/fa";
+import { FaCheckCircle, FaUnlink } from "react-icons/fa";
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
 import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
 import { getValidators } from "@/service/staking";
 import { Validator } from "@/types/Staking";
-
-const formatNumber = (num: number) => {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-};
+import { formatNumber } from "@/utils/format";
 
 const getImageFromDetails = (details: string) => {
   const substrings = details.split("|"); // Split the string into substrings
@@ -78,13 +59,8 @@ const getNameFromDetails = (details: string) => {
   return sdValue;
 };
 
-export default function Validators({
-  validators,
-}: {
-  validators: Validator[];
-}) {
-  // sort validators by voting power and if status is not bonded, put it at the end
-  validators.sort((a, b) => {
+const sortValidatorsByPower = (validators: Validator[]) => {
+  return validators.sort((a, b) => {
     if (
       a.status !== "BOND_STATUS_BONDED" &&
       b.status === "BOND_STATUS_BONDED"
@@ -99,7 +75,15 @@ export default function Validators({
       return parseInt(b.tokens) - parseInt(a.tokens);
     }
   });
+};
 
+export default function Validators({
+  validators,
+}: {
+  validators: Validator[];
+}) {
+  // sort validators by voting power and if status is not bonded, put it at the end
+  sortValidatorsByPower(validators);
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       {/* testing eslint */}
@@ -148,7 +132,7 @@ export default function Validators({
                       </Td>
                     </Tr>
                     {validators.map(
-                      (validator, index) =>
+                      (validator) =>
                         // show if moniker includes SIX NETWORK
                         validator.description.moniker
                           .toLowerCase()
@@ -620,12 +604,6 @@ export default function Validators({
     </Flex>
   );
 }
-
-const getTx = async (txhash: string) => {
-  return {
-    txhash,
-  };
-};
 
 export const getServerSideProps = async () => {
   const validators = await getValidators();

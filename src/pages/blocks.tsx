@@ -160,18 +160,14 @@ export default function Blocks({
 export const getServerSideProps = async () => {
   const latestBlock = await getLatestBlock();
   const latestBlockHeight = latestBlock
-    ? parseInt(latestBlock.block.header.height)
+    ? parseInt(latestBlock?.block?.header?.height) ?? null
     : null;
   const minBlockHeight = latestBlockHeight ? latestBlockHeight - 20 : null;
-  const latestBlocks =
-    latestBlockHeight && minBlockHeight
-      ? await getLatestBlocks(minBlockHeight, latestBlockHeight)
-      : null;
-  const blocksResult =
-    latestBlockHeight && minBlockHeight
-      ? await getBlocksResult(minBlockHeight, latestBlockHeight)
-      : null;
-  const validators = await getValidators();
+  const [latestBlocks, blocksResult, validators] = await Promise.all([
+    getLatestBlocks(minBlockHeight, latestBlockHeight),
+    getBlocksResult(minBlockHeight, latestBlockHeight),
+    getValidators(),
+  ]);
   return {
     props: { latestBlocks, blocksResult, validators },
   };

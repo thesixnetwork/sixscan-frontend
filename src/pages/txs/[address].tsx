@@ -49,11 +49,7 @@ import moment from "moment";
 import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
-import {
-  formatNumber,
-  convertUsixToSix,
-  convertDecimalToPercent,
-} from "@/utils/format";
+import { formatNumber, convertUsixToSix } from "@/utils/format";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";

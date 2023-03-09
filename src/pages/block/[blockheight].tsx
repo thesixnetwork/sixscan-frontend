@@ -19,11 +19,9 @@ import {
   TabPanel,
   TabPanels,
   Thead,
-  Badge,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
-// ------------------------- Styles -------------------------
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
@@ -35,7 +33,6 @@ import { Transaction } from "@/types/Txs";
 import moment from "moment";
 import { FaRegWindowClose, FaSortAmountDown } from "react-icons/fa";
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
 
 export default function BlockPage({
   block,
@@ -224,8 +221,10 @@ export const getServerSideProps = async (context: {
   params: { blockheight: string };
 }) => {
   const { blockheight } = context.params;
-  const block = await getBlock(blockheight);
-  const blockTxs = await getTxsFromBlock(blockheight);
+  const [block, blockTxs] = await Promise.all([
+    getBlock(blockheight),
+    getTxsFromBlock(blockheight),
+  ]);
   return {
     props: {
       block,
