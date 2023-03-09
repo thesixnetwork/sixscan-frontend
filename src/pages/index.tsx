@@ -231,7 +231,10 @@ export default function Home({
                             </Text>
                             <Text fontSize="xs" color="medium">
                               Txns{` `}
-                              <Clickable href="/" underline>
+                              <Clickable
+                                href={`/block/${block.header.height}`}
+                                underline
+                              >
                                 {block.num_txs}
                               </Clickable>
                             </Text>

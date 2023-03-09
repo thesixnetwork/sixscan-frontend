@@ -621,7 +621,10 @@ export default function Address({
                                     </Td>
                                     <Td>
                                       <Text>
-                                        <Clickable href="/" underline>
+                                        <Clickable
+                                          href={`/block/${tx.block_height}`}
+                                          underline
+                                        >
                                           {tx.block_height}
                                         </Clickable>
                                       </Text>
