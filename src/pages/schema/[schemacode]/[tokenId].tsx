@@ -22,6 +22,7 @@ import {
   Textarea,
   Button,
   Spacer,
+  Tooltip,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -44,6 +45,7 @@ import AttributeBox from "@/components/AttributeBox";
 import { getMetadata, getSchema } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
 import { NFTSchema } from "@/types/Nftmngr";
+import { useState } from "react";
 
 export default function Schema({
   metadata,
@@ -58,6 +60,14 @@ export default function Schema({
       value: schema.origin_data?.origin_chain,
     },
   ];
+  const [isCopied, setIsCopied] = useState(false);
+  const handleCopyClick = () => {
+    navigator.clipboard.writeText(JSON.stringify(metadata, null, 2));
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1000);
+  };
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       <Head>
@@ -305,12 +315,20 @@ export default function Schema({
                             <Text>Metadata Source Code</Text>
                           </Flex>
                           <Spacer />
-                          <Button size="sm" colorScheme={"gray"}>
-                            <FaExpand fontSize={12} />
-                          </Button>
-                          <Button size="sm" colorScheme={"gray"}>
-                            <FaCopy fontSize={12} />
-                          </Button>
+                          <Tooltip
+                            label={isCopied ? "Copied" : "Copy"}
+                            placement="top"
+                          >
+                            <Box
+                              bgColor="light"
+                              p={1.5}
+                              rounded="full"
+                              onClick={handleCopyClick}
+                              cursor="pointer"
+                            >
+                              <FaCopy fontSize={12} />
+                            </Box>
+                          </Tooltip>
                         </Flex>
                         <Textarea
                           value={JSON.stringify(metadata, null, 2)}
