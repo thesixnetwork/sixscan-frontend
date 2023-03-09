@@ -130,362 +130,16 @@ export default function Schema({
     );
     setItems(newItems);
   }, [nftCollection, page]);
-
-  return (
-    <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
-      <Head>
-        <title>SIXSCAN</title>
-        <meta name="description" content="SIXSCAN" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-      <NavBar />
-      {schema ? (
-        <Box>
-          <Box p={6}>
-            <Container maxW="container.xl">
-              <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                <GridItem
-                  colSpan={{ base: 12, md: 3 }}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                  display={"flex"}
-                >
-                  {openseaCollection && openseaCollection.image_url && (
-                    <Image
-                      rounded={{ base: "sm", md: "md", lg: "lg" }}
-                      src={openseaCollection.image_url}
-                      alt={schema.name}
-                      width="100%"
-                    />
-                  )}
-                </GridItem>
-                <GridItem colSpan={{ base: 12, md: 9 }}>
-                  <Flex direction="column" gap={4}>
-                    <Flex direction="column">
-                      <Flex direction="row" gap={2} alignItems="center">
-                        <Text fontSize="2xl" fontWeight="bold">
-                          {schema.name}
-                        </Text>
-                        {!schema.isVerified && (
-                          <FaCheckCircle color={"rgb(69,153,234)"} />
-                        )}
-                      </Flex>
-                      <Flex direction="row" gap={1}>
-                        <Text fontSize="sm">Contract</Text>
-                        <Text fontSize="sm">
-                          <Clickable
-                            href={
-                              schema.origin_data?.origin_chain
-                                ? chainConfig[schema.origin_data?.origin_chain]
-                                    .blockscan +
-                                  schema.origin_data?.origin_contract_address
-                                : ""
-                            }
-                            underline
-                          >
-                            {schema.origin_data?.origin_contract_address}
-                          </Clickable>
-                        </Text>
-                      </Flex>
-                    </Flex>
-                    <Flex direction="row" gap={2}>
-                      <Flex direction="row" gap={1} alignItems="center">
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <Link
-                            href={
-                              schema.origin_data?.origin_chain
-                                ? chainConfig[schema.origin_data?.origin_chain]
-                                    .opensea +
-                                  schema.origin_data?.origin_contract_address
-                                : ""
-                            }
-                          >
-                            <Image
-                              src="/opensea-logo.svg"
-                              alt="opensea"
-                              width={6}
-                            />
-                          </Link>
-                        </motion.div>
-                      </Flex>
-                      <Flex direction="row" gap={1} alignItems="center">
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                        >
-                          <Link
-                            href={
-                              schema.origin_data?.origin_chain
-                                ? chainConfig[schema.origin_data?.origin_chain]
-                                    .blockscan +
-                                  schema.origin_data?.origin_contract_address
-                                : ""
-                            }
-                          >
-                            <Box
-                              bgColor="light"
-                              p={1}
-                              borderRadius="full"
-                              border="1px solid"
-                              borderColor={"blackAlpha.100"}
-                            >
-                              {schema.origin_data?.origin_chain && (
-                                <Image
-                                  src={
-                                    chainConfig[
-                                      schema.origin_data?.origin_chain
-                                    ].icon
-                                  }
-                                  alt="icon"
-                                  height={3.5}
-                                />
-                              )}
-                            </Box>
-                          </Link>
-                        </motion.div>
-                      </Flex>
-                    </Flex>
-                    <Flex direction="column">
-                      {isShowMore ? (
-                        <Text>{openseaCollection.description}</Text>
-                      ) : (
-                        <Text>
-                          {`${openseaCollection.description.slice(0, 100)}...`}
-                        </Text>
-                      )}
-                      <Flex align="center" direction="row" gap={1}>
-                        <Box
-                          onClick={() => setIsShowMore(!isShowMore)}
-                          cursor={"pointer"}
-                          display={"flex"}
-                          alignItems={"center"}
-                          justifyContent={"center"}
-                          gap={1}
-                        >
-                          <Text fontSize={"sm"} fontWeight={"bold"}>
-                            {isShowMore ? `SHOW LESS` : `SHOW MORE`}
-                          </Text>
-                          {isShowMore ? (
-                            <FaChevronUp fontSize={12} />
-                          ) : (
-                            <FaChevronDown fontSize={12} />
-                          )}
-                        </Box>
-                      </Flex>
-                    </Flex>
-                    <Flex direction="row" gap={5}>
-                      {CONFIG.map((config, index) => (
-                        <Flex direction="column" key={index}>
-                          <Text fontWeight={"bold"}>{config.value}</Text>
-                          <Text color="medium">{config.title}</Text>
-                        </Flex>
-                      ))}
-                    </Flex>
-                  </Flex>
-                </GridItem>
-                <GridItem colSpan={12}>
-                  <CustomCard>
-                    <Tabs isLazy>
-                      <TabList>
-                        <Tab>Latest Actions</Tab>
-                        <Tab>Schema</Tab>
-                        <Tab>Metadata</Tab>
-                      </TabList>
-                      <TabPanels>
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            color={"dark"}
-                          >
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              Latest 25 from a total of{" "}
-                              <Clickable underline href="/">
-                                92
-                              </Clickable>{" "}
-                              transactions
-                            </Text>
-                          </Flex>
-                          <TableContainer>
-                            <Table>
-                              <Thead>
-                                <Tr>
-                                  <Td>
-                                    <Text>Txhash</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Token ID</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Method</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Age</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Block</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>By</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Gas Fee</Text>
-                                  </Td>
-                                </Tr>
-                              </Thead>
-                              <Tbody></Tbody>
-                            </Table>
-                          </TableContainer>
-                        </TabPanel>
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            justify="space-between"
-                            py={2}
-                          >
-                            <Flex align="center" direction="row" gap={2}>
-                              <FaScroll fontSize={12} />
-                              <Text>Schema Source Code</Text>
-                            </Flex>
-                            <Spacer />
-                            <Tooltip
-                              label={isCopied ? "Copied" : "Copy"}
-                              placement="top"
-                            >
-                              <Box
-                                bgColor="light"
-                                p={1.5}
-                                rounded="full"
-                                onClick={handleCopyClick}
-                                cursor="pointer"
-                              >
-                                <FaCopy fontSize={12} />
-                              </Box>
-                            </Tooltip>
-                          </Flex>
-                          <Textarea
-                            value={JSON.stringify(schema, null, 2)}
-                            readOnly
-                            minH={500}
-                          />
-                        </TabPanel>
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            py={4}
-                            justifyContent="right"
-                          >
-                            <Button
-                              variant={"solid"}
-                              size="xs"
-                              isDisabled={page === 1}
-                              onClick={() => {
-                                setPage(1);
-                              }}
-                            >
-                              First
-                            </Button>
-                            <Button
-                              size="xs"
-                              isDisabled={page === 1}
-                              onClick={() => {
-                                setPage(page - 1);
-                              }}
-                            >
-                              <FaArrowLeft fontSize={12} />
-                            </Button>
-                            <Text fontSize="xs">
-                              {`Page ${page} of ${Math.ceil(totalPages)}`}
-                            </Text>
-                            <Button
-                              size="xs"
-                              isDisabled={page === Math.ceil(totalPages)}
-                              onClick={() => {
-                                setPage(page + 1);
-                              }}
-                            >
-                              <FaArrowRight fontSize={12} />
-                            </Button>
-                            <Button
-                              size="xs"
-                              isDisabled={page === Math.ceil(totalPages)}
-                              onClick={() => {
-                                setPage(totalPages);
-                              }}
-                            >
-                              Last
-                            </Button>
-                          </Flex>
-                          <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                            {items.map((metadata, index) => (
-                              <GridItem
-                                colSpan={{ base: 6, md: 4, lg: 2 }}
-                                key={index}
-                              >
-                                <CustomCard>
-                                  <Link
-                                    href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
-                                    _hover={{
-                                      textDecoration: "none",
-                                    }}
-                                  >
-                                    <motion.div whileHover={{ scale: 1.05 }}>
-                                      <Image
-                                        src={
-                                          metadata.onchain_image
-                                            ? metadata.onchain_image
-                                            : metadata.origin_image
-                                        }
-                                        alt="mfer"
-                                        width="100%"
-                                      />
-                                    </motion.div>
-                                    <Flex direction="column" p={2}>
-                                      <Flex
-                                        direction="row"
-                                        gap={2}
-                                        align="center"
-                                      >
-                                        <Text
-                                          fontSize="sm"
-                                          fontWeight="bold"
-                                          color="dark"
-                                        >
-                                          #
-                                        </Text>
-                                        <Text
-                                          fontSize="sm"
-                                          color={"primary.500"}
-                                        >
-                                          {metadata.token_id}
-                                        </Text>
-                                      </Flex>
-                                    </Flex>
-                                  </Link>
-                                </CustomCard>
-                              </GridItem>
-                            ))}
-                          </Grid>
-                        </TabPanel>
-                      </TabPanels>
-                    </Tabs>
-                  </CustomCard>
-                </GridItem>
-              </Grid>
-            </Container>
-          </Box>
-        </Box>
-      ) : (
+  if (!schema) {
+    return (
+      <Flex minHeight={"100vh"} direction={"column"}>
+        <Head>
+          <title>SIXSCAN</title>
+          <meta name="description" content="SIXSCAN" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <NavBar />
         <Box
           height="100vh"
           display="flex"
@@ -518,7 +172,359 @@ export default function Schema({
             </Button>
           </Box>
         </Box>
-      )}
+        <Footer />
+      </Flex>
+    );
+  }
+  return (
+    <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
+      <Head>
+        <title>SIXSCAN</title>
+        <meta name="description" content="SIXSCAN" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <NavBar />
+      <Box>
+        <Box p={6}>
+          <Container maxW="container.xl">
+            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+              <GridItem
+                colSpan={{ base: 12, md: 3 }}
+                alignItems={"center"}
+                justifyContent={"center"}
+                display={"flex"}
+              >
+                {openseaCollection && openseaCollection.image_url && (
+                  <Image
+                    rounded={{ base: "sm", md: "md", lg: "lg" }}
+                    src={openseaCollection.image_url}
+                    alt={schema.name}
+                    width="100%"
+                  />
+                )}
+              </GridItem>
+              <GridItem colSpan={{ base: 12, md: 9 }}>
+                <Flex direction="column" gap={4}>
+                  <Flex direction="column">
+                    <Flex direction="row" gap={2} alignItems="center">
+                      <Text fontSize="2xl" fontWeight="bold">
+                        {schema.name}
+                      </Text>
+                      {!schema.isVerified && (
+                        <FaCheckCircle color={"rgb(69,153,234)"} />
+                      )}
+                    </Flex>
+                    <Flex direction="row" gap={1}>
+                      <Text fontSize="sm">Contract</Text>
+                      <Text fontSize="sm">
+                        <Clickable
+                          href={
+                            schema.origin_data?.origin_chain
+                              ? chainConfig[schema.origin_data?.origin_chain]
+                                  .blockscan +
+                                schema.origin_data?.origin_contract_address
+                              : ""
+                          }
+                          underline
+                        >
+                          {schema.origin_data?.origin_contract_address}
+                        </Clickable>
+                      </Text>
+                    </Flex>
+                  </Flex>
+                  <Flex direction="row" gap={2}>
+                    <Flex direction="row" gap={1} alignItems="center">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link
+                          href={
+                            schema.origin_data?.origin_chain
+                              ? chainConfig[schema.origin_data?.origin_chain]
+                                  .opensea +
+                                schema.origin_data?.origin_contract_address
+                              : ""
+                          }
+                        >
+                          <Image
+                            src="/opensea-logo.svg"
+                            alt="opensea"
+                            width={6}
+                          />
+                        </Link>
+                      </motion.div>
+                    </Flex>
+                    <Flex direction="row" gap={1} alignItems="center">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link
+                          href={
+                            schema.origin_data?.origin_chain
+                              ? chainConfig[schema.origin_data?.origin_chain]
+                                  .blockscan +
+                                schema.origin_data?.origin_contract_address
+                              : ""
+                          }
+                        >
+                          <Box
+                            bgColor="light"
+                            p={1}
+                            borderRadius="full"
+                            border="1px solid"
+                            borderColor={"blackAlpha.100"}
+                          >
+                            {schema.origin_data?.origin_chain && (
+                              <Image
+                                src={
+                                  chainConfig[schema.origin_data?.origin_chain]
+                                    .icon
+                                }
+                                alt="icon"
+                                height={3.5}
+                              />
+                            )}
+                          </Box>
+                        </Link>
+                      </motion.div>
+                    </Flex>
+                  </Flex>
+                  <Flex direction="column">
+                    {isShowMore ? (
+                      <Text>{openseaCollection.description}</Text>
+                    ) : (
+                      <Text>
+                        {`${openseaCollection.description.slice(0, 100)}...`}
+                      </Text>
+                    )}
+                    <Flex align="center" direction="row" gap={1}>
+                      <Box
+                        onClick={() => setIsShowMore(!isShowMore)}
+                        cursor={"pointer"}
+                        display={"flex"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                        gap={1}
+                      >
+                        <Text fontSize={"sm"} fontWeight={"bold"}>
+                          {isShowMore ? `SHOW LESS` : `SHOW MORE`}
+                        </Text>
+                        {isShowMore ? (
+                          <FaChevronUp fontSize={12} />
+                        ) : (
+                          <FaChevronDown fontSize={12} />
+                        )}
+                      </Box>
+                    </Flex>
+                  </Flex>
+                  <Flex direction="row" gap={5}>
+                    {CONFIG.map((config, index) => (
+                      <Flex direction="column" key={index}>
+                        <Text fontWeight={"bold"}>{config.value}</Text>
+                        <Text color="medium">{config.title}</Text>
+                      </Flex>
+                    ))}
+                  </Flex>
+                </Flex>
+              </GridItem>
+              <GridItem colSpan={12}>
+                <CustomCard>
+                  <Tabs isLazy>
+                    <TabList>
+                      <Tab>Latest Actions</Tab>
+                      <Tab>Schema</Tab>
+                      <Tab>Metadata</Tab>
+                    </TabList>
+                    <TabPanels>
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          color={"dark"}
+                        >
+                          <FaSortAmountDown fontSize={12} />
+                          <Text>
+                            Latest 25 from a total of{" "}
+                            <Clickable underline href="/">
+                              92
+                            </Clickable>{" "}
+                            transactions
+                          </Text>
+                        </Flex>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr>
+                                <Td>
+                                  <Text>Txhash</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Token ID</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Method</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Age</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Block</Text>
+                                </Td>
+                                <Td>
+                                  <Text>By</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Gas Fee</Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody></Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          justify="space-between"
+                          py={2}
+                        >
+                          <Flex align="center" direction="row" gap={2}>
+                            <FaScroll fontSize={12} />
+                            <Text>Schema Source Code</Text>
+                          </Flex>
+                          <Spacer />
+                          <Tooltip
+                            label={isCopied ? "Copied" : "Copy"}
+                            placement="top"
+                          >
+                            <Box
+                              bgColor="light"
+                              p={1.5}
+                              rounded="full"
+                              onClick={handleCopyClick}
+                              cursor="pointer"
+                            >
+                              <FaCopy fontSize={12} />
+                            </Box>
+                          </Tooltip>
+                        </Flex>
+                        <Textarea
+                          value={JSON.stringify(schema, null, 2)}
+                          readOnly
+                          minH={500}
+                        />
+                      </TabPanel>
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          py={4}
+                          justifyContent="right"
+                        >
+                          <Button
+                            variant={"solid"}
+                            size="xs"
+                            isDisabled={page === 1}
+                            onClick={() => {
+                              setPage(1);
+                            }}
+                          >
+                            First
+                          </Button>
+                          <Button
+                            size="xs"
+                            isDisabled={page === 1}
+                            onClick={() => {
+                              setPage(page - 1);
+                            }}
+                          >
+                            <FaArrowLeft fontSize={12} />
+                          </Button>
+                          <Text fontSize="xs">
+                            {`Page ${page} of ${Math.ceil(totalPages)}`}
+                          </Text>
+                          <Button
+                            size="xs"
+                            isDisabled={page === Math.ceil(totalPages)}
+                            onClick={() => {
+                              setPage(page + 1);
+                            }}
+                          >
+                            <FaArrowRight fontSize={12} />
+                          </Button>
+                          <Button
+                            size="xs"
+                            isDisabled={page === Math.ceil(totalPages)}
+                            onClick={() => {
+                              setPage(totalPages);
+                            }}
+                          >
+                            Last
+                          </Button>
+                        </Flex>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                          {items.map((metadata, index) => (
+                            <GridItem
+                              colSpan={{ base: 6, md: 4, lg: 2 }}
+                              key={index}
+                            >
+                              <CustomCard>
+                                <Link
+                                  href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
+                                  _hover={{
+                                    textDecoration: "none",
+                                  }}
+                                >
+                                  <motion.div whileHover={{ scale: 1.05 }}>
+                                    <Image
+                                      src={
+                                        metadata.onchain_image
+                                          ? metadata.onchain_image
+                                          : metadata.origin_image
+                                      }
+                                      alt="mfer"
+                                      width="100%"
+                                    />
+                                  </motion.div>
+                                  <Flex direction="column" p={2}>
+                                    <Flex
+                                      direction="row"
+                                      gap={2}
+                                      align="center"
+                                    >
+                                      <Text
+                                        fontSize="sm"
+                                        fontWeight="bold"
+                                        color="dark"
+                                      >
+                                        #
+                                      </Text>
+                                      <Text fontSize="sm" color={"primary.500"}>
+                                        {metadata.token_id}
+                                      </Text>
+                                    </Flex>
+                                  </Flex>
+                                </Link>
+                              </CustomCard>
+                            </GridItem>
+                          ))}
+                        </Grid>
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
+                </CustomCard>
+              </GridItem>
+            </Grid>
+          </Container>
+        </Box>
+      </Box>
       <Spacer />
       <Footer />
     </Flex>

@@ -19,6 +19,7 @@ import {
   Td,
   Badge,
   Spacer,
+  Button,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -35,8 +36,49 @@ import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
 import { getTxFromHash } from "@/service/txs";
 import { Transaction } from "@/types/Txs";
+import { useRouter } from "next/router";
 
 export default function Tx({ tx }: { tx: Transaction }) {
+  const router = useRouter();
+  if (!tx) {
+    return (
+      <Flex minHeight={"100vh"} direction={"column"}>
+        <Head>
+          <title>SIXSCAN</title>
+          <meta name="description" content="SIXSCAN" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <NavBar />
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Box
+            width="80%"
+            maxWidth="container.xl"
+            padding={6}
+            borderRadius={4}
+            textAlign="center"
+          >
+            <Text
+              fontSize={{ base: "2xl", lg: "6xl" }}
+              fontWeight="bold"
+              mb={2}
+            >
+              Tx does not exist
+            </Text>
+            <Button colorScheme="blue" onClick={() => router.push("/")}>
+              Go Home
+            </Button>
+          </Box>
+        </Box>
+        <Footer />
+      </Flex>
+    );
+  }
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>

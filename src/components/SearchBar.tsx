@@ -87,7 +87,7 @@ const SearchBar = ({
       // wait for 1s before performing search
       const timeout = setTimeout(() => {
         handleSearch();
-      }, 1000);
+      }, 100);
       return () => clearTimeout(timeout);
     }
   }, [searchInput]);

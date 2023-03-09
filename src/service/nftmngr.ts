@@ -55,7 +55,6 @@ export const getMetadata = async (
     const { data } = await axios.get(
       `https://six-data-chain-backend-api-gateway-7kl45r91.ts.gateway.dev/api/nft/metadata/${schemaCode}/${tokenid}`
     );
-    console.log(data);
     if (!data) {
       return null;
     }
