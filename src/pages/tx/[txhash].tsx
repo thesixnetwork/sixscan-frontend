@@ -33,12 +33,10 @@ import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
 import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
+import { getTxFromHash } from "@/service/txs";
+import { Transaction } from "@/types/Txs";
 
-const formatNumber = (num: number) => {
-  return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
-};
-
-export default function Tx() {
+export default function Tx({ tx }: { tx: Transaction }) {
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
@@ -73,9 +71,7 @@ export default function Tx() {
                       </Td>
                       <Td>
                         <Flex direction="column">
-                          <Text>
-                            {`0xbaf0c6a2e0de12d760af3095fae9dec76d024307976c33a487f225b3c91c4128`}
-                          </Text>
+                          <Text>{tx.hash}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -88,8 +84,8 @@ export default function Tx() {
                       <Td>
                         <Flex direction="column">
                           <Text>
-                            <Badge variant={"solid"} colorScheme={"green"}>
-                              {`Success`}
+                            <Badge colorScheme={"green"}>
+                              {tx.tx_result.code === 0 ? "Success" : "Failed"}
                             </Badge>
                           </Text>
                         </Flex>
@@ -105,7 +101,7 @@ export default function Tx() {
                         <Flex direction="column">
                           <Text>
                             <Clickable underline href="/">
-                              56782
+                              {tx.height}
                             </Clickable>
                           </Text>
                         </Flex>
@@ -114,82 +110,24 @@ export default function Tx() {
                     <Tr>
                       <Td>
                         <Flex direction="column">
-                          <Text>{`Timestamp:`}</Text>
+                          <Text>{`Gas Used:`}</Text>
                         </Flex>
                       </Td>
                       <Td>
                         <Flex direction="column">
-                          <Text>
-                            40 secs ago (Feb-21-2023 04:55:47 AM +UTC)
-                          </Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`From:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>
-                            <Clickable underline href="/">
-                              0xd2090025857b9c7b24387741f120538e928a3a59
-                            </Clickable>
-                          </Text>
+                          <Text>{tx.tx_result.gas_used}</Text>
                         </Flex>
                       </Td>
                     </Tr>
                     <Tr>
                       <Td>
                         <Flex direction="column">
-                          <Text>{`To:`}</Text>
+                          <Text>{`Gas Wanted:`}</Text>
                         </Flex>
                       </Td>
                       <Td>
                         <Flex direction="column">
-                          <Text>
-                            <Clickable underline href="/">
-                              0x4675c7e5baafbffbca748158becba61ef3b0a263
-                            </Clickable>
-                          </Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Value:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>100 SIX</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Transaction Fee:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>0.1 SIX</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Transaction Fee:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>0.1 SIX</Text>
+                          <Text>{tx.tx_result.gas_wanted}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -197,63 +135,34 @@ export default function Tx() {
                 </Table>
               </TableContainer>
             </CustomCard>
-            <CustomCard title={"Data Layer"}>
+            <CustomCard title={"Events"}>
               <TableContainer>
                 <Table>
                   <Tbody>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Schema:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="row" gap={2} alignItems="center">
-                          <Text>
-                            <Clickable underline href="/">
-                              sixnetwork.whalegate
-                            </Clickable>
-                          </Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Token ID:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="row" gap={2} alignItems="center">
-                          <Text>
-                            <Clickable underline href="/">
-                              1
-                            </Clickable>
-                          </Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Updated Data:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="row" gap={2} alignItems="center">
-                          <Text fontWeight={"bold"}>check_in:</Text>
-                          <Text>true</Text>
-                          <FaArrowRight fontSize={12} />
-                          <Text>false</Text>
-                        </Flex>
-                        <Flex direction="row" gap={2} alignItems="center">
-                          <Text fontWeight={"bold"}>check_in:</Text>
-                          <Text>true</Text>
-                          <FaArrowRight fontSize={12} />
-                          <Text>false</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
+                    {tx.tx_result.events.map((event, index) => (
+                      <Tr key={index}>
+                        <Td>
+                          <Badge>{event.type}</Badge>
+                        </Td>
+                        <Td>
+                          {event.attributes.map((attr, index) => (
+                            <Flex
+                              direction="row"
+                              gap={2}
+                              alignItems="center"
+                              key={index}
+                            >
+                              <Text>
+                                {Buffer.from(attr.key, "base64").toString()}
+                              </Text>
+                              <Text>
+                                {Buffer.from(attr.value, "base64").toString()}
+                              </Text>
+                            </Flex>
+                          ))}
+                        </Td>
+                      </Tr>
+                    ))}
                   </Tbody>
                 </Table>
               </TableContainer>
@@ -273,9 +182,11 @@ const getTx = async (txhash: string) => {
   };
 };
 
-const getServerSideProps = async (context: { params: { txhash: any } }) => {
+export const getServerSideProps = async (context: {
+  params: { txhash: any };
+}) => {
   const { txhash } = context.params;
-  const tx = await getTx(txhash);
+  const tx = await getTxFromHash(txhash);
   return {
     props: {
       tx,
