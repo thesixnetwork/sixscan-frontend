@@ -75,7 +75,7 @@ export default function Home({
     {
       title: "PRICE",
       value: price && price.usd ? `$${formatNumber(price.usd)}` : "$0",
-      badge: price ? `${formatNumber(price?.usd)}%` : "0%",
+      badge: price ? `${formatNumber(price?.usd_24h_change)}%` : "0%",
       icon: FaDollarSign,
     },
     {
@@ -166,7 +166,12 @@ export default function Home({
                               {item.value}
                             </Text>
                             {item.badge && (
-                              <Text fontSize="sm" color={"success"}>
+                              <Text
+                                fontSize="sm"
+                                color={
+                                  item.badge.includes("-") ? "error" : "success"
+                                }
+                              >
                                 {`(${item.badge})`}
                               </Text>
                             )}

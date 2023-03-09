@@ -519,7 +519,7 @@ export default function Address({
                 </CustomCard>
               </GridItem>
               <GridItem colSpan={12}>
-                <CustomCard>
+                <CustomCard footer={"VIEW TXNS"} href={`/txs/${address}`}>
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Txns (All)</Tab>
@@ -528,157 +528,164 @@ export default function Address({
                       {validator && <Tab>Individual Nodes</Tab>}
                     </TabList>
                     <TabPanels>
-                      <TabPanel>
-                        <Flex
-                          direction="row"
-                          gap={2}
-                          align="center"
-                          color={"dark"}
-                        >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            {`Latest ${accountTxs.count} from a total of `}
-                            <Clickable underline href={`/txs/${address}`}>
-                              {accountTxs.total_count}
-                            </Clickable>{" "}
-                            transactions
-                          </Text>
-                        </Flex>
-                        <TableContainer>
-                          <Table>
-                            <Thead>
-                              <Tr>
-                                <Td>
-                                  <Text>Txhash</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Method</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Age</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Block</Text>
-                                </Td>
-                                <Td>
-                                  <Text>From</Text>
-                                </Td>
-                                <Td></Td>
-                                <Td>
-                                  <Text>To</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Value</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Gas Fee</Text>
-                                </Td>
-                              </Tr>
-                            </Thead>
-                            <Tbody>
-                              {accountTxs.txs.map((tx, index) => (
-                                <Tr key={index}>
+                      {accountTxs && (
+                        <TabPanel>
+                          <Flex
+                            direction="row"
+                            gap={2}
+                            align="center"
+                            color={"dark"}
+                          >
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              {`Latest ${
+                                accountTxs.count || 0
+                              } from a total of `}
+                              <Clickable underline href={`/txs/${address}`}>
+                                {accountTxs.total_count}
+                              </Clickable>{" "}
+                              transactions
+                            </Text>
+                          </Flex>
+                          <TableContainer>
+                            <Table>
+                              <Thead>
+                                <Tr>
                                   <Td>
-                                    <Flex
-                                      direction="row"
-                                      gap={1}
-                                      align="center"
-                                    >
-                                      {tx.code !== 0 && (
-                                        <FaRegWindowClose
-                                          color="red"
-                                          fontSize={12}
-                                        />
-                                      )}
-                                      <Text>
-                                        <Clickable
-                                          href={`/tx/${tx.txhash}`}
-                                          underline
-                                        >
-                                          {formatHex(tx.txhash)}
-                                        </Clickable>
-                                      </Text>
-                                    </Flex>
+                                    <Text>Txhash</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Badge>
-                                        {tx.type
-                                          .split(".")
-                                          [tx.type.split(".").length - 1].slice(
-                                            3
-                                          )}
-                                      </Badge>
-                                    </Text>
+                                    <Text>Method</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      {moment(tx.time_stamp).fromNow()}
-                                    </Text>
+                                    <Text>Age</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {tx.block_height}
-                                      </Clickable>
-                                    </Text>
+                                    <Text>Block</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      {tx.decode_tx.toAddress && (
-                                        <Clickable
-                                          href={`/address/${tx.decode_tx.fromAddress}`}
-                                          underline
-                                        >
-                                          {formatHex(tx.decode_tx.fromAddress)}
-                                        </Clickable>
-                                      )}
-                                    </Text>
+                                    <Text>From</Text>
+                                  </Td>
+                                  <Td></Td>
+                                  <Td>
+                                    <Text>To</Text>
                                   </Td>
                                   <Td>
-                                    {tx.decode_tx.toAddress === address ? (
-                                      <Badge colorScheme="green">IN</Badge>
-                                    ) : tx.decode_tx.fromAddress === address ? (
-                                      <Badge colorScheme="orange">OUT</Badge>
-                                    ) : null}
+                                    <Text>Value</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      {tx.decode_tx.toAddress && (
-                                        <Clickable
-                                          href={`/address/${tx.decode_tx.toAddress}`}
-                                          underline
-                                        >
-                                          {formatHex(tx.decode_tx.toAddress)}
-                                        </Clickable>
-                                      )}
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    {tx.decode_tx.amount &&
-                                      tx.decode_tx.amount[0]?.amount && (
-                                        <Text>{`${formatNumber(
-                                          convertUsixToSix(
-                                            parseInt(
-                                              tx.decode_tx.amount[0].amount
-                                            )
-                                          )
-                                        )} SIX`}</Text>
-                                      )}
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${formatNumber(
-                                      convertUsixToSix(
-                                        parseInt(tx.decode_tx.fee_amount)
-                                      )
-                                    )} SIX`}</Text>
+                                    <Text>Gas Fee</Text>
                                   </Td>
                                 </Tr>
-                              ))}
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
+                              </Thead>
+                              <Tbody>
+                                {accountTxs.txs.map((tx, index) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        gap={1}
+                                        align="center"
+                                      >
+                                        {tx.code !== 0 && (
+                                          <FaRegWindowClose
+                                            color="red"
+                                            fontSize={12}
+                                          />
+                                        )}
+                                        <Text>
+                                          <Clickable
+                                            href={`/tx/${tx.txhash}`}
+                                            underline
+                                          >
+                                            {formatHex(tx.txhash)}
+                                          </Clickable>
+                                        </Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        <Badge>
+                                          {tx.type
+                                            .split(".")
+                                            [
+                                              tx.type.split(".").length - 1
+                                            ].slice(3)}
+                                        </Badge>
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        {moment(tx.time_stamp).fromNow()}
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        <Clickable href="/" underline>
+                                          {tx.block_height}
+                                        </Clickable>
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.fromAddress}`}
+                                            underline
+                                          >
+                                            {formatHex(
+                                              tx.decode_tx.fromAddress
+                                            )}
+                                          </Clickable>
+                                        )}
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      {tx.decode_tx.toAddress === address ? (
+                                        <Badge colorScheme="green">IN</Badge>
+                                      ) : tx.decode_tx.fromAddress ===
+                                        address ? (
+                                        <Badge colorScheme="orange">OUT</Badge>
+                                      ) : null}
+                                    </Td>
+                                    <Td>
+                                      <Text>
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.toAddress}`}
+                                            underline
+                                          >
+                                            {formatHex(tx.decode_tx.toAddress)}
+                                          </Clickable>
+                                        )}
+                                      </Text>
+                                    </Td>
+                                    <Td>
+                                      {tx.decode_tx.amount &&
+                                        tx.decode_tx.amount[0]?.amount && (
+                                          <Text>{`${formatNumber(
+                                            convertUsixToSix(
+                                              parseInt(
+                                                tx.decode_tx.amount[0].amount
+                                              )
+                                            )
+                                          )} SIX`}</Text>
+                                        )}
+                                    </Td>
+                                    <Td>
+                                      <Text>{`${formatNumber(
+                                        convertUsixToSix(
+                                          parseInt(tx.decode_tx.fee_amount)
+                                        )
+                                      )} SIX`}</Text>
+                                    </Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+                          </TableContainer>
+                        </TabPanel>
+                      )}
                       <TabPanel>
                         <Flex
                           direction="row"

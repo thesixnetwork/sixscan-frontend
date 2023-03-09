@@ -46,6 +46,7 @@ import { getMetadata, getSchema } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
 import { NFTSchema } from "@/types/Nftmngr";
 import { useState } from "react";
+import { useRouter } from "next/router";
 
 export default function Schema({
   metadata,
@@ -68,6 +69,46 @@ export default function Schema({
       setIsCopied(false);
     }, 1000);
   };
+  const router = useRouter();
+  if (!metadata) {
+    return (
+      <Flex minHeight={"100vh"} direction={"column"}>
+        <Head>
+          <title>SIXSCAN</title>
+          <meta name="description" content="SIXSCAN" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+        <NavBar />
+        <Box
+          height="100vh"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Box
+            width="80%"
+            maxWidth="container.xl"
+            padding={6}
+            borderRadius={4}
+            textAlign="center"
+          >
+            <Text
+              fontSize={{ base: "2xl", lg: "6xl" }}
+              fontWeight="bold"
+              mb={2}
+            >
+              Block does not exist
+            </Text>
+            <Button colorScheme="blue" onClick={() => router.push("/")}>
+              Go Home
+            </Button>
+          </Box>
+        </Box>
+        <Footer />
+      </Flex>
+    );
+  }
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       <Head>

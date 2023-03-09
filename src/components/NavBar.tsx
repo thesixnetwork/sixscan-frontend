@@ -161,9 +161,9 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
               )}
             </AnimatePresence>
           </Box>
-          <Button display={{ base: "none", lg: "block" }}>
+          {/* <Button display={{ base: "none", lg: "block" }}>
             <FaWallet />
-          </Button>
+          </Button> */}
         </Stack>
       </Flex>
 
@@ -296,9 +296,9 @@ const MobileNav = () => {
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
-      <Flex>
+      {/* <Flex>
         <Button width="100%">Connect Wallet</Button>
-      </Flex>
+      </Flex> */}
     </Stack>
   );
 };
