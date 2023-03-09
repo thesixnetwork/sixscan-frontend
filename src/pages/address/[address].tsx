@@ -525,7 +525,7 @@ export default function Address({
                       <Tab>Txns (All)</Tab>
                       <Tab>Txns (Data Layer)</Tab>
                       {validator && <Tab>Proposed Blocks</Tab>}
-                      {validator && <Tab>Individual Nodes</Tab>}
+                      {validator && <Tab>Delegator</Tab>}
                     </TabList>
                     <TabPanels>
                       {accountTxs && (
@@ -876,7 +876,7 @@ export default function Address({
                               <Clickable underline href="/">
                                 {delegations.length}
                               </Clickable>{" "}
-                              individual nodes
+                              Delegators
                             </Text>
                           </Flex>
                           <TableContainer>
