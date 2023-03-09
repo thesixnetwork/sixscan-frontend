@@ -604,15 +604,13 @@ export default function Address({
                                       </Flex>
                                     </Td>
                                     <Td>
-                                      <Text>
-                                        <Badge>
-                                          {tx.type
-                                            .split(".")
-                                            [
-                                              tx.type.split(".").length - 1
-                                            ].slice(3)}
-                                        </Badge>
-                                      </Text>
+                                      <Badge textAlign={"center"} width="100%">
+                                        {tx.type
+                                          .split(".")
+                                          [tx.type.split(".").length - 1].slice(
+                                            3
+                                          )}
+                                      </Badge>
                                     </Td>
                                     <Td>
                                       <Text>
@@ -645,10 +643,22 @@ export default function Address({
                                     </Td>
                                     <Td>
                                       {tx.decode_tx.toAddress === address ? (
-                                        <Badge colorScheme="green">IN</Badge>
+                                        <Badge
+                                          textAlign={"center"}
+                                          width="100%"
+                                          colorScheme="green"
+                                        >
+                                          IN
+                                        </Badge>
                                       ) : tx.decode_tx.fromAddress ===
                                         address ? (
-                                        <Badge colorScheme="orange">OUT</Badge>
+                                        <Badge
+                                          textAlign={"center"}
+                                          width="100%"
+                                          colorScheme="orange"
+                                        >
+                                          OUT
+                                        </Badge>
                                       ) : null}
                                     </Td>
                                     <Td>

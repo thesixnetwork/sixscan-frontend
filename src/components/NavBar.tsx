@@ -29,7 +29,7 @@ import ENV from "@/utils/ENV";
 
 export default function WithSubnavigation({ variant }: { variant?: string }) {
   const { isOpen, onToggle } = useDisclosure();
-  const [activeChain, setActiveChain] = useState(CHAINS[0].label);
+  const [activeChain, setActiveChain] = useState(ENV.CHAIN_NAME);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -102,7 +102,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             cursor="pointer"
           >
-            {/* <Button
+            <Button
               leftIcon={
                 <Box color="success">
                   <FaCircle />
@@ -113,7 +113,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
               variant={"outline"}
             >
               <Text color="medium">{activeChain}</Text>
-            </Button> */}
+            </Button>
             <AnimatePresence>
               {isDropdownOpen && (
                 <motion.div
@@ -131,7 +131,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
                     transition: { type: "spring", stiffness: 300, damping: 20 },
                   }}
                 >
-                  {/* <Box
+                  <Box
                     position="absolute"
                     top="100%"
                     left={0}
@@ -156,7 +156,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
                         {chain.label}
                       </Box>
                     ))}
-                  </Box> */}
+                  </Box>
                 </motion.div>
               )}
             </AnimatePresence>
