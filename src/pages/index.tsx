@@ -23,7 +23,6 @@ import {
 import { Clickable } from "@/components/Clickable";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
-import Image from "next/image";
 // ------------------------- Styles -------------------------
 import styles from "@/styles/Home.module.css";
 import {
@@ -36,15 +35,10 @@ import {
 import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
 import { Footer } from "@/components/Footer";
 import { getPool, getValidator, getValidators } from "@/service/staking";
 import { Pool, Validator } from "@/types/Staking";
-import {
-  convertDecimalToPercent,
-  convertUsixToSix,
-  formatHex,
-} from "@/utils/format";
+import { convertDecimalToPercent, convertUsixToSix } from "@/utils/format";
 import { getInflation } from "@/service/mint";
 import { getSupply } from "@/service/bank";
 import { Balance } from "@/types/Bank";
@@ -54,13 +48,8 @@ import {
   getLatestBlocks,
 } from "@/service/block";
 import { BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
-import {
-  getBlockRewardAmount,
-  getBlockRewardValidator,
-  getValidatorMoniker,
-} from "@/utils/block";
+import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 // ------------------------- Helper Libs -------------------------
-// import moment from "moment";
 import { formatNumber } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
@@ -101,7 +90,7 @@ export default function Home({
     },
     {
       title: "MARKET CAP",
-      value: price ? `$${formatNumber(price?.usd)}` : "$0",
+      value: price ? `$${formatNumber(price?.usd_market_cap)}` : "$0",
       icon: FaMoneyBillWave,
     },
     {
@@ -120,7 +109,6 @@ export default function Home({
       </Head>
       <NavBar variant={"search"} />
       <Box
-        // bgGradient={"linear(to-r, #3FC2FA, #3759F0)"}
         bgImage={"/banner.png"}
         bgSize={"cover"}
         bgPosition={"center"}
@@ -269,24 +257,29 @@ export default function Home({
 }
 
 export const getServerSideProps = async () => {
-  const pool = await getPool();
-  const inflation = await getInflation();
-  const supply = await getSupply("usix");
-  const latestBlock = await getLatestBlock();
+  const [pool, inflation, supply, latestBlock, validators, price] =
+    await Promise.all([
+      getPool(),
+      getInflation(),
+      getSupply("usix"),
+      getLatestBlock(),
+      getValidators(),
+      getPriceFromCoingecko("six-network"),
+    ]);
+
   const latestBlockHeight = latestBlock
-    ? parseInt(latestBlock.block.header.height)
+    ? parseInt(latestBlock?.block?.header?.height)
     : null;
   const minBlockHeight = latestBlockHeight ? latestBlockHeight - 10 : null;
-  const latestBlocks =
+
+  const [latestBlocks, blocksResult] =
     latestBlockHeight && minBlockHeight
-      ? await getLatestBlocks(minBlockHeight, latestBlockHeight)
-      : null;
-  const blocksResult =
-    latestBlockHeight && minBlockHeight
-      ? await getBlocksResult(minBlockHeight, latestBlockHeight)
-      : null;
-  const validators = await getValidators();
-  const price = await getPriceFromCoingecko("six-network");
+      ? await Promise.all([
+          getLatestBlocks(minBlockHeight, latestBlockHeight),
+          getBlocksResult(minBlockHeight, latestBlockHeight),
+        ])
+      : [null, null];
+
   return {
     props: {
       pool,

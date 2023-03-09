@@ -122,3 +122,18 @@ export interface Collection {
   is_rarity_enabled: boolean;
   is_creator_fees_enforced: boolean;
 }
+
+export interface Metadata {
+  image: string;
+  name?: string;
+  description?: string;
+  attributes: Attribute[];
+}
+
+interface Attribute {
+  trait_type: string;
+  value: string | number;
+  max_value: string;
+  display_type: string;
+  is_origin: boolean;
+}

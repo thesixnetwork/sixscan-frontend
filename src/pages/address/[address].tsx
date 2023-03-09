@@ -944,38 +944,46 @@ export const getServerSideProps = async (context: {
   params: { address: string };
 }) => {
   const { address } = context.params;
+  const [
+    validator,
+    account,
+    balance,
+    balances,
+    price,
+    accountTxs,
+    delegations,
+  ] = await Promise.all([
+    getValidator(address),
+    getAccount(address),
+    getBalance(address),
+    getBalances(address),
+    getPriceFromCoingecko("six-network"),
+    getTxsFromAddress(address, "1", "20"),
+    getDelegationsFromValidator(address),
+  ]);
   const isAddressValid = await validateAddress(address);
-  if (!isAddressValid) {
-    return {
-      props: {
-        address: null,
-        validator: null,
-        account: null,
-        balance: null,
-        balances: null,
-        price: null,
-        txs: null,
-      },
-    };
-  }
-  const validator = await getValidator(address);
-  const account = await getAccount(address);
-  const balance = await getBalance(address);
-  const balances = await getBalances(address);
-  const price = await getPriceFromCoingecko("six-network");
-  const accountTxs = await getTxsFromAddress(address, "1", "20");
-  const delegations = await getDelegationsFromValidator(address);
   return {
-    props: {
-      address,
-      validator,
-      account,
-      balance,
-      balances,
-      price,
-      accountTxs,
-      delegations,
-    },
+    props: isAddressValid
+      ? {
+          address,
+          validator,
+          account,
+          balance,
+          balances,
+          price,
+          accountTxs,
+          delegations,
+        }
+      : {
+          address: null,
+          validator: null,
+          account: null,
+          balance: null,
+          balances: null,
+          price: null,
+          accountTxs: null,
+          delegations: null,
+        },
   };
 };
 
@@ -1016,37 +1024,6 @@ const blocks = [
     feeRecipient: "6x192A...34kd",
   },
 ];
-
-const STATS = [
-  {
-    title: "Items",
-    value: "100",
-  },
-  {
-    title: "Created",
-    value: "Oct 2022",
-  },
-  {
-    title: "Chain",
-    value: "Klaytn",
-  },
-];
-
-const CONFIG = [
-  {
-    title: "unique owners",
-    value: "593",
-  },
-  {
-    title: "organisation",
-    value: "sixnetwork",
-  },
-  {
-    title: "whalegate",
-    value: "schema",
-  },
-];
-
 const ACTIONS = [
   {
     txhash: "0x898bb3b662419e79366046C625A213B83fB4809B",
@@ -1058,375 +1035,6 @@ const ACTIONS = [
     token_id: "1",
   },
 ];
-
-const SCHEMA = {
-  nFTSchema: {
-    code: "sixnetwork.whalegate",
-    name: "WHALEGATE",
-    owner: "6x1fq5wjklc379gh9lwy00n9xn64m90h6av8t9wsw",
-    system_actioners: [
-      "6nft16xncggw0w92wdpykzjj5gjvrgkq50dfvzzx0t8",
-      "6nft1vhwp0uk94a0m6lzwd68nyhs7zhthtmal6dwd94",
-      "6nft1yayu5s3dtp3dktcf93rmjszryjyzefq4uya38s",
-      "6nft1xpmx5g9j756zf0l2tp4g7ptmq904nq0a7w9wdn",
-      "6nft15f24wafjkjl8ejqjy9u6m5kqqy0qwdmn7eg9th",
-      "6x1t3gg4zc30fdfqs06r7c49u8japeh3su5f344uz",
-      "6x13n788j2apzzyj3rzk673j8mnscgqmkjyaaylrs",
-      "6x1uhs0677mad3vg2cuj2zc93j0l3yrlrkwznqa5c",
-      "6x1yete68tsu3vgwu7d3pa92yd5pmuggznuwwy9ul",
-    ],
-    origin_data: {
-      origin_chain: "KLAYTN",
-      origin_contract_address: "0x898bb3b662419e79366046C625A213B83fB4809B",
-      origin_base_uri:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmd9FJGWveLd1g6yZTDDNjxruVppyDtaUzrA2pkb2XAf8R/",
-      attribute_overriding: "CHAIN",
-      metadata_format: "opensea",
-      origin_attributes: [
-        {
-          name: "background",
-          data_type: "string",
-          required: false,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Background",
-              max_value: "0",
-            },
-          },
-          default_mint_value: null,
-          hidden_to_marketplace: false,
-          index: "0",
-        },
-        {
-          name: "moon",
-          data_type: "string",
-          required: false,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Moon",
-              max_value: "0",
-            },
-          },
-          default_mint_value: null,
-          hidden_to_marketplace: false,
-          index: "1",
-        },
-        {
-          name: "plate",
-          data_type: "string",
-          required: false,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Plate",
-              max_value: "0",
-            },
-          },
-          default_mint_value: null,
-          hidden_to_marketplace: false,
-          index: "2",
-        },
-        {
-          name: "tail",
-          data_type: "string",
-          required: false,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Tail",
-              max_value: "0",
-            },
-          },
-          default_mint_value: null,
-          hidden_to_marketplace: false,
-          index: "3",
-        },
-        {
-          name: "creature",
-          data_type: "string",
-          required: false,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Creature",
-              max_value: "0",
-            },
-          },
-          default_mint_value: null,
-          hidden_to_marketplace: false,
-          index: "4",
-        },
-      ],
-      uri_retrieval_method: "BASE",
-    },
-    onchain_data: {
-      reveal_required: true,
-      reveal_secret: null,
-      nft_attributes: [],
-      token_attributes: [
-        {
-          name: "points",
-          data_type: "number",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Points",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            number_attribute_value: {
-              value: "0",
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "5",
-        },
-        {
-          name: "missions_completed",
-          data_type: "number",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "",
-            bool_false_value: "",
-            opensea: {
-              display_type: "",
-              trait_type: "Missions Completed",
-              max_value: "3",
-            },
-          },
-          default_mint_value: {
-            number_attribute_value: {
-              value: "1",
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "6",
-        },
-        {
-          name: "bonus_1",
-          data_type: "boolean",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "Yes",
-            bool_false_value: "No",
-            opensea: {
-              display_type: "",
-              trait_type: "Bonus 1",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            boolean_attribute_value: {
-              value: false,
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "7",
-        },
-        {
-          name: "bonus_2",
-          data_type: "boolean",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "Yes",
-            bool_false_value: "No",
-            opensea: {
-              display_type: "",
-              trait_type: "Bonus 2",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            boolean_attribute_value: {
-              value: false,
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "8",
-        },
-        {
-          name: "checked_in",
-          data_type: "boolean",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "Yes",
-            bool_false_value: "No",
-            opensea: {
-              display_type: "",
-              trait_type: "Checked In",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            boolean_attribute_value: {
-              value: false,
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "9",
-        },
-        {
-          name: "redeemed",
-          data_type: "boolean",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "Yes",
-            bool_false_value: "No",
-            opensea: {
-              display_type: "",
-              trait_type: "Redeemed",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            boolean_attribute_value: {
-              value: false,
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "10",
-        },
-        {
-          name: "transformed",
-          data_type: "boolean",
-          required: true,
-          display_value_field: "value",
-          display_option: {
-            bool_true_value: "Yes",
-            bool_false_value: "No",
-            opensea: {
-              display_type: "",
-              trait_type: "Transformed",
-              max_value: "0",
-            },
-          },
-          default_mint_value: {
-            boolean_attribute_value: {
-              value: false,
-            },
-          },
-          hidden_to_marketplace: false,
-          index: "11",
-        },
-      ],
-      actions: [
-        {
-          name: "check_in",
-          desc: "Check In",
-          disable: false,
-          when: "meta.GetBoolean('checked_in') == false",
-          then: [
-            "meta.SetBoolean('checked_in', true)",
-            "meta.SetNumber('missions_completed', meta.GetNumber('missions_completed') + 1)",
-            "meta.SetNumber('points', meta.GetNumber('points') + 200)",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-        {
-          name: "claim_bonus_1",
-          desc: "Claim Bonus 1",
-          disable: false,
-          when: "meta.GetBoolean('bonus_1') == false",
-          then: [
-            "meta.SetBoolean('bonus_1', true)",
-            "meta.SetNumber('points', meta.GetNumber('points') + 200)",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-        {
-          name: "claim_bonus_2",
-          desc: "Claim Bonus 2",
-          disable: false,
-          when: "meta.GetBoolean('bonus_2') == false",
-          then: [
-            "meta.SetBoolean('bonus_2', true)",
-            "meta.SetNumber('points', meta.GetNumber('points') + 200)",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-        {
-          name: "redeem_200",
-          desc: "Redeem gift for 200 points",
-          disable: false,
-          when: "meta.GetBoolean('redeemed') == false && meta.GetNumber('points') >= 200 && meta.GetBoolean('transformed') == false && meta.GetNumber('missions_completed') == 2",
-          then: [
-            "meta.SetBoolean('redeemed', true)",
-            "meta.SetNumber('points', meta.GetNumber('points') - 200)",
-            "meta.SetNumber('missions_completed', meta.GetNumber('missions_completed') + 1)",
-            "meta.SetBoolean('transformed', true)",
-            "meta.SetImage(meta.ReplaceAllString(meta.GetImage(),'.png','-t.png'))",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-        {
-          name: "redeem_400",
-          desc: "Redeem gift for 400 points",
-          disable: false,
-          when: "meta.GetBoolean('redeemed') == false && meta.GetNumber('points') >= 400 && meta.GetBoolean('transformed') == false && meta.GetNumber('missions_completed') == 2",
-          then: [
-            "meta.SetBoolean('redeemed', true)",
-            "meta.SetNumber('points', meta.GetNumber('points') - 400)",
-            "meta.SetNumber('missions_completed', meta.GetNumber('missions_completed') + 1)",
-            "meta.SetBoolean('transformed', true)",
-            "meta.SetImage(meta.ReplaceAllString(meta.GetImage(),'.png','-t.png'))",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-        {
-          name: "redeem_600",
-          desc: "Redeem gift for 600 points",
-          disable: false,
-          when: "meta.GetBoolean('redeemed') == false && meta.GetNumber('points') >= 600 && meta.GetBoolean('transformed') == false && meta.GetNumber('missions_completed') == 2",
-          then: [
-            "meta.SetBoolean('redeemed', true)",
-            "meta.SetNumber('points', meta.GetNumber('points') - 600)",
-            "meta.SetNumber('missions_completed', meta.GetNumber('missions_completed') + 1)",
-            "meta.SetBoolean('transformed', true)",
-            "meta.SetImage(meta.ReplaceAllString(meta.GetImage(),'.png','-t.png'))",
-          ],
-          allowed_actioner: "ALLOWED_ACTIONER_ALL",
-          params: [],
-        },
-      ],
-      status: [],
-      nft_attributes_value: [],
-    },
-    isVerified: false,
-    mint_authorization: "system",
-  },
-};
 
 const METADATA = [
   {

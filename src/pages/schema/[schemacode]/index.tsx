@@ -4,14 +4,9 @@ import {
   Flex,
   Text,
   Container,
-  Card,
-  CardBody,
   Grid,
   GridItem,
-  Icon,
-  Stack,
   Link,
-  Divider,
   Table,
   TableContainer,
   Tbody,
@@ -28,37 +23,30 @@ import {
   Textarea,
   Button,
   Spacer,
-  Circle,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
-// import Image from "next/image";
 // ------------------------- Styles -------------------------
-import styles from "@/styles/Home.module.css";
+
 import {
+  FaArrowLeft,
   FaArrowRight,
   FaCheckCircle,
   FaChevronDown,
   FaChevronUp,
   FaCopy,
-  FaDollarSign,
   FaExpand,
   FaScroll,
-  FaSearch,
   FaSortAmountDown,
-  FaSortNumericDown,
 } from "react-icons/fa";
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
 import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
-import { useState } from "react";
-import { getSchema } from "@/service/nftmngr";
-import { NFTSchema } from "@/types/Nftmngr";
+import { useEffect, useState } from "react";
+import { getNftCollection, getSchema } from "@/service/nftmngr";
+import { NftData, NFTSchema } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
@@ -68,11 +56,14 @@ export default function Schema({
   schemacode,
   schema,
   openseaCollection,
+  nftCollection,
 }: {
   schemacode: string;
   schema: NFTSchema;
   openseaCollection: Collection;
+  nftCollection: any;
 }) {
+  const [items, setItems] = useState<NftData[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
   const router = useRouter();
   const chainConfig: {
@@ -112,6 +103,22 @@ export default function Schema({
       value: code,
     },
   ];
+  const [page, setPage] = useState(1);
+  const perPage = 12;
+  const totalPages = nftCollection.pagination.total / perPage;
+  // sort by token_id
+  useEffect(() => {
+    // sort by token_id
+    nftCollection.nftCollection.sort(
+      (a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id)
+    );
+    const newItems = nftCollection.nftCollection.slice(
+      (page - 1) * perPage,
+      page * perPage
+    );
+    setItems(newItems);
+  }, [nftCollection, page]);
+
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       <Head>
@@ -320,66 +327,7 @@ export default function Schema({
                                   </Td>
                                 </Tr>
                               </Thead>
-                              <Tbody>
-                                {ACTIONS.map((action, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Text>
-                                        <Clickable href="/" underline>
-                                          {formatHex(action.txhash)}
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        <Clickable
-                                          href={`/schema/${
-                                            METADATA.find(
-                                              (metadatum) =>
-                                                metadatum.nftData.token_id ===
-                                                action.token_id
-                                            )?.nftData.nft_schema_code
-                                          }/${action.token_id}`}
-                                          underline
-                                        >
-                                          {
-                                            METADATA.find(
-                                              (metadatum) =>
-                                                metadatum.nftData.token_id ===
-                                                action.token_id
-                                            )?.nftData.token_id
-                                          }
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        <Badge>{action.method}</Badge>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>{action.age}</Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        <Clickable href="/" underline>
-                                          {action.block}
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        <Clickable href="/" underline>
-                                          {formatHex(action.by)}
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>{`${action.gasfee} SIX`}</Text>
-                                    </Td>
-                                  </Tr>
-                                ))}
-                              </Tbody>
+                              <Tbody></Tbody>
                             </Table>
                           </TableContainer>
                         </TabPanel>
@@ -410,25 +358,78 @@ export default function Schema({
                           />
                         </TabPanel>
                         <TabPanel>
+                          <Flex
+                            direction="row"
+                            gap={2}
+                            align="center"
+                            py={4}
+                            justifyContent="right"
+                          >
+                            <Button
+                              variant={"solid"}
+                              size="xs"
+                              isDisabled={page === 1}
+                              onClick={() => {
+                                setPage(1);
+                              }}
+                            >
+                              First
+                            </Button>
+                            <Button
+                              size="xs"
+                              isDisabled={page === 1}
+                              onClick={() => {
+                                setPage(page - 1);
+                              }}
+                            >
+                              <FaArrowLeft fontSize={12} />
+                            </Button>
+                            <Text fontSize="xs">
+                              {`Page ${page} of ${Math.ceil(totalPages)}`}
+                            </Text>
+                            <Button
+                              size="xs"
+                              isDisabled={page === Math.ceil(totalPages)}
+                              onClick={() => {
+                                setPage(page + 1);
+                              }}
+                            >
+                              <FaArrowRight fontSize={12} />
+                            </Button>
+                            <Button
+                              size="xs"
+                              isDisabled={page === Math.ceil(totalPages)}
+                              onClick={() => {
+                                setPage(totalPages);
+                              }}
+                            >
+                              Last
+                            </Button>
+                          </Flex>
                           <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                            {METADATA.map((metadata, index) => (
+                            {items.map((metadata, index) => (
                               <GridItem
                                 colSpan={{ base: 6, md: 4, lg: 2 }}
                                 key={index}
                               >
                                 <CustomCard>
                                   <Link
-                                    href={`/schema/${metadata.nftData.nft_schema_code}/${metadata.nftData.token_id}`}
+                                    href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
+                                    _hover={{
+                                      textDecoration: "none",
+                                    }}
                                   >
-                                    <Image
-                                      src={
-                                        metadata.nftData.onchain_image
-                                          ? metadata.nftData.onchain_image
-                                          : metadata.nftData.origin_image
-                                      }
-                                      alt="mfer"
-                                      width="100%"
-                                    />
+                                    <motion.div whileHover={{ scale: 1.05 }}>
+                                      <Image
+                                        src={
+                                          metadata.onchain_image
+                                            ? metadata.onchain_image
+                                            : metadata.origin_image
+                                        }
+                                        alt="mfer"
+                                        width="100%"
+                                      />
+                                    </motion.div>
                                     <Flex direction="column" p={2}>
                                       <Flex
                                         direction="row"
@@ -440,13 +441,13 @@ export default function Schema({
                                           fontWeight="bold"
                                           color="dark"
                                         >
-                                          TokenID
+                                          #
                                         </Text>
                                         <Text
                                           fontSize="sm"
                                           color={"primary.500"}
                                         >
-                                          {metadata.nftData.token_id}
+                                          {metadata.token_id}
                                         </Text>
                                       </Flex>
                                     </Flex>
@@ -504,241 +505,24 @@ export default function Schema({
   );
 }
 
-export const getServerSideProps = async (context: {
+export const getServerSideProps = async ({
+  params: { schemacode },
+}: {
   params: { schemacode: string };
 }) => {
-  const { schemacode } = context.params;
   const schema = await getSchema(schemacode);
-  const [organisation, code] = schema
-    ? schema.code.includes(".")
-      ? schema.code.split(".")
-      : ["", schema.code]
-    : ["", ""];
-  const openseaCollection =
-    code && code !== "" ? await getOpenseaCollectionByName(code) : null;
+  const [organisation = "", code = schema?.code ?? ""] =
+    schema?.code?.split(".") ?? [];
+  const openseaCollection = code
+    ? await getOpenseaCollectionByName(code)
+    : null;
+  const nftCollection = await getNftCollection(schemacode);
   return {
     props: {
       schemacode,
       schema,
       openseaCollection,
+      nftCollection,
     },
   };
 };
-
-const STATS = [
-  {
-    title: "Items",
-    value: "100",
-  },
-  {
-    title: "Created",
-    value: "Oct 2022",
-  },
-  {
-    title: "Chain",
-    value: "Klaytn",
-  },
-];
-
-const ACTIONS = [
-  {
-    txhash: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    method: "transfer",
-    age: "1 day",
-    block: "123456",
-    by: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    gasfee: "0.1",
-    token_id: "1",
-  },
-];
-
-const METADATA = [
-  {
-    nftData: {
-      nft_schema_code: "sixnetwork.whalegate",
-      token_id: "1",
-      token_owner: "0x6A127EF7e02d3Cb83387f2c71db0EEA1e1d0D250",
-      owner_address_type: "ORIGIN_ADDRESS",
-      origin_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/1.png",
-      onchain_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/1-t.png",
-      token_uri: "",
-      origin_attributes: [
-        {
-          name: "background",
-          string_attribute_value: {
-            value: "Galaxy",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "tail",
-          string_attribute_value: {
-            value: "White",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "creature",
-          string_attribute_value: {
-            value: "Whale",
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-      onchain_attributes: [
-        {
-          name: "points",
-          number_attribute_value: {
-            value: "400",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "missions_completed",
-          number_attribute_value: {
-            value: "3",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_1",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_2",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "checked_in",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "redeemed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "transformed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-    },
-  },
-  {
-    nftData: {
-      nft_schema_code: "sixnetwork.whalegate",
-      token_id: "2",
-      token_owner: "0xC0B5f14c0140aE2DFA4CA15BEA5f19FdE4E24D9A",
-      owner_address_type: "ORIGIN_ADDRESS",
-      origin_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/2.png",
-      onchain_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/2-t.png",
-      token_uri: "",
-      origin_attributes: [
-        {
-          name: "background",
-          string_attribute_value: {
-            value: "CoralPink",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "moon",
-          string_attribute_value: {
-            value: "Beige",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "plate",
-          string_attribute_value: {
-            value: "LightPurple",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "tail",
-          string_attribute_value: {
-            value: "DarkBlue",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "creature",
-          string_attribute_value: {
-            value: "Whale",
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-      onchain_attributes: [
-        {
-          name: "points",
-          number_attribute_value: {
-            value: "0",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "missions_completed",
-          number_attribute_value: {
-            value: "3",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_1",
-          boolean_attribute_value: {
-            value: false,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_2",
-          boolean_attribute_value: {
-            value: false,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "checked_in",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "redeemed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "transformed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-    },
-  },
-];
