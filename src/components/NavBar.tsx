@@ -29,14 +29,8 @@ import ENV from "@/utils/ENV";
 
 export default function WithSubnavigation({ variant }: { variant?: string }) {
   const { isOpen, onToggle } = useDisclosure();
-  const [activeChain, setActiveChain] = useState(ENV.CHAIN_NAME);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const handleChainChange = (chain: string) => {
-    setActiveChain(chain);
-    setIsDropdownOpen(false);
-  };
 
   return (
     <Box>
@@ -112,7 +106,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
               color={"light"}
               variant={"outline"}
             >
-              <Text color="medium">{activeChain}</Text>
+              <Text color="medium">{ENV.CHAIN_NAME}</Text>
             </Button>
             <AnimatePresence>
               {isDropdownOpen && (
@@ -131,7 +125,7 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
                     transition: { type: "spring", stiffness: 300, damping: 20 },
                   }}
                 >
-                  <Box
+                  <Flex
                     position="absolute"
                     top="100%"
                     left={0}
@@ -144,19 +138,21 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
                     bg="white"
                     mt={1}
                     zIndex={1}
+                    direction="column"
                   >
                     {CHAINS.map((chain) => (
                       <Box
                         key={chain.label}
                         p={2}
                         _hover={{ background: "gray.100" }}
-                        onClick={() => handleChainChange(chain.label)}
+                        href={chain.href}
+                        as={"a"}
                         color={"medium"}
                       >
                         {chain.label}
                       </Box>
                     ))}
-                  </Box>
+                  </Flex>
                 </motion.div>
               )}
             </AnimatePresence>
