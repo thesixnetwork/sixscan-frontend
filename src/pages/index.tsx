@@ -203,7 +203,10 @@ export default function Home({
                         <Td>
                           <Flex direction="column">
                             <Text>
-                              <Clickable underline href="/">
+                              <Clickable
+                                underline
+                                href={`/block/${block.header.height}`}
+                              >
                                 {block.header.height}
                               </Clickable>
                             </Text>

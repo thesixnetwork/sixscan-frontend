@@ -94,7 +94,10 @@ export default function Blocks({
                         <Td>
                           <Flex direction="column">
                             <Text>
-                              <Clickable underline href="/">
+                              <Clickable
+                                underline
+                                href={`/block/${block.header.height}`}
+                              >
                                 {block.header.height}
                               </Clickable>
                             </Text>
@@ -104,18 +107,10 @@ export default function Blocks({
                           </Flex>
                         </Td>
                         <Td>
-                          <Text>
-                            <Clickable underline href="/">
-                              {formatHex(block.block_id.hash)}
-                            </Clickable>
-                          </Text>
+                          <Text>{formatHex(block.block_id.hash)}</Text>
                         </Td>
                         <Td>
-                          <Text>
-                            <Clickable underline href="/">
-                              {block.num_txs}
-                            </Clickable>
-                          </Text>
+                          <Text>{block.num_txs}</Text>
                         </Td>
                         <Td>
                           <Text>

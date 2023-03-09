@@ -1,3 +1,4 @@
+import ENV from "@/utils/ENV";
 import axios from "axios";
 
 export const getTxsFromAddress = async (
@@ -14,6 +15,36 @@ export const getTxsFromAddress = async (
       return null;
     }
     return accountTxs;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getTxsFromBlock = async (height: string): Promise<any> => {
+  try {
+    const res = await axios.get(
+      `${ENV.ARCH_RPC_URL}tx_search?query="tx.height=${height}"`
+    );
+    const blockTxs = res.data.result;
+    if (!blockTxs) {
+      return null;
+    }
+    return blockTxs;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getTxFromHash = async (hash: string): Promise<any> => {
+  try {
+    const res = await axios.get(`${ENV.ARCH_RPC_URL}tx?hash=0x${hash}`);
+    const tx = res.data.result;
+    if (!tx) {
+      return null;
+    }
+    return tx;
   } catch (error) {
     console.error(error);
     return null;
