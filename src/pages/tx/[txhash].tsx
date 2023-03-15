@@ -32,7 +32,7 @@ import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
-import { Footer } from "@/components/Footer";
+
 import { Clickable } from "@/components/Clickable";
 import { getTxFromHash } from "@/service/txs";
 import { Transaction } from "@/types/Txs";
@@ -49,7 +49,7 @@ export default function Tx({ tx }: { tx: Transaction }) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <NavBar />
+
         <Box
           height="100vh"
           display="flex"
@@ -75,7 +75,6 @@ export default function Tx({ tx }: { tx: Transaction }) {
             </Button>
           </Box>
         </Box>
-        <Footer />
       </Flex>
     );
   }
@@ -87,7 +86,7 @@ export default function Tx({ tx }: { tx: Transaction }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+
       <Box>
         <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
@@ -213,7 +212,6 @@ export default function Tx({ tx }: { tx: Transaction }) {
         </Container>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

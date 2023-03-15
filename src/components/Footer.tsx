@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { FaTwitter } from "react-icons/fa";
 
-export const Footer = () => {
+const Footer = () => {
   return (
     <Box bgColor="lightest">
       <Container maxW="container.xl" py={4}>
@@ -96,3 +96,5 @@ const MENU_ITEMS = [
     href: "https://twitter.com/theSIXnetwork",
   },
 ];
+
+export default Footer;

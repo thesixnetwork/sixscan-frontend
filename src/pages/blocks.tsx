@@ -32,7 +32,7 @@ import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
-import { Footer } from "@/components/Footer";
+
 import { Clickable } from "@/components/Clickable";
 import {
   getBlocksResult,
@@ -62,7 +62,7 @@ export default function Blocks({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+
       <Box>
         <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
@@ -152,7 +152,6 @@ export default function Blocks({
         </Container>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

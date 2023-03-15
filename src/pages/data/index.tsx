@@ -32,7 +32,7 @@ import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
-import { Footer } from "@/components/Footer";
+
 import { Clickable } from "@/components/Clickable";
 import { formatHex, formatNumber } from "@/utils/format";
 
@@ -73,7 +73,6 @@ export default function Data() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar variant={"search"} />
       <Box
         bgGradient={"linear(to-r, #3FC2FA, #3759F0)"}
         paddingTop={10}
@@ -327,7 +326,6 @@ export default function Data() {
         </Container>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }
