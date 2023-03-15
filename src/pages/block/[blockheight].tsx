@@ -26,7 +26,7 @@ import Head from "next/head";
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-import { Footer } from "@/components/Footer";
+
 import { getBlock } from "@/service/block";
 import { Block } from "@/types/Block";
 import { getTxsFromBlock } from "@/service/txs";
@@ -53,7 +53,7 @@ export default function BlockPage({
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <NavBar />
+
         <Box
           height="100vh"
           display="flex"
@@ -79,7 +79,6 @@ export default function BlockPage({
             </Button>
           </Box>
         </Box>
-        <Footer />
       </Flex>
     );
   }
@@ -91,7 +90,7 @@ export default function BlockPage({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+
       <Box>
         <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
@@ -254,7 +253,6 @@ export default function BlockPage({
         </Container>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

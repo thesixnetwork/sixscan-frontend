@@ -35,7 +35,7 @@ import {
 import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import { Footer } from "@/components/Footer";
+import Footer from "@/components/Footer";
 import { getPool, getValidator, getValidators } from "@/service/staking";
 import { Pool, Validator } from "@/types/Staking";
 import { convertDecimalToPercent, convertUsixToSix } from "@/utils/format";
@@ -107,7 +107,6 @@ export default function Home({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar variant={"search"} />
       <Box
         bgImage={"/banner.png"}
         bgSize={"cover"}
@@ -259,7 +258,6 @@ export default function Home({
         </Container>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

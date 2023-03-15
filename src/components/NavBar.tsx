@@ -14,6 +14,7 @@ import {
   useColorModeValue,
   useDisclosure,
   Image,
+  Tooltip,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -26,12 +27,20 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef } from "react";
 import SearchBar from "./SearchBar";
 import ENV from "@/utils/ENV";
+import { Block } from "@/types/Block";
 
-export default function WithSubnavigation({ variant }: { variant?: string }) {
+export default function WithSubnavigation({
+  variant,
+  status,
+}: {
+  variant?: string;
+  status: Block;
+}) {
   const { isOpen, onToggle } = useDisclosure();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const isBlockRunning =
+    new Date(status.block.header.time).getTime() > Date.now() - 60000;
   return (
     <Box>
       <Flex
@@ -96,18 +105,48 @@ export default function WithSubnavigation({ variant }: { variant?: string }) {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             cursor="pointer"
           >
-            <Button
-              leftIcon={
-                <Box color="success">
-                  <FaCircle />
-                </Box>
-              }
-              rightIcon={isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />}
-              color={"light"}
-              variant={"outline"}
-            >
-              <Text color="medium">{ENV.CHAIN_NAME}</Text>
-            </Button>
+            {status && (
+              <>
+                {isBlockRunning ? (
+                  <Button
+                    leftIcon={
+                      <Box color={isBlockRunning ? `success` : `error`}>
+                        <FaCircle />
+                      </Box>
+                    }
+                    rightIcon={
+                      isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />
+                    }
+                    color={"light"}
+                    variant={"outline"}
+                  >
+                    <Text color="medium">{ENV.CHAIN_NAME}</Text>
+                  </Button>
+                ) : (
+                  <Tooltip
+                    label={`No new blocks since block ${status.block.header.height}`}
+                    placement="bottom-end"
+                    bgColor="error"
+                  >
+                    <Button
+                      leftIcon={
+                        <Box color={isBlockRunning ? `success` : `error`}>
+                          <FaCircle />
+                        </Box>
+                      }
+                      rightIcon={
+                        isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />
+                      }
+                      color={"light"}
+                      variant={"outline"}
+                    >
+                      <Text color="medium">{ENV.CHAIN_NAME}</Text>
+                    </Button>
+                  </Tooltip>
+                )}
+              </>
+            )}
+
             <AnimatePresence>
               {isDropdownOpen && (
                 <motion.div

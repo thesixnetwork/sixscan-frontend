@@ -37,7 +37,7 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-import { Footer } from "@/components/Footer";
+
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
@@ -79,7 +79,7 @@ export default function Schema({
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <NavBar />
+
         <Box
           height="100vh"
           display="flex"
@@ -105,7 +105,6 @@ export default function Schema({
             </Button>
           </Box>
         </Box>
-        <Footer />
       </Flex>
     );
   }
@@ -117,7 +116,7 @@ export default function Schema({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+
       <Box>
         <Box p={6}>
           <Container maxW="container.xl">
@@ -386,7 +385,6 @@ export default function Schema({
         </Box>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

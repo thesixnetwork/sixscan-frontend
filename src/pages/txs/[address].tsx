@@ -36,7 +36,7 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-import { Footer } from "@/components/Footer";
+
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { validateAddress } from "@/utils/validate";
@@ -103,7 +103,7 @@ export default function Address({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+
       <Box>
         <Box>
           <Container maxW="container.xl">
@@ -350,7 +350,6 @@ export default function Address({
         </Box>
       </Box>
       <Spacer />
-      <Footer />
     </Flex>
   );
 }

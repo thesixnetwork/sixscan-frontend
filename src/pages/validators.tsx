@@ -25,9 +25,7 @@ import Head from "next/head";
 // ------------------------- Styles -------------------------
 import { FaCheckCircle, FaUnlink } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-import { Footer } from "@/components/Footer";
 import { Clickable } from "@/components/Clickable";
 import { getValidators } from "@/service/staking";
 import { Validator } from "@/types/Staking";
@@ -93,7 +91,7 @@ export default function Validators({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <NavBar />
+      {/*  */}
       <Box>
         <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
@@ -600,7 +598,7 @@ export default function Validators({
         </Container>
       </Box>
       <Spacer />
-      <Footer />
+      {/*  */}
     </Flex>
   );
 }
