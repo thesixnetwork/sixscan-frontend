@@ -38,7 +38,7 @@ jobs:
         gcloud --quiet auth configure-docker
     - name: Build and tag image
       run: |-
-        docker build . --tag "gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA"
+        docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag "gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA"
     - name: Push image to GCR
       run: |-
         docker push gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA
@@ -51,5 +51,5 @@ jobs:
           --platform managed \
           --region $CLOUD_RUN_REGION \
           --allow-unauthenticated \
-          --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL,NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME \
+          --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL \
           --quiet
