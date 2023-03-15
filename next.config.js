@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME,
+    CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME,
   },
 };
 
