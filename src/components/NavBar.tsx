@@ -42,7 +42,7 @@ export default function WithSubnavigation({
   const isBlockRunning =
     new Date(status.block.header.time).getTime() > Date.now() - 60000;
 
-  console.log("Chain Name: ", ENV.CHAIN_NAME);
+  console.log("Chain Name: ", ENV.NEXT_PUBLIC_CHAIN_NAME);
   return (
     <Box>
       <Flex
@@ -122,7 +122,7 @@ export default function WithSubnavigation({
                     color={"light"}
                     variant={"outline"}
                   >
-                    <Text color="medium">{ENV.CHAIN_NAME}</Text>
+                    <Text color="medium">{ENV.NEXT_PUBLIC_CHAIN_NAME}</Text>
                   </Button>
                 ) : (
                   <Tooltip
@@ -142,7 +142,7 @@ export default function WithSubnavigation({
                       color={"light"}
                       variant={"outline"}
                     >
-                      <Text color="medium">{ENV.CHAIN_NAME}</Text>
+                      <Text color="medium">{ENV.NEXT_PUBLIC_CHAIN_NAME}</Text>
                     </Button>
                   </Tooltip>
                 )}
