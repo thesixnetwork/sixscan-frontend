@@ -1,6 +1,12 @@
 # base image
 FROM node:16.0.0-alpine
 
+# Set environment variables.
+
+ARG NEXT_PUBLIC_CHAIN_NAME
+ENV NEXT_PUBLIC_CHAIN_NAME $NEXT_PUBLIC_CHAIN_NAME
+
+
 # Create and change to the app directory.
 WORKDIR /usr/app
 
