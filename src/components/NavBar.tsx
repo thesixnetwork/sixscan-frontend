@@ -41,6 +41,8 @@ export default function WithSubnavigation({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const isBlockRunning =
     new Date(status.block.header.time).getTime() > Date.now() - 60000;
+
+  console.log("Chain Name: ", ENV.CHAIN_NAME);
   return (
     <Box>
       <Flex
