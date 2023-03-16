@@ -24,7 +24,6 @@ import { Clickable } from "@/components/Clickable";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 // ------------------------- Styles -------------------------
-import styles from "@/styles/Home.module.css";
 import {
   FaDollarSign,
   FaMoneyBillWave,
@@ -38,7 +37,11 @@ import CustomCard from "@/components/CustomCard";
 import Footer from "@/components/Footer";
 import { getPool, getValidator, getValidators } from "@/service/staking";
 import { Pool, Validator } from "@/types/Staking";
-import { convertDecimalToPercent, convertUsixToSix } from "@/utils/format";
+import {
+  convertDecimalToPercent,
+  convertUsixToSix,
+  formatNumberAndRoundUp,
+} from "@/utils/format";
 import { getInflation } from "@/service/mint";
 import { getSupply } from "@/service/bank";
 import { Balance } from "@/types/Bank";
@@ -74,13 +77,13 @@ export default function Home({
   const data = [
     {
       title: "PRICE",
-      value: price && price.usd ? `$${formatNumber(price.usd)}` : "$0",
+      value: price && price.usd ? `$${formatNumber(price.usd, 8)}` : "$0",
       badge: price ? `${formatNumber(price?.usd_24h_change)}%` : "0%",
       icon: FaDollarSign,
     },
     {
       title: "STAKED",
-      value: `${formatNumber(
+      value: `${formatNumberAndRoundUp(
         convertUsixToSix(parseInt(pool.bonded_tokens))
       )} SIX`,
       badge: `${convertDecimalToPercent(

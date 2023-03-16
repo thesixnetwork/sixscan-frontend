@@ -344,7 +344,9 @@ export default function Address({
                                               fontSize={"xs"}
                                               color={"dark"}
                                             >
-                                              {`@ $${formatNumber(price?.usd)}`}
+                                              {`@ ~$${formatNumber(
+                                                price?.usd
+                                              )}`}
                                             </Text>
                                           )}
                                         </Flex>
@@ -522,8 +524,9 @@ export default function Address({
                 <CustomCard footer={"VIEW TXNS"} href={`/txs/${address}`}>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Txns (All)</Tab>
+                      <Tab>Txns (Cosmos)</Tab>
                       <Tab>Txns (Data Layer)</Tab>
+                      <Tab>Txns (Evm)</Tab>
                       {validator && <Tab>Proposed Blocks</Tab>}
                       {validator && <Tab>Delegator</Tab>}
                     </TabList>
