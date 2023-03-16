@@ -1,6 +1,30 @@
-export const formatNumber = (num: number) => {
-  const roundedNum = Math.ceil(num * 100) / 100; // round up to two decimal places
-  return roundedNum.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+export const formatNumber = (num: number, decimalPoints: number = 2) => {
+  const [integerPart, decimalPart] = num.toFixed(decimalPoints).split(".");
+  const formattedIntegerPart = integerPart.replace(
+    /(\d)(?=(\d{3})+(?!\d))/g,
+    "$1,"
+  );
+  return decimalPoints > 0
+    ? `${formattedIntegerPart}.${decimalPart}`
+    : formattedIntegerPart;
+};
+
+export const formatNumberAndRoundUp = (
+  num: number,
+  decimalPoints: number = 2
+) => {
+  const factor = 10 ** decimalPoints;
+  const roundedNum = Math.ceil(num * factor) / factor; // round up to specified decimal places
+  const [integerPart, decimalPart] = roundedNum
+    .toFixed(decimalPoints)
+    .split(".");
+  const formattedIntegerPart = integerPart.replace(
+    /(\d)(?=(\d{3})+(?!\d))/g,
+    "$1,"
+  );
+  return decimalPoints > 0
+    ? `${formattedIntegerPart}.${decimalPart}`
+    : formattedIntegerPart;
 };
 
 export const formatHex = (hash: string) => {
