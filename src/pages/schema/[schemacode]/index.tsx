@@ -24,6 +24,7 @@ import {
   Button,
   Spacer,
   Tooltip,
+  Skeleton,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -64,6 +65,7 @@ export default function Schema({
   openseaCollection: Collection;
   nftCollection: any;
 }) {
+  const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NftData[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
   const router = useRouter();
@@ -195,12 +197,15 @@ export default function Schema({
                 display={"flex"}
               >
                 {openseaCollection && openseaCollection.image_url && (
-                  <Image
-                    rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={openseaCollection.image_url}
-                    alt={schema.name}
-                    width="100%"
-                  />
+                  <Skeleton isLoaded={!isLoading} w="100%" h="100%">
+                    <Image
+                      rounded={{ base: "sm", md: "md", lg: "lg" }}
+                      src={openseaCollection.image_url}
+                      alt={schema.name}
+                      width="100%"
+                      onLoad={() => setIsLoading(false)}
+                    />
+                  </Skeleton>
                 )}
               </GridItem>
               <GridItem colSpan={{ base: 12, md: 9 }}>

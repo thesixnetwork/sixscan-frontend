@@ -63,7 +63,11 @@ const data = [
   },
 ];
 
-export default function Data() {
+export default function Data(modalstate: {
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+}) {
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -86,6 +90,7 @@ export default function Data() {
             <SearchBar
               hasButton
               placeHolder="Search by Address / Txn Hash / Block / Token / SNS"
+              modalstate={modalstate}
             />
           </Flex>
         </Container>
