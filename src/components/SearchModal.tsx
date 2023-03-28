@@ -13,7 +13,14 @@ import {
   Text,
   Flex,
 } from "@chakra-ui/react";
-import { FaArrowRight, FaFingerprint, FaSearch } from "react-icons/fa";
+import {
+  FaArrowRight,
+  FaFingerprint,
+  FaHashtag,
+  FaLayerGroup,
+  FaScroll,
+  FaSearch,
+} from "react-icons/fa";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -25,6 +32,7 @@ import {
 type SearchResult = {
   type: "address" | "tx" | "block" | "schema";
   value: string;
+  icon: React.ReactNode;
 };
 
 const SearchModal = ({
@@ -54,6 +62,7 @@ const SearchModal = ({
       _searchResults.push({
         type: "address",
         value: searchInput,
+        icon: <FaFingerprint />,
       });
     }
 
@@ -61,6 +70,7 @@ const SearchModal = ({
       _searchResults.push({
         type: "tx",
         value: searchInput,
+        icon: <FaHashtag />,
       });
     }
 
@@ -68,12 +78,14 @@ const SearchModal = ({
       _searchResults.push({
         type: "block",
         value: searchInput,
+        icon: <FaLayerGroup />,
       });
     }
     if (!isAddress && !isTx && !isBlock) {
       _searchResults.push({
         type: "schema",
         value: searchInput,
+        icon: <FaScroll />,
       });
     }
     setSearchResults(_searchResults);
@@ -107,7 +119,7 @@ const SearchModal = ({
             </InputLeftElement>
             <Input
               variant="ghost"
-              placeholder={"Search by Address / Txn Hash / Block / Token / SNS"}
+              placeholder={"Search by Address / Txn Hash / Block"}
               value={searchInput}
               onClick={onOpen}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -132,9 +144,7 @@ const SearchModal = ({
                     gap={2}
                     alignItems="center"
                   >
-                    <Box color="dark">
-                      <FaFingerprint />
-                    </Box>
+                    <Box color="dark">{result.icon}</Box>
                     <Text
                       fontSize="md"
                       color="dark"
