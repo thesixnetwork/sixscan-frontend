@@ -183,7 +183,7 @@ export default function BlockPage({
                 <Tabs isLazy>
                   <TabList>
                     <Tab>Txns (All)</Tab>
-                    <Tab>Txns (Data Layer)</Tab>
+                    {/* <Tab>Txns (Data Layer)</Tab> */}
                   </TabList>
                   <TabPanels>
                     <TabPanel>

@@ -39,6 +39,7 @@ import {
   PopoverAnchor,
   Input,
   Tooltip,
+  Skeleton,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -64,10 +65,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
 
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
@@ -113,7 +111,6 @@ export default function Address({
   account,
   balance,
   balances,
-  price,
   accountTxs,
   delegations,
 }: {
@@ -122,13 +119,15 @@ export default function Address({
   account: Account | null;
   balance: Balance | null;
   balances: Balance[] | null;
-  price: CoinGeckoPrice | null;
   accountTxs: AccountTxs;
   delegations: Delegation[] | null;
 }) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
   let totalValueTmp = 0;
+  const [filteredBalances, setFilteredBalances] = useState<Balance[] | null>(
+    balances
+  );
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(address);
@@ -143,9 +142,33 @@ export default function Address({
     return value;
   };
 
+  const handleOnChange = (value: string) => {
+    if (value === "") {
+      setFilteredBalances(balances);
+      return;
+    }
+    const filtered = balances?.filter((balance) => {
+      return balance.denom.toLowerCase().includes(value.toLowerCase());
+    });
+    if (filtered) {
+      setFilteredBalances(filtered);
+    }
+  };
+
   useEffect(() => {
     setTotalValue(totalValueTmp);
-  }, [totalValue]);
+  }, []);
+
+  const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
+
+  useEffect(() => {
+    // async function fetchPrice() {
+    const fetchPrice = async () => {
+      setPrice(await getPriceFromCoingecko("six-network"));
+    };
+
+    fetchPrice();
+  }, []);
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
@@ -230,7 +253,7 @@ export default function Address({
                                   price?.usd
                               )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
                             ) : (
-                              <Text fontSize={"sm"}>{`$0`}</Text>
+                              <Skeleton height="28px" width="150px" />
                             )}
                           </Td>
                         </Tr>
@@ -274,11 +297,18 @@ export default function Address({
                               <PopoverContent>
                                 <PopoverArrow />
                                 <PopoverHeader>
-                                  <Input placeholder="Search" size="sm" />
+                                  <Input
+                                    placeholder="Search"
+                                    size="sm"
+                                    onChange={(e) => {
+                                      handleOnChange(e.target.value);
+                                    }}
+                                  />
                                 </PopoverHeader>
                                 <PopoverBody>
-                                  {balances && balances.length > 0 ? (
-                                    balances.map((token, index) => (
+                                  {filteredBalances &&
+                                  filteredBalances.length > 0 ? (
+                                    filteredBalances.map((token, index) => (
                                       <Flex
                                         direction="row"
                                         p={2}
@@ -525,10 +555,10 @@ export default function Address({
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Txns (Cosmos)</Tab>
-                      <Tab>Txns (Data Layer)</Tab>
-                      <Tab>Txns (Evm)</Tab>
-                      {validator && <Tab>Proposed Blocks</Tab>}
-                      {validator && <Tab>Delegator</Tab>}
+                      {/* <Tab>Txns (Data Layer)</Tab>*/}
+                      {/* <Tab>Txns (Evm)</Tab> */}
+                      {/* {validator && <Tab>Proposed Blocks</Tab>} */}
+                      {validator && <Tab>Delegators</Tab>}
                     </TabList>
                     <TabPanels>
                       {accountTxs && (
@@ -676,7 +706,7 @@ export default function Address({
                                         )}
                                       </Text>
                                     </Td>
-                                    <Td>
+                                    <Td isNumeric>
                                       {tx.decode_tx.amount &&
                                         tx.decode_tx.amount[0]?.amount && (
                                           <Text>{`${formatNumber(
@@ -971,7 +1001,7 @@ export const getServerSideProps = async (context: {
     account,
     balance,
     balances,
-    price,
+    // price,
     accountTxs,
     delegations,
   ] = await Promise.all([
@@ -979,7 +1009,7 @@ export const getServerSideProps = async (context: {
     getAccount(address),
     getBalance(address),
     getBalances(address),
-    getPriceFromCoingecko("six-network"),
+    // getPriceFromCoingecko("six-network"),
     getTxsFromAddress(address, "1", "20"),
     getDelegationsFromValidator(address),
   ]);
@@ -992,7 +1022,7 @@ export const getServerSideProps = async (context: {
           account,
           balance,
           balances,
-          price,
+          // price,
           accountTxs,
           delegations,
         }
@@ -1002,7 +1032,7 @@ export const getServerSideProps = async (context: {
           account: null,
           balance: null,
           balances: null,
-          price: null,
+          // price: null,
           accountTxs: null,
           delegations: null,
         },
