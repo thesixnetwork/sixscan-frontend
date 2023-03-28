@@ -1,4 +1,5 @@
 // ------------------------- Chakra UI -------------------------
+import { useEffect } from "react";
 import {
   Box,
   Flex,
@@ -19,6 +20,7 @@ import {
   Td,
   Tr,
   Badge,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Clickable } from "@/components/Clickable";
 // ------------------------- NextJS -------------------------
@@ -31,10 +33,8 @@ import {
   FaPrint,
 } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import Footer from "@/components/Footer";
 import { getPool, getValidator, getValidators } from "@/service/staking";
 import { Pool, Validator } from "@/types/Staking";
 import {
@@ -58,6 +58,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 export default function Home({
+  modalstate,
   pool,
   inflation,
   supply,
@@ -66,6 +67,7 @@ export default function Home({
   validators,
   price,
 }: {
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
   pool: Pool;
   inflation: string;
   supply: Balance;
@@ -74,6 +76,8 @@ export default function Home({
   validators: Validator[];
   price: CoinGeckoPrice | null;
 }) {
+  console.log("modalstate: ", modalstate);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const data = [
     {
       title: "PRICE",
@@ -130,6 +134,7 @@ export default function Home({
             <SearchBar
               hasButton
               placeHolder="Search by Address / Txn Hash / Block / Token / SNS"
+              modalstate={modalstate}
             />
           </Flex>
         </Container>

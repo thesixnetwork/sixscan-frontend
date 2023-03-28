@@ -28,13 +28,16 @@ import { useState, useRef } from "react";
 import SearchBar from "./SearchBar";
 import ENV from "@/utils/ENV";
 import { Block } from "@/types/Block";
+import SearchModal from "./SearchModal";
 
 export default function WithSubnavigation({
   variant,
   status,
+  modalstate,
 }: {
   variant?: string;
   status: Block;
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
 }) {
   const { isOpen, onToggle } = useDisclosure();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -92,7 +95,7 @@ export default function WithSubnavigation({
         </Flex>
         {variant === "search" ? null : (
           <Box display={{ base: "none", lg: "block" }}>
-            <SearchBar />
+            <SearchBar modalstate={modalstate} />
           </Box>
         )}
         <Stack
@@ -205,7 +208,7 @@ export default function WithSubnavigation({
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav modalstate={modalstate} />
       </Collapse>
     </Box>
   );
@@ -317,7 +320,11 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({
+  modalstate,
+}: {
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
+}) => {
   return (
     <Stack
       bg={useColorModeValue("white", "gray.800")}
@@ -328,6 +335,7 @@ const MobileNav = () => {
         <SearchBar
           placeHolder={"Search by Address / Txn Hash / Block / Token / SNS"}
           hasButton
+          modalstate={modalstate}
         />
       </Box>
       {NAV_ITEMS.map((navItem) => (
@@ -351,6 +359,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         href={href ?? "#"}
         justify={"space-between"}
         align={"center"}
+        bb
         _hover={{
           textDecoration: "none",
         }}

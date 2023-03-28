@@ -3,7 +3,13 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({
+  children,
+  modalstate,
+}: {
+  children: React.ReactNode;
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
+}) {
   const router = useRouter();
   const fetcher = (url: string, options?: RequestInit) => {
     return fetch(url, options).then((res) => res.json());
@@ -17,9 +23,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {isHome ? (
-        <Navbar status={data} variant={"search"} />
+        <Navbar status={data} variant={"search"} modalstate={modalstate} />
       ) : (
-        <Navbar status={data} />
+        <Navbar status={data} modalstate={modalstate} />
       )}
       <main>{children}</main>
       <Footer />
