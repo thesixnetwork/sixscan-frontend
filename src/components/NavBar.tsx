@@ -15,6 +15,7 @@ import {
   useDisclosure,
   Image,
   Tooltip,
+  Circle,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -24,11 +25,10 @@ import {
 } from "@chakra-ui/icons";
 import { FaChevronDown, FaChevronUp, FaCircle, FaWallet } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ENV from "@/utils/ENV";
 import { Block } from "@/types/Block";
-import SearchModal from "./SearchModal";
 
 export default function WithSubnavigation({
   variant,
@@ -45,7 +45,17 @@ export default function WithSubnavigation({
   const isBlockRunning =
     new Date(status.block.header.time).getTime() > Date.now() - 60000;
 
-  console.log("Chain Name: ", ENV.NEXT_PUBLIC_CHAIN_NAME);
+  const [isBlinking, setIsBlinking] = useState(false);
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+    if (isBlockRunning) {
+      intervalId = setInterval(() => setIsBlinking((prev) => !prev), 500);
+    } else {
+      setIsBlinking(false);
+    }
+    return () => clearInterval(intervalId);
+  }, [isBlockRunning]);
   return (
     <Box>
       <Flex
@@ -115,8 +125,21 @@ export default function WithSubnavigation({
                 {isBlockRunning ? (
                   <Button
                     leftIcon={
-                      <Box color={isBlockRunning ? `success` : `error`}>
-                        <FaCircle />
+                      <Box>
+                        <Circle
+                          size="12px"
+                          bg={isBlockRunning ? `success` : `error`}
+                          shadow={
+                            isBlockRunning && isBlinking
+                              ? `0 0 5px #0f0, 0 0 10px #0f0, 0 0 15px #0f0`
+                              : `none`
+                          }
+                          transition={
+                            isBlockRunning
+                              ? `box-shadow 0.3s ease-in-out`
+                              : `none`
+                          }
+                        />
                       </Box>
                     }
                     rightIcon={
@@ -136,7 +159,20 @@ export default function WithSubnavigation({
                     <Button
                       leftIcon={
                         <Box color={isBlockRunning ? `success` : `error`}>
-                          <FaCircle />
+                          <Circle
+                            size="12px"
+                            bg={isBlockRunning ? `success` : `error`}
+                            shadow={
+                              isBlockRunning && isBlinking
+                                ? `0 0 5px #0f0, 0 0 10px #0f0, 0 0 15px #0f0`
+                                : `none`
+                            }
+                            transition={
+                              isBlockRunning
+                                ? `box-shadow 0.3s ease-in-out`
+                                : `none`
+                            }
+                          />
                         </Box>
                       }
                       rightIcon={
