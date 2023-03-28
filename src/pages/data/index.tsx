@@ -89,7 +89,7 @@ export default function Data(modalstate: {
             </Text>
             <SearchBar
               hasButton
-              placeHolder="Search by Address / Txn Hash / Block / Token / SNS"
+              placeHolder="Search by Address / Txn Hash / Block"
               modalstate={modalstate}
             />
           </Flex>

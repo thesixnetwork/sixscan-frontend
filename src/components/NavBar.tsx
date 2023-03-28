@@ -36,16 +36,24 @@ export default function WithSubnavigation({
   modalstate,
 }: {
   variant?: string;
-  status: Block;
+  status: Block | null;
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
 }) {
   const { isOpen, onToggle } = useDisclosure();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const isBlockRunning =
-    new Date(status.block.header.time).getTime() > Date.now() - 60000;
+  // const isBlockRunning = status ? new Date(status.block.header.time).getTime() > Date.now() - 60000 : false;
 
+  const [isBlockRunning, setIsBlockRunning] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
+
+  useEffect(() => {
+    setIsBlockRunning(
+      status
+        ? new Date(status.block.header.time).getTime() > Date.now() - 60000
+        : false
+    );
+  }, [status]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -369,7 +377,7 @@ const MobileNav = ({
     >
       <Box display={{ base: "block", lg: "none" }}>
         <SearchBar
-          placeHolder={"Search by Address / Txn Hash / Block / Token / SNS"}
+          placeHolder={"Search by Address / Txn Hash / Block"}
           hasButton
           modalstate={modalstate}
         />

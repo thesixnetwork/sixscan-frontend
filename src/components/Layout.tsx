@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Navbar from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import { CircularProgress, Box, Flex } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 
 export default function Layout({
   children,
@@ -15,28 +16,24 @@ export default function Layout({
   const fetcher = (url: string, options?: RequestInit) => {
     return fetch(url, options).then((res) => res.json());
   };
+  const [status, setStatus] = useState(null);
   const { data, error } = useSWR("/api/latestblock", fetcher);
-  if (error) return <div>Failed to load</div>;
-  if (!data)
-    return (
-      <Flex
-        height="100vh"
-        width="100vw"
-        justifyContent="center"
-        alignItems="center"
-      >
-        <CircularProgress isIndeterminate color="primary.500" />
-      </Flex>
-    );
+
+  useEffect(() => {
+    setStatus(data);
+  }, [data]);
 
   const isHome = router.pathname === "/" ? true : false;
 
+  useEffect(() => {
+    console.log("Layout rerendered with new status:", status);
+  }, [status, children]); // add status to dependency array
   return (
     <>
       {isHome ? (
-        <Navbar status={data} variant={"search"} modalstate={modalstate} />
+        <Navbar status={status} variant={"search"} modalstate={modalstate} />
       ) : (
-        <Navbar status={data} modalstate={modalstate} />
+        <Navbar status={status} modalstate={modalstate} />
       )}
       <main>{children}</main>
       <Footer />
