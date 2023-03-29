@@ -21,26 +21,42 @@ export const getSchema = async (
 };
 
 export const getNftCollection = async (
-  schemaCode: string
+  schemaCode: string,
+  metadataPage: string
 ): Promise<any | null> => {
   try {
     const {
       data: {
+        nftCollection,
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}`
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
 
-    const {
-      data: { nftCollection },
-    } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=${total}`
-    );
-    if (!nftCollection) {
+    const startingTokenId =
+      (parseInt(metadataPage) - 1) * 12 + parseInt(nftCollection[0].token_id);
+    const promises = [];
+
+    for (let i = startingTokenId; i < startingTokenId + 12; i++) {
+      promises.push(
+        await (
+          await axios.get(
+            `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_data/${schemaCode}/${i}`
+          )
+        ).data.nftData
+      );
+    }
+    const metadata = await Promise.all(promises);
+
+    console.log("metadata: ", metadata);
+    console.log("total: ", total);
+
+    if (!metadata) {
       return null;
     }
-    return { nftCollection, pagination: { total } };
+    // console.log("metadata: ", metadata);
+    return { metadata, pagination: { total } };
   } catch (error) {
     console.error(error);
     return null;
