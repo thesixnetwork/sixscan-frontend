@@ -403,7 +403,6 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         href={href ?? "#"}
         justify={"space-between"}
         align={"center"}
-        bb
         _hover={{
           textDecoration: "none",
         }}
