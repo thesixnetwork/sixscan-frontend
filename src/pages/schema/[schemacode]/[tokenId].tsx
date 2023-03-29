@@ -257,11 +257,11 @@ export default function Schema({
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Latest Actions</Tab>
+                      {/* <Tab>Latest Actions</Tab> */}
                       <Tab>Metadata</Tab>
                     </TabList>
                     <TabPanels>
-                      <TabPanel>
+                      {/* <TabPanel>
                         <Flex
                           direction="row"
                           gap={2}
@@ -341,7 +341,7 @@ export default function Schema({
                             </Tbody>
                           </Table>
                         </TableContainer>
-                      </TabPanel>
+                      </TabPanel> */}
                       <TabPanel>
                         <Flex
                           direction="row"

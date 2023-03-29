@@ -71,6 +71,7 @@ export default function Schema({
   nftCollection,
   txns,
   pageNumber,
+  metadataPageNumber,
 }: {
   schemacode: string;
   schema: NFTSchema;
@@ -78,6 +79,7 @@ export default function Schema({
   nftCollection: any;
   txns: Txns;
   pageNumber: string;
+  metadataPageNumber: string;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NftData[]>([]);
@@ -108,10 +110,10 @@ export default function Schema({
       : ["", schema.code]
     : ["", ""];
   const CONFIG = [
-    {
-      title: "unique owners",
-      value: "0",
-    },
+    // {
+    //   title: "unique owners",
+    //   value: "0",
+    // },
     {
       title: "organisation",
       value: organisation,
@@ -123,7 +125,7 @@ export default function Schema({
   ];
   const [page, setPage] = useState(1);
   const perPage = 12;
-  const totalPages = nftCollection.pagination.total / perPage;
+  const totalPages = Math.ceil(nftCollection.pagination.total / perPage);
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -158,10 +160,10 @@ export default function Schema({
 
   useEffect(() => {
     // sort by token_id
-    nftCollection.nftCollection.sort(
+    nftCollection.metadata.sort(
       (a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id)
     );
-    const newItems = nftCollection.nftCollection.slice(
+    const newItems = nftCollection.metadata.slice(
       (page - 1) * perPage,
       page * perPage
     );
@@ -392,67 +394,76 @@ export default function Schema({
               </GridItem>
               <GridItem colSpan={12}>
                 <CustomCard>
-                  <Tabs isLazy>
+                  <Tabs
+                    isLazy
+                    defaultIndex={parseInt(metadataPageNumber) > 1 ? 2 : 0}
+                  >
                     <TabList overflow={{ base: "auto", md: "none" }}>
                       <Tab>Txns</Tab>
                       <Tab>Schema</Tab>
                       <Tab>Metadata</Tab>
                       <Spacer />
-                      <Flex direction="row" gap={2} align="center" px="2">
-                        <Button
-                          variant={"solid"}
-                          size="xs"
-                          href={`/schema/${schemacode}?page=1`}
-                          as="a"
-                          isDisabled={parseInt(pageNumber) === 1}
-                        >
-                          First
-                        </Button>
-                        <Button
-                          size="xs"
-                          href={`/schema/${schemacode}?page=1`}
-                          as="a"
-                          isDisabled={parseInt(pageNumber) === 1}
-                        >
-                          <FaArrowLeft fontSize={12} />
-                        </Button>
-                        <Text fontSize="xs">
-                          {`Page ${pageNumber} of ${txns.totalPage}`}
-                        </Text>
-                        <Button
-                          size="xs"
-                          href={`/schema/${schemacode}?page=${
-                            parseInt(pageNumber) + 1
-                          }`}
-                          as="a"
-                          isDisabled={parseInt(pageNumber) === txns.totalPage}
-                        >
-                          <FaArrowRight fontSize={12} />
-                        </Button>
-                        <Button
-                          size="xs"
-                          href={`/schema/${schemacode}?page=${txns.totalPage}`}
-                          as="a"
-                          isDisabled={parseInt(pageNumber) === txns.totalPage}
-                        >
-                          Last
-                        </Button>
-                      </Flex>
                     </TabList>
                     <TabPanels>
                       <TabPanel>
                         <Flex
                           direction="row"
-                          gap={2}
                           align="center"
                           color={"dark"}
+                          justify="space-between"
                         >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            {`Showing ${txns.txs.length} txns from a total of `}
-                            <Clickable>{txns.totalCount}</Clickable>{" "}
-                            transactions
-                          </Text>
+                          <Flex direction="row" gap={2} align="center">
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              {`Showing ${txns.txs.length} txns from a total of `}
+                              <Clickable>{txns.totalCount}</Clickable>{" "}
+                              transactions
+                            </Text>
+                          </Flex>
+                          <Flex direction="row" gap={2} align="center" px="2">
+                            <Button
+                              variant={"solid"}
+                              size="xs"
+                              href={`/schema/${schemacode}?page=1`}
+                              as="a"
+                              isDisabled={parseInt(pageNumber) === 1}
+                            >
+                              First
+                            </Button>
+                            <Button
+                              size="xs"
+                              href={`/schema/${schemacode}?page=1`}
+                              as="a"
+                              isDisabled={parseInt(pageNumber) === 1}
+                            >
+                              <FaArrowLeft fontSize={12} />
+                            </Button>
+                            <Text fontSize="xs">
+                              {`Page ${pageNumber} of ${txns.totalPage}`}
+                            </Text>
+                            <Button
+                              size="xs"
+                              href={`/schema/${schemacode}?page=${
+                                parseInt(pageNumber) + 1
+                              }`}
+                              as="a"
+                              isDisabled={
+                                parseInt(pageNumber) === txns.totalPage
+                              }
+                            >
+                              <FaArrowRight fontSize={12} />
+                            </Button>
+                            <Button
+                              size="xs"
+                              href={`/schema/${schemacode}?page=${txns.totalPage}`}
+                              as="a"
+                              isDisabled={
+                                parseInt(pageNumber) === txns.totalPage
+                              }
+                            >
+                              Last
+                            </Button>
+                          </Flex>
                         </Flex>
                         <TableContainer>
                           <Table>
@@ -600,7 +611,7 @@ export default function Schema({
                         />
                       </TabPanel>
                       <TabPanel>
-                        <Flex
+                        {/* <Flex
                           direction="row"
                           gap={2}
                           align="center"
@@ -644,6 +655,56 @@ export default function Schema({
                             onClick={() => {
                               setPage(totalPages);
                             }}
+                          >
+                            Last
+                          </Button>
+                        </Flex> */}
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          py={4}
+                          justifyContent="right"
+                        >
+                          <Button
+                            variant={"solid"}
+                            size="xs"
+                            href={`/schema/${schemacode}?metadata_page=1`}
+                            as="a"
+                            isDisabled={parseInt(metadataPageNumber) === 1}
+                          >
+                            First
+                          </Button>
+                          <Button
+                            size="xs"
+                            href={`/schema/${schemacode}?metadata_page=1`}
+                            as="a"
+                            isDisabled={parseInt(metadataPageNumber) === 1}
+                          >
+                            <FaArrowLeft fontSize={12} />
+                          </Button>
+                          <Text fontSize="xs">
+                            {`Page ${metadataPageNumber} of ${totalPages}`}
+                          </Text>
+                          <Button
+                            size="xs"
+                            href={`/schema/${schemacode}?metadata_page=${
+                              parseInt(metadataPageNumber) + 1
+                            }`}
+                            as="a"
+                            isDisabled={
+                              parseInt(metadataPageNumber) === totalPages
+                            }
+                          >
+                            <FaArrowRight fontSize={12} />
+                          </Button>
+                          <Button
+                            size="xs"
+                            href={`/schema/${schemacode}?metadata_page=${totalPages}`}
+                            as="a"
+                            isDisabled={
+                              parseInt(metadataPageNumber) === totalPages
+                            }
                           >
                             Last
                           </Button>
@@ -711,19 +772,26 @@ export default function Schema({
 
 export const getServerSideProps = async ({
   params: { schemacode },
-  query: { page = "1" },
+  query: { page = "1", metadata_page = "1" },
 }: {
   params: { schemacode: string };
-  query: { page: string };
+  query: { page: string; metadata_page: string };
 }) => {
   const schema = await getSchema(schemacode);
   const [organisation = "", code = schema?.code ?? ""] =
     schema?.code?.split(".") ?? [];
-  const openseaCollection = code
-    ? await getOpenseaCollectionByName(code)
-    : null;
-  const nftCollection = await getNftCollection(schemacode);
-  const txns = await getTxsFromSchema(schemacode, page ? page : "1", "20");
+  const [openseaCollection, nftCollection, txns] = await Promise.all([
+    code ? await getOpenseaCollectionByName(code) : null,
+    getNftCollection(schemacode, metadata_page),
+    getTxsFromSchema(schemacode, page ? page : "1", "20"),
+  ]);
+
+  // const openseaCollection = code
+  //   ? await getOpenseaCollectionByName(code)
+  //   : null;
+  // const nftCollection = await getNftCollection(schemacode, metadata_page);
+  // console.log("nftCollection: ", nftCollection);
+  // const txns = await getTxsFromSchema(schemacode, page ? page : "1", "20");
 
   return {
     props: {
@@ -733,6 +801,7 @@ export const getServerSideProps = async ({
       nftCollection,
       txns,
       pageNumber: page,
+      metadataPageNumber: metadata_page,
     },
   };
 };
