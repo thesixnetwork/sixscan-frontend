@@ -10,7 +10,7 @@ import ENV from "../utils/ENV";
 export const getLatestBlock = async (): Promise<Block | null> => {
   try {
     const { data: { result: latestBlock } = {} } = await axios.get(
-      `${ENV.ARCH_RPC_URL}block`
+      `${ENV.ARCH_RPC_URL}/block`
     );
     return latestBlock;
   } catch (error) {
@@ -25,7 +25,7 @@ export const getLatestBlocks = async (
 ): Promise<BlockchainResult | null> => {
   try {
     const { data: { result: blockchainResult } = {} } = await axios.get(
-      `${ENV.ARCH_RPC_URL}blockchain`,
+      `${ENV.ARCH_RPC_URL}/blockchain`,
       {
         params: {
           minHeight,
@@ -51,7 +51,9 @@ export const getBlocksResult = async (
     }
     for (let i = minHeight; i <= maxHeight; i++) {
       promises.push(
-        axios.get<BlockResponse>(`${ENV.ARCH_RPC_URL}block_results?height=${i}`)
+        axios.get<BlockResponse>(
+          `${ENV.ARCH_RPC_URL}/block_results?height=${i}`
+        )
       );
     }
     const results = await Promise.all(promises);
@@ -65,7 +67,7 @@ export const getBlocksResult = async (
 
 export const getBlock = async (height: string): Promise<Block | null> => {
   try {
-    const res = await axios.get(`${ENV.ARCH_RPC_URL}block?height=${height}`);
+    const res = await axios.get(`${ENV.ARCH_RPC_URL}/block?height=${height}`);
     const result = res.data.result;
     if (!result) {
       return null;

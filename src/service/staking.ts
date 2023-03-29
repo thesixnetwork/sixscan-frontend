@@ -6,7 +6,7 @@ import { fromBech32, toBech32, toHex } from "@cosmjs/encoding";
 export const getValidators = async (): Promise<Validator[]> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/staking/v1beta1/validators`
+      `${ENV.API_URL}/cosmos/staking/v1beta1/validators`
     );
     const validators = res.data.validators;
     if (!validators) {
@@ -24,7 +24,7 @@ export const getValidator = async (
 ): Promise<Validator | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}`
+      `${ENV.API_URL}//cosmos/staking/v1beta1/validators/${address}`
     );
     const validator = res.data.validator;
     if (!validator) {
@@ -42,7 +42,7 @@ export const getValidator = async (
 
 export const getPool = async (): Promise<Pool | null> => {
   try {
-    const res = await axios.get(`${ENV.API_URL}cosmos/staking/v1beta1/pool`);
+    const res = await axios.get(`${ENV.API_URL}/cosmos/staking/v1beta1/pool`);
     const pool = res.data.pool;
     if (!pool) {
       return null;
@@ -59,7 +59,7 @@ export const getDelegationsFromValidator = async (
 ): Promise<Delegation[] | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/staking/v1beta1/validators/${address}/delegations`
+      `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}/delegations`
     );
     const delegation_responses = res.data.delegation_responses;
     if (!delegation_responses) {

@@ -7,7 +7,7 @@ export const getSchema = async (
 ): Promise<NFTSchema | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
     );
     const schema = res.data.nFTSchema;
     if (!schema) {
@@ -29,13 +29,13 @@ export const getNftCollection = async (
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}`
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}`
     );
 
     const {
       data: { nftCollection },
     } = await axios.get(
-      `${ENV.API_URL}thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=${total}`
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=${total}`
     );
     if (!nftCollection) {
       return null;

@@ -38,6 +38,7 @@ import {
   FaChevronUp,
   FaCopy,
   FaExpand,
+  FaRegWindowClose,
   FaScroll,
   FaSortAmountDown,
 } from "react-icons/fa";
@@ -53,20 +54,34 @@ import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
 import { useRouter } from "next/router";
+import { getTxsFromSchema } from "@/service/txs";
+import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
+import moment from "moment";
+
+type Txns = {
+  txs: any[];
+  totalCount: number;
+  totalPage: number;
+};
 
 export default function Schema({
   schemacode,
   schema,
   openseaCollection,
   nftCollection,
+  txns,
+  pageNumber,
 }: {
   schemacode: string;
   schema: NFTSchema;
   openseaCollection: Collection;
   nftCollection: any;
+  txns: Txns;
+  pageNumber: string;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NftData[]>([]);
+  const [sortedTxs, setSortedTxs] = useState<any[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
   const router = useRouter();
   const chainConfig: {
@@ -113,6 +128,26 @@ export default function Schema({
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
 
+  const getExplorerLink = (chain: string, address: string) => {
+    if (!chain || !chainConfig[chain]) {
+      return "";
+    }
+    return chainConfig[chain].blockscan + address;
+  };
+  const getOpenseaLink = (chain: string, address: string) => {
+    if (!chain || !chainConfig[chain]) {
+      return "";
+    }
+    return chainConfig[chain].opensea + address;
+  };
+
+  const getIcon = (chain: string) => {
+    if (!chain || !chainConfig[chain]) {
+      return "";
+    }
+    return chainConfig[schema.origin_data?.origin_chain].icon;
+  };
+
   const handleCopyClick = () => {
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2));
     setIsCopied(true);
@@ -131,6 +166,10 @@ export default function Schema({
       page * perPage
     );
     setItems(newItems);
+    // sort txs
+    setSortedTxs(
+      txns.txs.sort((a: any, b: any) => b.time_stamp - a.time_stamp)
+    );
   }, [nftCollection, page]);
   if (!schema) {
     return (
@@ -196,16 +235,24 @@ export default function Schema({
                 justifyContent={"center"}
                 display={"flex"}
               >
-                {openseaCollection && openseaCollection.image_url && (
-                  <Skeleton isLoaded={!isLoading} w="100%" h="100%">
-                    <Image
-                      rounded={{ base: "sm", md: "md", lg: "lg" }}
-                      src={openseaCollection.image_url}
-                      alt={schema.name}
-                      width="100%"
-                      onLoad={() => setIsLoading(false)}
-                    />
-                  </Skeleton>
+                {openseaCollection && openseaCollection.image_url ? (
+                  <Image
+                    rounded={{ base: "sm", md: "md", lg: "lg" }}
+                    src={openseaCollection.image_url}
+                    alt={schema.name}
+                    width="100%"
+                  />
+                ) : (
+                  <Flex
+                    width="100%"
+                    height="100%"
+                    alignItems="center"
+                    justifyContent="center"
+                    bgColor="light"
+                    rounded={{ base: "sm", md: "md", lg: "lg" }}
+                  >
+                    <Text color="dark">No Collection Image Found</Text>
+                  </Flex>
                 )}
               </GridItem>
               <GridItem colSpan={{ base: 12, md: 9 }}>
@@ -223,107 +270,116 @@ export default function Schema({
                       <Text fontSize="sm">Contract</Text>
                       <Text fontSize="sm">
                         <Clickable
-                          href={
-                            schema.origin_data?.origin_chain
-                              ? chainConfig[schema.origin_data?.origin_chain]
-                                  .blockscan +
-                                schema.origin_data?.origin_contract_address
-                              : ""
+                          href={getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )}
+                          underline={
+                            getExplorerLink(
+                              schema.origin_data.origin_chain,
+                              schema.origin_data.origin_contract_address
+                            ) === ""
+                              ? false
+                              : true
                           }
-                          underline
                         >
-                          {schema.origin_data?.origin_contract_address}
+                          {getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )
+                            ? schema.origin_data?.origin_contract_address
+                            : "N/A"}
                         </Clickable>
                       </Text>
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={2}>
-                    <Flex direction="row" gap={1} alignItems="center">
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <Link
-                          href={
-                            schema.origin_data?.origin_chain
-                              ? chainConfig[schema.origin_data?.origin_chain]
-                                  .opensea +
-                                schema.origin_data?.origin_contract_address
-                              : ""
-                          }
+                    {getOpenseaLink(
+                      schema.origin_data.origin_chain,
+                      schema.origin_data.origin_contract_address
+                    ) && (
+                      <Flex direction="row" gap={1} alignItems="center">
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
                         >
-                          <Image
-                            src="/opensea-logo.svg"
-                            alt="opensea"
-                            width={6}
-                          />
-                        </Link>
-                      </motion.div>
-                    </Flex>
-                    <Flex direction="row" gap={1} alignItems="center">
-                      <motion.div
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                      >
-                        <Link
-                          href={
-                            schema.origin_data?.origin_chain
-                              ? chainConfig[schema.origin_data?.origin_chain]
-                                  .blockscan +
-                                schema.origin_data?.origin_contract_address
-                              : ""
-                          }
-                        >
-                          <Box
-                            bgColor="light"
-                            p={1}
-                            borderRadius="full"
-                            border="1px solid"
-                            borderColor={"blackAlpha.100"}
-                          >
-                            {schema.origin_data?.origin_chain && (
-                              <Image
-                                src={
-                                  chainConfig[schema.origin_data?.origin_chain]
-                                    .icon
-                                }
-                                alt="icon"
-                                height={3.5}
-                              />
+                          <Link
+                            href={getOpenseaLink(
+                              schema.origin_data.origin_chain,
+                              schema.origin_data.origin_contract_address
                             )}
-                          </Box>
+                          >
+                            <Image
+                              src="/opensea-logo.svg"
+                              alt="opensea"
+                              width={6}
+                            />
+                          </Link>
+                        </motion.div>
+                      </Flex>
+                    )}
+                    <Flex direction="row" gap={1} alignItems="center">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link
+                          href={getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )}
+                        >
+                          {getIcon(schema.origin_data.origin_chain) && (
+                            <Box
+                              bgColor="light"
+                              p={1}
+                              borderRadius="full"
+                              border="1px solid"
+                              borderColor={"blackAlpha.100"}
+                            >
+                              {schema.origin_data?.origin_chain && (
+                                <Image
+                                  src={getIcon(schema.origin_data.origin_chain)}
+                                  alt="icon"
+                                  height={3.5}
+                                />
+                              )}
+                            </Box>
+                          )}
                         </Link>
                       </motion.div>
                     </Flex>
                   </Flex>
-                  <Flex direction="column">
-                    {isShowMore ? (
-                      <Text>{openseaCollection.description}</Text>
-                    ) : (
-                      <Text>
-                        {`${openseaCollection.description.slice(0, 100)}...`}
-                      </Text>
-                    )}
-                    <Flex align="center" direction="row" gap={1}>
-                      <Box
-                        onClick={() => setIsShowMore(!isShowMore)}
-                        cursor={"pointer"}
-                        display={"flex"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
-                        gap={1}
-                      >
-                        <Text fontSize={"sm"} fontWeight={"bold"}>
-                          {isShowMore ? `SHOW LESS` : `SHOW MORE`}
+                  {openseaCollection && openseaCollection.description && (
+                    <Flex direction="column">
+                      {isShowMore ? (
+                        <Text>{openseaCollection.description}</Text>
+                      ) : (
+                        <Text>
+                          {`${openseaCollection.description.slice(0, 100)}...`}
                         </Text>
-                        {isShowMore ? (
-                          <FaChevronUp fontSize={12} />
-                        ) : (
-                          <FaChevronDown fontSize={12} />
-                        )}
-                      </Box>
+                      )}
+                      <Flex align="center" direction="row" gap={1}>
+                        <Box
+                          onClick={() => setIsShowMore(!isShowMore)}
+                          cursor={"pointer"}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                          gap={1}
+                        >
+                          <Text fontSize={"sm"} fontWeight={"bold"}>
+                            {isShowMore ? `SHOW LESS` : `SHOW MORE`}
+                          </Text>
+                          {isShowMore ? (
+                            <FaChevronUp fontSize={12} />
+                          ) : (
+                            <FaChevronDown fontSize={12} />
+                          )}
+                        </Box>
+                      </Flex>
                     </Flex>
-                  </Flex>
+                  )}
                   <Flex direction="row" gap={5}>
                     {CONFIG.map((config, index) => (
                       <Flex direction="column" key={index}>
@@ -337,10 +393,51 @@ export default function Schema({
               <GridItem colSpan={12}>
                 <CustomCard>
                   <Tabs isLazy>
-                    <TabList>
-                      <Tab>Latest Actions</Tab>
+                    <TabList overflow={{ base: "auto", md: "none" }}>
+                      <Tab>Txns</Tab>
                       <Tab>Schema</Tab>
                       <Tab>Metadata</Tab>
+                      <Spacer />
+                      <Flex direction="row" gap={2} align="center" px="2">
+                        <Button
+                          variant={"solid"}
+                          size="xs"
+                          href={`/schema/${schemacode}?page=1`}
+                          as="a"
+                          isDisabled={parseInt(pageNumber) === 1}
+                        >
+                          First
+                        </Button>
+                        <Button
+                          size="xs"
+                          href={`/schema/${schemacode}?page=1`}
+                          as="a"
+                          isDisabled={parseInt(pageNumber) === 1}
+                        >
+                          <FaArrowLeft fontSize={12} />
+                        </Button>
+                        <Text fontSize="xs">
+                          {`Page ${pageNumber} of ${txns.totalPage}`}
+                        </Text>
+                        <Button
+                          size="xs"
+                          href={`/schema/${schemacode}?page=${
+                            parseInt(pageNumber) + 1
+                          }`}
+                          as="a"
+                          isDisabled={parseInt(pageNumber) === txns.totalPage}
+                        >
+                          <FaArrowRight fontSize={12} />
+                        </Button>
+                        <Button
+                          size="xs"
+                          href={`/schema/${schemacode}?page=${txns.totalPage}`}
+                          as="a"
+                          isDisabled={parseInt(pageNumber) === txns.totalPage}
+                        >
+                          Last
+                        </Button>
+                      </Flex>
                     </TabList>
                     <TabPanels>
                       <TabPanel>
@@ -352,10 +449,8 @@ export default function Schema({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
-                            </Clickable>{" "}
+                            {`Showing ${txns.txs.length} txns from a total of `}
+                            <Clickable>{txns.totalCount}</Clickable>{" "}
                             transactions
                           </Text>
                         </Flex>
@@ -386,7 +481,87 @@ export default function Schema({
                                 </Td>
                               </Tr>
                             </Thead>
-                            <Tbody></Tbody>
+                            <Tbody>
+                              {sortedTxs.map((tx, index) => (
+                                <Tr key={index}>
+                                  <Td>
+                                    <Flex
+                                      direction="row"
+                                      gap={1}
+                                      align="center"
+                                    >
+                                      {tx.code !== 0 && (
+                                        <FaRegWindowClose
+                                          color="red"
+                                          fontSize={12}
+                                        />
+                                      )}
+                                      <Text>
+                                        <Clickable
+                                          href={`/tx/${tx.txhash}`}
+                                          underline
+                                        >
+                                          {formatHex(tx.txhash)}
+                                        </Clickable>
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable
+                                        href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                        underline
+                                      >
+                                        {tx.decode_tx.tokenId}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Badge textAlign={"center"} width="100%">
+                                      {tx.type
+                                        .split(".")
+                                        [tx.type.split(".").length - 1].slice(
+                                          3
+                                        )}
+                                    </Badge>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      {moment(tx.time_stamp).fromNow()}
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable
+                                        href={`/block/${tx.block_height}`}
+                                        underline
+                                      >
+                                        {tx.block_height}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      {tx.decode_tx.creator && (
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.creator}`}
+                                          underline
+                                        >
+                                          {formatHex(tx.decode_tx.creator)}
+                                        </Clickable>
+                                      )}
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{`${formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(tx.decode_tx.fee_amount)
+                                      )
+                                    )} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              ))}
+                            </Tbody>
                           </Table>
                         </TableContainer>
                       </TabPanel>
@@ -536,8 +711,10 @@ export default function Schema({
 
 export const getServerSideProps = async ({
   params: { schemacode },
+  query: { page = "1" },
 }: {
   params: { schemacode: string };
+  query: { page: string };
 }) => {
   const schema = await getSchema(schemacode);
   const [organisation = "", code = schema?.code ?? ""] =
@@ -546,12 +723,16 @@ export const getServerSideProps = async ({
     ? await getOpenseaCollectionByName(code)
     : null;
   const nftCollection = await getNftCollection(schemacode);
+  const txns = await getTxsFromSchema(schemacode, page ? page : "1", "20");
+
   return {
     props: {
       schemacode,
       schema,
       openseaCollection,
       nftCollection,
+      txns,
+      pageNumber: page,
     },
   };
 };

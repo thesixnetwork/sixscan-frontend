@@ -119,8 +119,8 @@ export interface NFTSchema {
   name: string;
   owner: string;
   system_actioners: string[];
-  origin_data: OriginData | undefined;
-  onchain_data: OnChainData | undefined;
+  origin_data: OriginData;
+  onchain_data: OnChainData;
   isVerified: boolean;
   mint_authorization: string;
 }
