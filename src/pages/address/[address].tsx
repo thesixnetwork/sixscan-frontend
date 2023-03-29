@@ -554,7 +554,7 @@ export default function Address({
                 <CustomCard footer={"VIEW TXNS"} href={`/txs/${address}`}>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Txns (Cosmos)</Tab>
+                      <Tab>Txns</Tab>
                       {/* <Tab>Txns (Data Layer)</Tab>*/}
                       {/* <Tab>Txns (Evm)</Tab> */}
                       {/* {validator && <Tab>Proposed Blocks</Tab>} */}
@@ -662,7 +662,7 @@ export default function Address({
                                     </Td>
                                     <Td>
                                       <Text>
-                                        {tx.decode_tx.toAddress && (
+                                        {tx.decode_tx.fromAddress && (
                                           <Clickable
                                             href={`/address/${tx.decode_tx.fromAddress}`}
                                             underline
@@ -732,7 +732,7 @@ export default function Address({
                           </TableContainer>
                         </TabPanel>
                       )}
-                      <TabPanel>
+                      {/* <TabPanel>
                         <Flex
                           direction="row"
                           gap={2}
@@ -904,7 +904,7 @@ export default function Address({
                             </Table>
                           </TableContainer>
                         </TabPanel>
-                      )}
+                      )} */}
                       {validator && delegations && (
                         <TabPanel>
                           <Flex

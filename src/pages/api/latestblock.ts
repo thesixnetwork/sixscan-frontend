@@ -7,7 +7,7 @@ export default async function handler(
 ) {
   try {
     const response = await fetch(
-      `${ENV.API_URL}/cosmos/base/tendermint/v1beta1/blocks/latest`
+      `${ENV.API_URL}//cosmos/base/tendermint/v1beta1/blocks/latest`
     );
     const data = await response.json();
     res.status(200).json(data);

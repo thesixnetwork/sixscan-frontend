@@ -4,7 +4,7 @@ import { Account } from "../types/Auth";
 
 export const getAccounts = async (): Promise<Account[]> => {
   try {
-    const res = await axios.get(`${ENV.API_URL}cosmos/auth/v1beta1/accounts`);
+    const res = await axios.get(`${ENV.API_URL}/cosmos/auth/v1beta1/accounts`);
     const accounts = res.data.accounts;
     if (!accounts) {
       return [];
@@ -19,7 +19,7 @@ export const getAccounts = async (): Promise<Account[]> => {
 export const getAccount = async (address: string): Promise<Account | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/auth/v1beta1/accounts/${address}`
+      `${ENV.API_URL}/cosmos/auth/v1beta1/accounts/${address}`
     );
     const account = res.data.account;
     if (!account) {

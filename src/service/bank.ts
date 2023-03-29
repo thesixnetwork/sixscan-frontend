@@ -5,7 +5,7 @@ import { Balance } from "../types/Bank";
 export const getBalances = async (address: string): Promise<Balance[]> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/bank/v1beta1/balances/${address}`
+      `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}`
     );
     const balances = res.data.balances;
     if (!balances) {
@@ -21,7 +21,7 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
 export const getBalance = async (address: string): Promise<Balance | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/bank/v1beta1/balances/${address}/by_denom?denom=usix`
+      `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=usix`
     );
     const balance = res.data.balance;
     if (!balance) {
@@ -37,7 +37,7 @@ export const getBalance = async (address: string): Promise<Balance | null> => {
 export const getCoinMetadata = async (denom: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/bank/v1beta1/denoms_metadata/${denom}`
+      `${ENV.API_URL}/cosmos/bank/v1beta1/denoms_metadata/${denom}`
     );
     const metadata = res.data.metadata;
     if (!metadata) {
@@ -53,7 +53,7 @@ export const getCoinMetadata = async (denom: string): Promise<any> => {
 export const getSupply = async (denom: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}cosmos/bank/v1beta1/supply/${denom}`
+      `${ENV.API_URL}/cosmos/bank/v1beta1/supply/${denom}`
     );
     const amount = res.data.amount;
     if (!amount) {

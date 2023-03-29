@@ -141,7 +141,7 @@ export default function Tx({ tx }: { tx: Transaction }) {
                       <Td>
                         <Flex direction="column">
                           <Text>
-                            <Clickable underline href="/">
+                            <Clickable underline href={`/block/${tx.height}`}>
                               {tx.height}
                             </Clickable>
                           </Text>

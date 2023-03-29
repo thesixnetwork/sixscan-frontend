@@ -8,6 +8,9 @@ export const getOpenseaCollectionByName = async (
     const res = await axios.get(
       `https://api.opensea.io/api/v1/collection/${collectionName}`
     );
+    if (res.data.success === false) {
+      return null;
+    }
     const collection = res.data.collection;
     if (!collection) {
       return null;
