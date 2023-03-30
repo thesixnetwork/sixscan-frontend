@@ -174,7 +174,7 @@ export default function Schema({
         txns.txs.sort((a: any, b: any) => b.time_stamp - a.time_stamp)
       );
     }
-  }, [nftCollection, page]);
+  }, [nftCollection, page, sortedTxs]);
   if (!schema) {
     return (
       <Flex minHeight={"100vh"} direction={"column"}>

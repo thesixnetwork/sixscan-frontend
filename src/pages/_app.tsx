@@ -17,7 +17,7 @@ export default function App({ Component, pageProps }: AppProps) {
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [modalState.onOpen]);
+  }, [modalState.onOpen, modalState]);
   return (
     <ChakraProvider theme={theme}>
       <Layout modalstate={modalState}>

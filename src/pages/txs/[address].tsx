@@ -86,7 +86,7 @@ export default function Address({
 
   useEffect(() => {
     setTotalValue(totalValueTmp);
-  }, [totalValue]);
+  }, [totalValue, totalValueTmp]);
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
