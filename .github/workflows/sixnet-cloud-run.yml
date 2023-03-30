@@ -14,8 +14,7 @@ env:
   RPC_URL: ${{ vars.RPC_URL }}
   NEXT_PUBLIC_CHAIN_NAME: ${{ vars.NEXT_PUBLIC_CHAIN_NAME }}
   TXS_API_URL: ${{ vars.TXS_API_URL }}
-  DATA_CHAIN_TXS_API_URL: ${{ vars.DATA_CHAIN_TXS_API_URL }}'
-  
+  DATA_CHAIN_TXS_API_URL: ${{ vars.DATA_CHAIN_TXS_API_URL }}
   ARCH_API_URL: ${{ vars.ARCH_API_URL }}
   ARCH_RPC_URL: ${{ vars.ARCH_RPC_URL }}
 
