@@ -9,6 +9,10 @@ export const getSchema = async (
     const res = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
     );
+    console.log(res);
+    if (res.data.code && res.data.code !== 0) {
+      return null;
+    }
     const schema = res.data.nFTSchema;
     if (!schema) {
       return null;

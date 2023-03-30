@@ -457,10 +457,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Home",
     href: "/",
   },
-  {
-    label: "Data Layer",
-    href: "/data",
-  },
+  // {
+  //   label: "Data Layer",
+  //   href: "/data",
+  // },
   {
     label: "Blockchain",
     children: [
@@ -481,10 +481,10 @@ const NAV_ITEMS: Array<NavItem> = [
 const CHAINS = [
   {
     label: "Mainnet",
-    href: "/",
+    href: "https://sixscan-frontend-4ze6p6t2ga-an.a.run.app/",
   },
   {
     label: "Testnet",
-    href: "/",
+    href: "https://sixscan-frontend-hsmu5sumnq-an.a.run.app/",
   },
 ];

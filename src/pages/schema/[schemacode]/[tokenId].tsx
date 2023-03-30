@@ -58,7 +58,7 @@ export default function Schema({
   const STATS = [
     {
       title: "Chain",
-      value: schema.origin_data?.origin_chain,
+      value: schema?.origin_data?.origin_chain || "",
     },
   ];
   const [isCopied, setIsCopied] = useState(false);
@@ -98,7 +98,7 @@ export default function Schema({
               fontWeight="bold"
               mb={2}
             >
-              Block does not exist
+              Token does not exist
             </Text>
             <Button colorScheme="blue" onClick={() => router.push("/")}>
               Go Home
@@ -398,6 +398,9 @@ export const getServerSideProps = async ({
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
   ]);
+  if (!schema) {
+    return { props: { metadata: null, schema: null } };
+  }
   return {
     props: { metadata, schema },
   };

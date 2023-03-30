@@ -131,7 +131,9 @@ export default function Address({
                 )}
               </Flex>
               <Divider />
-              {!address && <Text color="error">Please provide a valid tx</Text>}
+              {!address && (
+                <Text color="error">Please provide a valid address</Text>
+              )}
             </Flex>
           </Container>
         </Box>
