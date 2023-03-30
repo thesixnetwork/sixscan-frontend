@@ -14,7 +14,10 @@ env:
   RPC_URL: ${{ vars.RPC_URL }}
   NEXT_PUBLIC_CHAIN_NAME: ${{ vars.NEXT_PUBLIC_CHAIN_NAME }}
   TXS_API_URL: ${{ vars.TXS_API_URL }}
-  DATA_CHAIN_TXS_API_URL: ${{ vars.DATA_CHAIN_TXS_API_URL }}
+  DATA_CHAIN_TXS_API_URL: ${{ vars.DATA_CHAIN_TXS_API_URL }}'
+  
+  ARCH_API_URL: ${{ vars.ARCH_API_URL }}
+  ARCH_RPC_URL: ${{ vars.ARCH_RPC_URL }}
 
 jobs:
   build-and-deploy:
@@ -52,5 +55,5 @@ jobs:
           --platform managed \
           --region $CLOUD_RUN_REGION \
           --allow-unauthenticated \
-          --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL,$TXS_API_URL=$TXS_API_URL,$DATA_CHAIN_TXS_API_URL=$DATA_CHAIN_TXS_API_URL \
+          --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL,TXS_API_URL=$TXS_API_URL,DATA_CHAIN_TXS_API_URL=$DATA_CHAIN_TXS_API_URL,ARCH_API_URL=$ARCH_API_URL,ARCH_RPC_URL=$ARCH_API_URL \
           --quiet

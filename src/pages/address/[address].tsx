@@ -165,7 +165,7 @@ export default function Address({
     };
 
     fetchPrice();
-  }, []);
+  }, [totalValueTmp]);
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
