@@ -24,10 +24,6 @@ export default function Layout({
   }, [data]);
 
   const isHome = router.pathname === "/" ? true : false;
-
-  useEffect(() => {
-    console.log("Layout rerendered with new status:", status);
-  }, [status, children]); // add status to dependency array
   return (
     <>
       {isHome ? (

@@ -10,17 +10,22 @@ export const getTxsFromSchema = async (
     const res = await axios.get(
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransaction?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
     );
+    if (res.status !== 200) {
+      console.log("Error: Non-200 status code returned:", res.status);
+      return null;
+    }
     if (res.data.statusCode !== "V:0001") {
-      console.log("statusCode: ", res.data.statusCode);
+      console.log("Error: API returned status code", res.data.statusCode);
       return null;
     }
     const accountTxs = res.data.data;
+    console.log("res: ", res);
     if (!accountTxs) {
       return null;
     }
     return accountTxs;
   } catch (error) {
-    console.error(error);
+    console.error("Error: ", error);
     return null;
   }
 };

@@ -169,9 +169,11 @@ export default function Schema({
     );
     setItems(newItems);
     // sort txs
-    setSortedTxs(
-      txns.txs.sort((a: any, b: any) => b.time_stamp - a.time_stamp)
-    );
+    if (sortedTxs) {
+      setSortedTxs(
+        txns.txs.sort((a: any, b: any) => b.time_stamp - a.time_stamp)
+      );
+    }
   }, [nftCollection, page]);
   if (!schema) {
     return (
@@ -415,55 +417,61 @@ export default function Schema({
                           <Flex direction="row" gap={2} align="center">
                             <FaSortAmountDown fontSize={12} />
                             <Text>
-                              {`Showing ${txns.txs.length} txns from a total of `}
-                              <Clickable>{txns.totalCount}</Clickable>{" "}
+                              {`Showing ${
+                                txns ? txns.txs.length : "0"
+                              } txns from a total of `}
+                              <Clickable>
+                                {txns ? txns.totalCount : "0"}
+                              </Clickable>{" "}
                               transactions
                             </Text>
                           </Flex>
-                          <Flex direction="row" gap={2} align="center" px="2">
-                            <Button
-                              variant={"solid"}
-                              size="xs"
-                              href={`/schema/${schemacode}?page=1`}
-                              as="a"
-                              isDisabled={parseInt(pageNumber) === 1}
-                            >
-                              First
-                            </Button>
-                            <Button
-                              size="xs"
-                              href={`/schema/${schemacode}?page=1`}
-                              as="a"
-                              isDisabled={parseInt(pageNumber) === 1}
-                            >
-                              <FaArrowLeft fontSize={12} />
-                            </Button>
-                            <Text fontSize="xs">
-                              {`Page ${pageNumber} of ${txns.totalPage}`}
-                            </Text>
-                            <Button
-                              size="xs"
-                              href={`/schema/${schemacode}?page=${
-                                parseInt(pageNumber) + 1
-                              }`}
-                              as="a"
-                              isDisabled={
-                                parseInt(pageNumber) === txns.totalPage
-                              }
-                            >
-                              <FaArrowRight fontSize={12} />
-                            </Button>
-                            <Button
-                              size="xs"
-                              href={`/schema/${schemacode}?page=${txns.totalPage}`}
-                              as="a"
-                              isDisabled={
-                                parseInt(pageNumber) === txns.totalPage
-                              }
-                            >
-                              Last
-                            </Button>
-                          </Flex>
+                          {txns && (
+                            <Flex direction="row" gap={2} align="center" px="2">
+                              <Button
+                                variant={"solid"}
+                                size="xs"
+                                href={`/schema/${schemacode}?page=1`}
+                                as="a"
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                First
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}?page=1`}
+                                as="a"
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                <FaArrowLeft fontSize={12} />
+                              </Button>
+                              <Text fontSize="xs">
+                                {`Page ${pageNumber} of ${txns.totalPage}`}
+                              </Text>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}?page=${
+                                  parseInt(pageNumber) + 1
+                                }`}
+                                as="a"
+                                isDisabled={
+                                  parseInt(pageNumber) === txns.totalPage
+                                }
+                              >
+                                <FaArrowRight fontSize={12} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}?page=${txns.totalPage}`}
+                                as="a"
+                                isDisabled={
+                                  parseInt(pageNumber) === txns.totalPage
+                                }
+                              >
+                                Last
+                              </Button>
+                            </Flex>
+                          )}
                         </Flex>
                         <TableContainer>
                           <Table>
@@ -785,6 +793,8 @@ export const getServerSideProps = async ({
     getNftCollection(schemacode, metadata_page),
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
+
+  console.log("txns: ", txns);
 
   return {
     props: {
