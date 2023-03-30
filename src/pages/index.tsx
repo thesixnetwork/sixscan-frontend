@@ -289,20 +289,12 @@ export default function Home({
 }
 
 export const getServerSideProps = async () => {
-  const [
-    pool,
-    inflation,
-    supply,
-    latestBlock,
-    validators,
-    // price
-  ] = await Promise.all([
+  const [pool, inflation, supply, latestBlock, validators] = await Promise.all([
     getPool(),
     getInflation(),
     getSupply("usix"),
     getLatestBlock(),
     getValidators(),
-    // getPriceFromCoingecko("six-network"),
   ]);
 
   const latestBlockHeight = latestBlock
@@ -326,7 +318,6 @@ export const getServerSideProps = async () => {
       latestBlocks,
       blocksResult,
       validators,
-      // price,
     },
   };
 };
