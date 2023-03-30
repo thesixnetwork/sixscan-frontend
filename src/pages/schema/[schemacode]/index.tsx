@@ -125,7 +125,9 @@ export default function Schema({
   ];
   const [page, setPage] = useState(1);
   const perPage = 12;
-  const totalPages = Math.ceil(nftCollection.pagination.total / perPage);
+  const totalPages = schema
+    ? Math.ceil(nftCollection.pagination.total / perPage)
+    : 0;
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -160,6 +162,9 @@ export default function Schema({
 
   useEffect(() => {
     // sort by token_id
+    if (!schema) {
+      return;
+    }
     nftCollection.metadata.sort(
       (a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id)
     );
@@ -169,7 +174,7 @@ export default function Schema({
     );
     setItems(newItems);
     // sort txs
-    if (sortedTxs) {
+    if (txns) {
       setSortedTxs(
         txns.txs.sort((a: any, b: any) => b.time_stamp - a.time_stamp)
       );
@@ -786,6 +791,20 @@ export const getServerSideProps = async ({
   query: { page: string; metadata_page: string };
 }) => {
   const schema = await getSchema(schemacode);
+  console.log("schema: ", schema);
+  if (!schema) {
+    return {
+      props: {
+        schemacode: null,
+        schema: null,
+        openseaCollection: null,
+        nftCollection: null,
+        txns: null,
+        pageNumber: null,
+        metadataPageNumber: null,
+      },
+    };
+  }
   const [organisation = "", code = schema?.code ?? ""] =
     schema?.code?.split(".") ?? [];
   const [openseaCollection, nftCollection, txns] = await Promise.all([
@@ -793,8 +812,6 @@ export const getServerSideProps = async ({
     getNftCollection(schemacode, metadata_page),
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
-
-  console.log("txns: ", txns);
 
   return {
     props: {

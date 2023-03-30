@@ -19,7 +19,6 @@ export const getTxsFromSchema = async (
       return null;
     }
     const accountTxs = res.data.data;
-    console.log("res: ", res);
     if (!accountTxs) {
       return null;
     }
