@@ -1,4 +1,4 @@
-# -> [Develop Deployment](https://sixscan-frontend-hsmu5sumnq-an.a.run.app/) <-
+# -> [Production Deployment](https://sixscan-frontend-4ze6p6t2ga-an.a.run.app/) <- | -> [Develop Deployment](https://sixscan-frontend-hsmu5sumnq-an.a.run.app/) <-
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
