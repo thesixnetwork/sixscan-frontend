@@ -49,9 +49,6 @@ export const getNftCollection = async (
     }
     const metadata = await Promise.all(promises);
 
-    console.log("metadata: ", metadata);
-    console.log("total: ", total);
-
     if (!metadata) {
       return null;
     }
