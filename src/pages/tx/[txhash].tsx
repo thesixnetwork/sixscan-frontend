@@ -193,12 +193,16 @@ export default function Tx({ tx }: { tx: Transaction }) {
                               alignItems="center"
                               key={index}
                             >
-                              <Text>
-                                {Buffer.from(attr.key, "base64").toString()}
-                              </Text>
-                              <Text>
-                                {Buffer.from(attr.value, "base64").toString()}
-                              </Text>
+                              {attr.key && (
+                                <Text>
+                                  {Buffer.from(attr.key, "base64").toString()}
+                                </Text>
+                              )}
+                              {attr.value && (
+                                <Text>
+                                  {Buffer.from(attr.value, "base64").toString()}
+                                </Text>
+                              )}
                             </Flex>
                           ))}
                         </Td>

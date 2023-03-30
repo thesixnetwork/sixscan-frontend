@@ -86,9 +86,6 @@ import {
 
 import { validateAddress } from "@/utils/validate";
 
-import { pubkeyToAddress } from "@cosmjs/tendermint-rpc";
-import { anyToSinglePubkey } from "@cosmjs/proto-signing";
-import { fromBase64, toHex } from "@cosmjs/encoding";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
@@ -315,7 +312,7 @@ export default function Address({
                                         align="center"
                                         justify={"space-between"}
                                         borderBottom={
-                                          index === TOKENS.length - 1
+                                          index === filteredBalances.length - 1
                                             ? "none"
                                             : "1px solid"
                                         }
@@ -561,58 +558,58 @@ export default function Address({
                       {validator && <Tab>Delegators</Tab>}
                     </TabList>
                     <TabPanels>
-                      {accountTxs && (
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            color={"dark"}
-                          >
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              {`Latest ${
-                                accountTxs.count || 0
-                              } from a total of `}
-                              <Clickable underline href={`/txs/${address}`}>
-                                {accountTxs.total_count}
-                              </Clickable>{" "}
-                              transactions
-                            </Text>
-                          </Flex>
-                          <TableContainer>
-                            <Table>
-                              <Thead>
-                                <Tr>
-                                  <Td>
-                                    <Text>Txhash</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Method</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Age</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Block</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>From</Text>
-                                  </Td>
-                                  <Td></Td>
-                                  <Td>
-                                    <Text>To</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Value</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Gas Fee</Text>
-                                  </Td>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                                {accountTxs.txs.map((tx, index) => (
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          color={"dark"}
+                        >
+                          <FaSortAmountDown fontSize={12} />
+                          <Text>
+                            {`Latest ${
+                              (accountTxs && accountTxs.count) || 0
+                            } from a total of `}
+                            <Clickable underline href={`/txs/${address}`}>
+                              {accountTxs ? accountTxs.total_count : "0"}
+                            </Clickable>{" "}
+                            transactions
+                          </Text>
+                        </Flex>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr>
+                                <Td>
+                                  <Text>Txhash</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Method</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Age</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Block</Text>
+                                </Td>
+                                <Td>
+                                  <Text>From</Text>
+                                </Td>
+                                <Td></Td>
+                                <Td>
+                                  <Text>To</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Value</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Gas Fee</Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {accountTxs &&
+                                accountTxs.txs.map((tx, index) => (
                                   <Tr key={index}>
                                     <Td>
                                       <Flex
@@ -727,11 +724,10 @@ export default function Address({
                                     </Td>
                                   </Tr>
                                 ))}
-                              </Tbody>
-                            </Table>
-                          </TableContainer>
-                        </TabPanel>
-                      )}
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
                       {/* <TabPanel>
                         <Flex
                           direction="row"
@@ -996,23 +992,15 @@ export const getServerSideProps = async (context: {
   params: { address: string };
 }) => {
   const { address } = context.params;
-  const [
-    validator,
-    account,
-    balance,
-    balances,
-    // price,
-    accountTxs,
-    delegations,
-  ] = await Promise.all([
-    getValidator(address),
-    getAccount(address),
-    getBalance(address),
-    getBalances(address),
-    // getPriceFromCoingecko("six-network"),
-    getTxsFromAddress(address, "1", "20"),
-    getDelegationsFromValidator(address),
-  ]);
+  const [validator, account, balance, balances, accountTxs, delegations] =
+    await Promise.all([
+      getValidator(address),
+      getAccount(address),
+      getBalance(address),
+      getBalances(address),
+      getTxsFromAddress(address, "1", "20"),
+      getDelegationsFromValidator(address),
+    ]);
   const isAddressValid = await validateAddress(address);
   return {
     props: isAddressValid
@@ -1022,7 +1010,6 @@ export const getServerSideProps = async (context: {
           account,
           balance,
           balances,
-          // price,
           accountTxs,
           delegations,
         }
@@ -1032,268 +1019,8 @@ export const getServerSideProps = async (context: {
           account: null,
           balance: null,
           balances: null,
-          // price: null,
           accountTxs: null,
           delegations: null,
         },
   };
 };
-
-const blocks = [
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-  {
-    blockHeight: 45678,
-    time: "6 seconds ago",
-    txns: 62,
-    fee: 0.4,
-    feeRecipient: "6x192A...34kd",
-  },
-];
-const ACTIONS = [
-  {
-    txhash: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    method: "transfer",
-    age: "1 day",
-    block: "123456",
-    by: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    gasfee: "0.1",
-    token_id: "1",
-  },
-];
-
-const METADATA = [
-  {
-    nftData: {
-      nft_schema_code: "sixnetwork.whalegate",
-      token_id: "1",
-      token_owner: "0x6A127EF7e02d3Cb83387f2c71db0EEA1e1d0D250",
-      owner_address_type: "ORIGIN_ADDRESS",
-      origin_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/1.png",
-      onchain_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/1-t.png",
-      token_uri: "",
-      origin_attributes: [
-        {
-          name: "background",
-          string_attribute_value: {
-            value: "Galaxy",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "tail",
-          string_attribute_value: {
-            value: "White",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "creature",
-          string_attribute_value: {
-            value: "Whale",
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-      onchain_attributes: [
-        {
-          name: "points",
-          number_attribute_value: {
-            value: "400",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "missions_completed",
-          number_attribute_value: {
-            value: "3",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_1",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_2",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "checked_in",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "redeemed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "transformed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-    },
-  },
-  {
-    nftData: {
-      nft_schema_code: "sixnetwork.whalegate",
-      token_id: "2",
-      token_owner: "0xC0B5f14c0140aE2DFA4CA15BEA5f19FdE4E24D9A",
-      owner_address_type: "ORIGIN_ADDRESS",
-      origin_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/2.png",
-      onchain_image:
-        "https://ipfs.whalegate.sixprotocol.com/ipfs/Qmax9JSauGbCYJ8ie3QvDhxutB6xdZHR7ATmE5y3HGbiVb/2-t.png",
-      token_uri: "",
-      origin_attributes: [
-        {
-          name: "background",
-          string_attribute_value: {
-            value: "CoralPink",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "moon",
-          string_attribute_value: {
-            value: "Beige",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "plate",
-          string_attribute_value: {
-            value: "LightPurple",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "tail",
-          string_attribute_value: {
-            value: "DarkBlue",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "creature",
-          string_attribute_value: {
-            value: "Whale",
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-      onchain_attributes: [
-        {
-          name: "points",
-          number_attribute_value: {
-            value: "0",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "missions_completed",
-          number_attribute_value: {
-            value: "3",
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_1",
-          boolean_attribute_value: {
-            value: false,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "bonus_2",
-          boolean_attribute_value: {
-            value: false,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "checked_in",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "redeemed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-        {
-          name: "transformed",
-          boolean_attribute_value: {
-            value: true,
-          },
-          hidden_to_marketplace: false,
-        },
-      ],
-    },
-  },
-];
-
-const TOKENS = [
-  {
-    name: "Day of Defeat",
-    symbol: "DOD",
-    amount: 18765,
-    value: "400",
-    price: "0.1",
-    icon: "https://bscscan.com/token/images/dayofdefeat_32.png",
-  },
-  {
-    name: "Day of Defeat",
-    symbol: "DOD",
-    amount: 18765,
-    value: "400",
-    price: "0.1",
-    icon: "https://bscscan.com/token/images/dayofdefeat_32.png",
-  },
-];

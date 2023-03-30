@@ -786,13 +786,6 @@ export const getServerSideProps = async ({
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
 
-  // const openseaCollection = code
-  //   ? await getOpenseaCollectionByName(code)
-  //   : null;
-  // const nftCollection = await getNftCollection(schemacode, metadata_page);
-  // console.log("nftCollection: ", nftCollection);
-  // const txns = await getTxsFromSchema(schemacode, page ? page : "1", "20");
-
   return {
     props: {
       schemacode,

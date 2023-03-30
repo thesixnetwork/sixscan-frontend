@@ -598,7 +598,6 @@ export default function Validators({
         </Container>
       </Box>
       <Spacer />
-      {/*  */}
     </Flex>
   );
 }
