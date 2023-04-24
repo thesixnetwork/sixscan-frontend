@@ -330,9 +330,9 @@ export default function Address({
                                               fontSize={"sm"}
                                               color={"dark"}
                                             >
-                                              {tokens[token.denom].name}{" "}
+                                              {tokens.usix.name}{" "}
                                               {`(${
-                                                tokens[token.denom].symbol
+                                                token.denom
                                               })`}
                                             </Text>
                                             <Text
@@ -344,7 +344,7 @@ export default function Address({
                                                   parseInt(token.amount)
                                                 )
                                               )}{" "}
-                                              {tokens[token.denom].symbol}
+                                              {tokens.usix.symbol}
                                             </Text>
                                           </Flex>
                                         </Flex>
