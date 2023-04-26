@@ -78,3 +78,24 @@ export const getBlock = async (height: string): Promise<Block | null> => {
     return null;
   }
 };
+
+export const getBlockEVM = async (height: string): Promise<any> => {
+  const body = {
+    jsonrpc: "2.0",
+    method: "eth_getBlockByNumber",
+    id: "1",
+    params: [height, true],
+  };
+  try {
+    const res = await axios.post(`${ENV.Endpoint}/`, body);
+    const result = res.data.result;
+    if (!result) {
+      return null;
+    }
+    return result;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+
+};

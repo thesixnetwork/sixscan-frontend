@@ -46,3 +46,7 @@ export const convertDecimalToPercent = (decimal: number) => {
 export const convertUsixToSix = (usix: number) => {
   return usix / 1000000;
 };
+
+export const convertAsixToSix = (asix: number) => {
+  return asix / 1000000000000000000;
+};

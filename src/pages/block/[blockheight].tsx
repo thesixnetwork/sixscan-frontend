@@ -27,7 +27,7 @@ import Head from "next/head";
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 
-import { getBlock } from "@/service/block";
+import { getBlock, getBlockEVM } from "@/service/block";
 import { Block } from "@/types/Block";
 import { getTxsFromBlock } from "@/service/txs";
 import { Transaction } from "@/types/Txs";
@@ -36,14 +36,31 @@ import { FaRegWindowClose, FaSortAmountDown } from "react-icons/fa";
 import { Clickable } from "@/components/Clickable";
 import { useRouter } from "next/router";
 
+import axios from "axios";
+import ENV from "../../utils/ENV";
+import { useEffect, useState } from "react";
+import { formatHex } from "@/utils/format";
+
+
+
 export default function BlockPage({
   block,
   blockTxs,
+  blockEVM,
 }: {
   block: Block;
+  blockEVM: Block;
   blockTxs: { txs: Transaction[]; total_count: number };
 }) {
   const router = useRouter();
+  console.log("block =>",block)
+  console.log("blockTxs =>",blockTxs)
+  // console.log("test =>", blockTxs.txs.map((x) => x))
+  // console.log(typeof tx.tx_result.log)
+  
+  
+
+
   if (!block) {
     return (
       <Flex minHeight={"100vh"} direction={"column"}>
@@ -82,6 +99,30 @@ export default function BlockPage({
       </Flex>
     );
   }
+
+  ///
+  const [Txs_EVM, setTex_EVM] = useState(null)
+  const GetBalance = async () => {
+    const body = {
+      jsonrpc: "2.0",
+      method: "eth_getTransactionByHash",
+      id: "1",
+      params: ["0x0e4c544a2d30a78b0f9ff2a69f50b0efcc1b9c5ef6de7b534213ee6bafc716b9"],
+    };
+    try {
+      const response = await axios.post(`https://rpc-evm.fivenet.sixprotocol.net/`, body);
+      // setTex_EVM(response)
+      console.log("res 0x39CDFF :",response);
+      // console.log(ENV)
+    } catch (error) {
+      console.log(error.response.data);
+    }
+  };
+  GetBalance();
+
+
+  console.log(blockTxs.txs.map((x) => ( x.tx_result.log )))
+  console.log(blockTxs.txs)
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
@@ -182,7 +223,8 @@ export default function BlockPage({
               <CustomCard>
                 <Tabs isLazy>
                   <TabList>
-                    <Tab>Txns (All)</Tab>
+                    <Tab>Txns ({(blockTxs.total_count)})</Tab>
+                    <Tab>Txns EVM ({(blockEVM.transactions.length)})</Tab>
                     {/* <Tab>Txns (Data Layer)</Tab> */}
                   </TabList>
                   <TabPanels>
@@ -205,6 +247,19 @@ export default function BlockPage({
                               <Td>
                                 <Text>Txhash</Text>
                               </Td>
+                              <Td>
+                                <Text>Age</Text>
+                              </Td>
+                              <Td>
+                                <Text>From</Text>
+                              </Td>
+                              <Td>
+                                <Text>To</Text>
+                              </Td>
+                              <Td>
+                                <Text>Value</Text>
+                              </Td>
+
                             </Tr>
                           </Thead>
                           <Tbody>
@@ -223,7 +278,7 @@ export default function BlockPage({
                                         href={`/tx/${tx.hash}`}
                                         underline
                                       >
-                                        {tx.hash}
+                                        {formatHex(tx.hash)}
                                       </Clickable>
                                     </Text>
                                   </Flex>
@@ -231,11 +286,46 @@ export default function BlockPage({
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
-                                      {
-                                        JSON.parse(tx.tx_result.log).find(
-                                          (log: any) => log.msg_type === "send"
-                                        )?.amount[0].amount
-                                      }
+                                     {
+                                      console.log(JSON.parse(tx.tx_result.log)[0].events)
+                                     }
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                      <Clickable
+                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "sender").value}`}
+                                        underline
+                                      >
+                                     {
+                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "sender").value)
+                                     }
+                                      </Clickable>
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                      <Clickable
+                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "recipient").value}`}
+                                        underline
+                                      >
+                                     {
+                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "recipient").value)
+                                     }
+                                      </Clickable>
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                     {
+                                      JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "amount").value
+                                     }
                                     </Text>
                                   </Flex>
                                 </Td>
@@ -245,6 +335,102 @@ export default function BlockPage({
                         </Table>
                       </TableContainer>
                     </TabPanel>
+
+                    <TabPanel>
+                      <Flex
+                        direction="row"
+                        gap={2}
+                        align="center"
+                        color={"dark"}
+                      >
+                        <FaSortAmountDown fontSize={12} />
+                        <Text>
+                          {`${blockEVM.transactions.length} total transactions`}
+                        </Text>
+                      </Flex>
+                      <TableContainer>
+                        <Table>
+                          <Thead>
+                            <Tr>
+                              <Td>
+                                <Text>Txhash</Text>
+                              </Td>
+                              <Td>
+                                <Text>Age</Text>
+                              </Td>
+                              <Td>
+                                <Text>Form</Text>
+                              </Td>
+                              <Td>
+                                <Text>To</Text>
+                              </Td>
+                              <Td>
+                                <Text>Value</Text>
+                              </Td>
+                            </Tr>
+                          </Thead>
+                          <Tbody>
+                            {blockEVM.transactions.map((tx, index) => (
+                              <Tr key={index}>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    {/* {tx.tx_result.code !== 0 && (
+                                      <FaRegWindowClose
+                                        color="red"
+                                        fontSize={12}
+                                      />
+                                    )} */}
+                                    <Text>
+                                      <Clickable
+                                        href={`/tx/${tx.hash}`}
+                                        underline
+                                      >
+                                        {formatHex(tx.hash)}
+                                      </Clickable>
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                      {/* {
+                                        JSON.parse(tx.tx_result.log).find(
+                                          (log: any) => log.msg_type === "send"
+                                        )?.amount[0].amount
+                                      } */}
+                                      ss
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                      {tx.from.substring(0, 10)+'...'}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                    {tx.to.substring(0, 10)+'...'}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
+                                    {parseInt(tx.value, 16)}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            ))}
+                          </Tbody>
+                        </Table>
+                      </TableContainer>
+                    </TabPanel>
+
+
                   </TabPanels>
                 </Tabs>
               </CustomCard>
@@ -265,10 +451,13 @@ export const getServerSideProps = async (context: {
     getBlock(blockheight),
     getTxsFromBlock(blockheight),
   ]);
+  console.log(block)
+  const blockEVM = await getBlockEVM(blockheight)
   return {
     props: {
       block,
       blockTxs,
+      blockEVM,
     },
   };
 };
