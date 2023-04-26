@@ -386,81 +386,13 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       </Td>
                       <Td>
                         <Flex direction="row">
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].value, 16))} SIX </Text>
+                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].gas, 16) * parseInt(txs.transactions[0].gasPrice, 16))} SIX </Text>
+                          <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].gas, 16) * parseInt(txs.transactions[0].gasPrice, 16)) * price?.usd)})</Text>
+
                         </Flex>
                       </Td>
                     </Tr>
-                    <Tr>
-                      <Td borderBottom="none">
-                        <Flex direction="column">
-                          <Text>{`Gas Used:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td borderBottom="none">
-                        <Flex direction="column">
-                          <Text>{parseInt(txs.transactions[0].gas, 16)}</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td borderBottom="none">
-                        <Flex direction="column">
-                          <Text>{`Gas Price:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td borderBottom="none">
-                        <Flex direction="row">
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16))} SIX</Text>
-                          <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16)) * price?.usd)})</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Gas Limit & Usage by Txn:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{parseInt(txs.gasLimit, 16)} | {parseInt(txs.transactions[0].gas, 16)} ({((parseInt(txs.transactions[0].gas, 16) / parseInt(txs.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td borderBottom="none">
-                        <Flex direction="column">
-                          <Text>{`Other Attributes:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td borderBottom="none">
-                        <Flex
-                              direction="row"
-                              gap={2}
-                              alignItems="center"
-                        >
-                          <Badge>Txn Type: {parseInt(txs.transactions[0].type, 16)}(EIP-2718)</Badge>
-                          <Badge>Nonce: {parseInt(txs.transactions[0].nonce, 16)}</Badge>
-                          <Badge>Position: {parseInt(txs.transactions[0].transactionIndex, 16)}</Badge>                            
-                        </Flex>
-                      </Td>
-                    </Tr>
-                    <Tr>
-                      <Td>
-                        <Flex direction="column">
-                          <Text>{`Input Data:`}</Text>
-                        </Flex>
-                      </Td>
-                      <Td>
-                        <Flex direction="column">
-                        <Card style={{ resize: "both", overflow: "auto", minHeight: "50px", minWidth: "680px", backgroundColor:"#f8f9fa", borderRadius:"10px"  }}>
-                          <CardBody>
-                            <Text>{txs.transactions[0].input}</Text>
-                          </CardBody>
-                        </Card>
-                        </Flex>
-                      </Td>
-                    </Tr>
+                    
                     
                   </Tbody>
                 </Table>
@@ -471,7 +403,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
         </Container>
       </Box>
 
-      <Box p={6}>
+      <Box px={6} >
         <Container maxW="container.xl">
           <Flex direction={"column"} gap={6}>
             <CustomCard>
@@ -479,21 +411,92 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                 <AccordionItem>
                   
                 <AccordionPanel pb={4}>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-                    veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                    commodo consequat.
-                  </AccordionPanel>
-
+                  <TableContainer>
+                    <Table>
+                      <Tbody>
+                        <Tr>
+                          <Td borderBottom="none">
+                            <Flex direction="column">
+                              <Text>{`Gas Used:`}</Text>
+                            </Flex>
+                          </Td>
+                          <Td borderBottom="none">
+                            <Flex direction="column">
+                              <Text>{parseInt(txs.transactions[0].gas, 16)}</Text>
+                            </Flex>
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td borderBottom="none">
+                            <Flex direction="column">
+                              <Text>{`Gas Price:`}</Text>
+                            </Flex>
+                          </Td>
+                          <Td borderBottom="none">
+                            <Flex direction="row">
+                              <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16))} SIX</Text>
+                              <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16)) * price?.usd)})</Text>
+                            </Flex>
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td>
+                            <Flex direction="column">
+                              <Text>{`Gas Limit & Usage by Txn:`}</Text>
+                            </Flex>
+                          </Td>
+                          <Td>
+                            <Flex direction="column">
+                              <Text>{parseInt(txs.gasLimit, 16)} | {parseInt(txs.transactions[0].gas, 16)} ({((parseInt(txs.transactions[0].gas, 16) / parseInt(txs.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
+                            </Flex>
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td borderBottom="none">
+                            <Flex direction="column">
+                              <Text>{`Other Attributes:`}</Text>
+                            </Flex>
+                          </Td>
+                          <Td borderBottom="none">
+                            <Flex
+                                  direction="row"
+                                  gap={2}
+                                  alignItems="center"
+                            >
+                              <Badge>Txn Type: {parseInt(txs.transactions[0].type, 16)}(EIP-2718)</Badge>
+                              <Badge>Nonce: {parseInt(txs.transactions[0].nonce, 16)}</Badge>
+                              <Badge>Position: {parseInt(txs.transactions[0].transactionIndex, 16)}</Badge>                            
+                            </Flex>
+                          </Td>
+                        </Tr>
+                        <Tr>
+                          <Td>
+                            <Flex direction="column">
+                              <Text>{`Input Data:`}</Text>
+                            </Flex>
+                          </Td>
+                          <Td>
+                            <Flex direction="column">
+                            <Card style={{ resize: "both", overflow: "auto", minHeight: "50px", minWidth: "680px", backgroundColor:"#f8f9fa", borderRadius:"10px"  }}>
+                              <CardBody>
+                                <Text>{txs.transactions[0].input}</Text>
+                              </CardBody>
+                            </Card>
+                            </Flex>
+                          </Td>
+                        </Tr>
+                        
+                      </Tbody>
+                    </Table>
+                  </TableContainer>
+                  </AccordionPanel >
                     <AccordionButton onClick={handleClick}>
-                      <Box p={6}>
-                        More Details: 
-                        {isOpen ? 'Click to see Less' : 'Click to see More'}
+                      <Box p={3}>
+                        <Text style={{ marginRight: "70px" }}>More Details:</Text>
+                        
                       </Box>
-                      <AccordionIcon />
+                      <Text style={{color: '#0784C3'}} >{isOpen ? '- Click to see Less' : '+ Click to see More'}</Text>
                     </AccordionButton>
-                  
-                  
                 </AccordionItem>
               </Accordion>
             </CustomCard>
