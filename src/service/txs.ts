@@ -78,3 +78,24 @@ export const getTxFromHash = async (hash: string): Promise<any> => {
     return null;
   }
 };
+
+export const getTxEVMFromHash = async (hash: string): Promise<any> => {
+  console.log("hash =>",hash)
+  const body = {
+    jsonrpc: "2.0",
+    method: "eth_getTransactionByHash",
+    id: "1",
+    params: [hash],
+  };
+  try {
+    const res = await axios.post(`${ENV.Endpoint}/`, body);
+    const tx = res.data.result;
+    if (!tx) {
+      return null;
+    }
+    return tx;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
