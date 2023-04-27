@@ -80,7 +80,7 @@ export const getTxFromHash = async (hash: string): Promise<any> => {
 };
 
 export const getTxEVMFromHash = async (hash: string): Promise<any> => {
-  console.log("hash =>",hash)
+  // console.log("hash =>",hash)
   const body = {
     jsonrpc: "2.0",
     method: "eth_getTransactionByHash",
