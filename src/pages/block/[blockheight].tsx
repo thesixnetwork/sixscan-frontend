@@ -28,7 +28,7 @@ import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 
 import { getBlock, getBlockEVM } from "@/service/block";
-import { Block } from "@/types/Block";
+import { Block,BlockEVM } from "@/types/Block";
 import { getTxsFromBlock } from "@/service/txs";
 import { Transaction } from "@/types/Txs";
 import moment from "moment";
@@ -38,7 +38,6 @@ import { useRouter } from "next/router";
 
 import axios from "axios";
 import ENV from "../../utils/ENV";
-import { useEffect, useState } from "react";
 import { formatHex } from "@/utils/format";
 
 
@@ -49,12 +48,12 @@ export default function BlockPage({
   blockEVM,
 }: {
   block: Block;
-  blockEVM: Block;
+  blockEVM: BlockEVM;
   blockTxs: { txs: Transaction[]; total_count: number };
 }) {
   const router = useRouter();
   console.log("block =>",block)
-  console.log("blockTxs =>",blockTxs)
+  console.log("blockEVM =>",blockEVM)
   // console.log("test =>", blockTxs.txs.map((x) => x))
   // console.log(typeof tx.tx_result.log)
   
@@ -101,7 +100,6 @@ export default function BlockPage({
   }
 
   ///
-  const [Txs_EVM, setTex_EVM] = useState(null)
   const GetBalance = async () => {
     const body = {
       jsonrpc: "2.0",
@@ -115,7 +113,7 @@ export default function BlockPage({
       console.log("res 0x39CDFF :",response);
       // console.log(ENV)
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
     }
   };
   GetBalance();
@@ -286,9 +284,9 @@ export default function BlockPage({
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
-                                     {
+                                     {/* {
                                       console.log(JSON.parse(tx.tx_result.log)[0].events)
-                                     }
+                                     } */}
                                     </Text>
                                   </Flex>
                                 </Td>
@@ -296,11 +294,11 @@ export default function BlockPage({
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
                                       <Clickable
-                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "sender").value}`}
+                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "sender").value}`}
                                         underline
                                       >
                                      {
-                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "sender").value)
+                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "sender").value)
                                      }
                                       </Clickable>
                                     </Text>
@@ -310,11 +308,11 @@ export default function BlockPage({
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
                                       <Clickable
-                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "recipient").value}`}
+                                        href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "recipient").value}`}
                                         underline
                                       >
                                      {
-                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "recipient").value)
+                                      formatHex(JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "recipient").value)
                                      }
                                       </Clickable>
                                     </Text>
@@ -324,7 +322,7 @@ export default function BlockPage({
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
                                      {
-                                      JSON.parse(tx.tx_result.log)[0].events.find(e => e.type === "transfer")?.attributes.find(e => e.key === "amount").value
+                                      JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "amount").value
                                      }
                                     </Text>
                                   </Flex>
