@@ -26,6 +26,10 @@ import {
   Spacer,
   Button,
 } from "@chakra-ui/react";
+
+import {
+  CopyIcon
+} from "@chakra-ui/icons";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 import Image from "next/image";
@@ -291,8 +295,9 @@ export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM
                         </Flex>
                       </Td>
                       <Td borderBottom="none">
-                        <Flex direction="column">
-                          <Text>{txsevm.hash}</Text>
+                        <Flex direction="row">
+                          <Text style={{marginRight: '5px'}}>{txsevm.hash}</Text>
+                          <CopyIcon onClick={() => navigator.clipboard.writeText(txsevm.hash)}/>
                         </Flex>
                       </Td>
                     </Tr>
@@ -352,7 +357,14 @@ export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM
                       </Td>
                       <Td borderBottom="none">
                         <Flex direction="column">
-                          <Text>{txsevm.from}</Text>
+                          <Text>
+                            <Clickable
+                              href={`/address/${txsevm.from}`}
+                              underline
+                            >
+                            {txsevm.from}
+                            </Clickable>
+                          </Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -364,7 +376,14 @@ export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM
                       </Td>
                       <Td>
                         <Flex direction="column">
-                          <Text>{txsevm.to}</Text>
+                          <Text>
+                            <Clickable
+                              href={`/address/${txsevm.to}`}
+                              underline
+                            >
+                            {txsevm.to}
+                            </Clickable>
+                          </Text>
                         </Flex>
                       </Td>
                     </Tr>
