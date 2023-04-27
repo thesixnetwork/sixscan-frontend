@@ -44,7 +44,9 @@ import moment from "moment";
 import { Clickable } from "@/components/Clickable";
 import { getTxFromHash, getTxEVMFromHash } from "@/service/txs";
 import { getBlockEVM } from "@/service/block";
-import { Transaction } from "@/types/Txs";
+import { Transaction, TransactionEVM } from "@/types/Txs";
+import { BlockEVM } from "@/types/Block";
+
 import { useRouter } from "next/router";
 
 import { formatNumber, convertAsixToSix } from "@/utils/format";
@@ -52,9 +54,11 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 
-export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
+export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM, txsevm: TransactionEVM  }) {
   const router = useRouter();
   
+  console.log("txs =>",txs)
+  console.log("txsevm =>",txsevm)
   ////// Get Price SIX ///////
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -288,7 +292,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       </Td>
                       <Td borderBottom="none">
                         <Flex direction="column">
-                          <Text>{txs.transactions[0].hash}</Text>
+                          <Text>{txsevm.hash}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -302,7 +306,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                         <Flex direction="column">
                           <Text>
                             <Badge colorScheme={"green"}>
-                              {txs.transactions[0].transactionIndex === null ? "Failed" : "Success"}
+                              {txsevm.transactionIndex === null ? "Failed" : "Success"}
                             </Badge>
                           </Text>
                         </Flex>
@@ -348,7 +352,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       </Td>
                       <Td borderBottom="none">
                         <Flex direction="column">
-                          <Text>{txs.transactions[0].from}</Text>
+                          <Text>{txsevm.from}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -360,7 +364,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       </Td>
                       <Td>
                         <Flex direction="column">
-                          <Text>{txs.transactions[0].to}</Text>
+                          <Text>{txsevm.to}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -373,8 +377,8 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       <Td borderBottom="none">
                         <Flex direction="row">
                           <Image src="/six.png" alt="coin" height={20} width={20} style={{marginRight: '5px'}} />
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].value, 16))} SIX </Text>
-                          <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].value, 16)) * price?.usd)})</Text>
+                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.value, 16))} SIX </Text>
+                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `($${formatNumber(convertAsixToSix(parseInt(txsevm.value, 16)) * price.usd)})` : ''}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -386,8 +390,8 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                       </Td>
                       <Td>
                         <Flex direction="row">
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].gas, 16) * parseInt(txs.transactions[0].gasPrice, 16))} SIX </Text>
-                          <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].gas, 16) * parseInt(txs.transactions[0].gasPrice, 16)) * price?.usd)})</Text>
+                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.gas, 16) * parseInt(txsevm.gasPrice, 16))} SIX </Text>
+                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(txsevm.gas, 16) * parseInt(txsevm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
 
                         </Flex>
                       </Td>
@@ -422,7 +426,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                           </Td>
                           <Td borderBottom="none">
                             <Flex direction="column">
-                              <Text>{parseInt(txs.transactions[0].gas, 16)}</Text>
+                              <Text>{parseInt(txsevm.gas, 16)}</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -434,8 +438,8 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                           </Td>
                           <Td borderBottom="none">
                             <Flex direction="row">
-                              <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16))} SIX</Text>
-                              <Text style={{color: '#6c757d'}} >(${formatNumber(convertAsixToSix(parseInt(txs.transactions[0].gasPrice, 16)) * price?.usd)})</Text>
+                              <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.gasPrice, 16))} SIX</Text>
+                              <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(txsevm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -447,7 +451,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                           </Td>
                           <Td>
                             <Flex direction="column">
-                              <Text>{parseInt(txs.gasLimit, 16)} | {parseInt(txs.transactions[0].gas, 16)} ({((parseInt(txs.transactions[0].gas, 16) / parseInt(txs.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
+                              <Text>{parseInt(txs.gasLimit, 16)} | {parseInt(txsevm.gas, 16)} ({((parseInt(txsevm.gas, 16) / parseInt(txs.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -463,9 +467,9 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                                   gap={2}
                                   alignItems="center"
                             >
-                              <Badge>Txn Type: {parseInt(txs.transactions[0].type, 16)}(EIP-2718)</Badge>
-                              <Badge>Nonce: {parseInt(txs.transactions[0].nonce, 16)}</Badge>
-                              <Badge>Position: {parseInt(txs.transactions[0].transactionIndex, 16)}</Badge>                            
+                              <Badge>Txn Type: {parseInt(txsevm.type, 16)}(EIP-2718)</Badge>
+                              <Badge>Nonce: {parseInt(txsevm.nonce, 16)}</Badge>
+                              <Badge>Position: {parseInt(txsevm.transactionIndex, 16)}</Badge>                            
                             </Flex>
                           </Td>
                         </Tr>
@@ -479,7 +483,7 @@ export default function Tx({ tx, txs }: { tx: Transaction, txs: Transaction }) {
                             <Flex direction="column">
                             <Card style={{ resize: "both", overflow: "auto", minHeight: "50px", minWidth: "680px", backgroundColor:"#f8f9fa", borderRadius:"10px"  }}>
                               <CardBody>
-                                <Text>{txs.transactions[0].input}</Text>
+                                <Text>{txsevm.input}</Text>
                               </CardBody>
                             </Card>
                             </Flex>
@@ -521,26 +525,28 @@ export const getServerSideProps = async (context: {
 }) => {
   const { txhash } = context.params;
   let tx;
-  let txss;
+  let txsevm;
   let txs;
   if (txhash.startsWith('0x')) {
-    txss = await getTxEVMFromHash(txhash);
+    txsevm = await getTxEVMFromHash(txhash);
   } else {
     tx = await getTxFromHash(txhash);
   }
   if (!tx) {
     tx = null;
   }
-  if (txss != undefined ) {
-    txs = await getBlockEVM(txss.blockNumber);
+  if (txsevm != undefined ) {
+    txs = await getBlockEVM(txsevm.blockNumber);
   }
   if (!txs) {
     txs = null;
+    txsevm = null;
   }
   return {
     props: {
       tx,
       txs,
+      txsevm,
     },
   };
 };
