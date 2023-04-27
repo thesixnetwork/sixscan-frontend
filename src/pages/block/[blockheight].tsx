@@ -21,6 +21,10 @@ import {
   Thead,
   Button,
 } from "@chakra-ui/react";
+
+import {
+  ArrowForwardIcon
+} from "@chakra-ui/icons";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 // ------------- Components ----------------
@@ -246,16 +250,13 @@ export default function BlockPage({
                                 <Text>Txhash</Text>
                               </Td>
                               <Td>
-                                <Text>Age</Text>
-                              </Td>
-                              <Td>
                                 <Text>From</Text>
                               </Td>
                               <Td>
-                                <Text>To</Text>
+                                <Text></Text>
                               </Td>
                               <Td>
-                                <Text>Value</Text>
+                                <Text>To</Text>
                               </Td>
 
                             </Tr>
@@ -276,17 +277,8 @@ export default function BlockPage({
                                         href={`/tx/${tx.hash}`}
                                         underline
                                       >
-                                        {formatHex(tx.hash)}
+                                        {tx.hash}
                                       </Clickable>
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                                <Td>
-                                  <Flex direction="row" gap={1} align="center">
-                                    <Text>
-                                     {/* {
-                                      console.log(JSON.parse(tx.tx_result.log)[0].events)
-                                     } */}
                                     </Text>
                                   </Flex>
                                 </Td>
@@ -307,6 +299,13 @@ export default function BlockPage({
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
+                                     <ArrowForwardIcon style={{ color:'#00c9a7' }}/>
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row" gap={1} align="center">
+                                    <Text>
                                       <Clickable
                                         href={`/address/${JSON.parse(tx.tx_result.log)[0].events.find((e:any) => e.type === "transfer")?.attributes.find((e:any) => e.key === "recipient").value}`}
                                         underline
@@ -318,7 +317,7 @@ export default function BlockPage({
                                     </Text>
                                   </Flex>
                                 </Td>
-                                <Td>
+                                {/* <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
                                      {
@@ -326,7 +325,7 @@ export default function BlockPage({
                                      }
                                     </Text>
                                   </Flex>
-                                </Td>
+                                </Td> */}
                               </Tr>
                             ))}
                           </Tbody>
@@ -354,16 +353,13 @@ export default function BlockPage({
                                 <Text>Txhash</Text>
                               </Td>
                               <Td>
-                                <Text>Age</Text>
-                              </Td>
-                              <Td>
                                 <Text>Form</Text>
                               </Td>
                               <Td>
-                                <Text>To</Text>
+                                <Text></Text>
                               </Td>
                               <Td>
-                                <Text>Value</Text>
+                                <Text>To</Text>
                               </Td>
                             </Tr>
                           </Thead>
@@ -372,18 +368,12 @@ export default function BlockPage({
                               <Tr key={index}>
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
-                                    {/* {tx.tx_result.code !== 0 && (
-                                      <FaRegWindowClose
-                                        color="red"
-                                        fontSize={12}
-                                      />
-                                    )} */}
                                     <Text>
                                       <Clickable
                                         href={`/tx/${tx.hash}`}
                                         underline
                                       >
-                                        {formatHex(tx.hash)}
+                                        {tx.hash}
                                       </Clickable>
                                     </Text>
                                   </Flex>
@@ -391,33 +381,31 @@ export default function BlockPage({
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
-                                      {/* {
-                                        JSON.parse(tx.tx_result.log).find(
-                                          (log: any) => log.msg_type === "send"
-                                        )?.amount[0].amount
-                                      } */}
-                                      ss
+                                      <Clickable
+                                        href={`/address/${tx.from}`}
+                                        underline
+                                      >
+                                        {formatHex(tx.from)}
+                                      </Clickable>
                                     </Text>
                                   </Flex>
                                 </Td>
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
-                                      {tx.from.substring(0, 10)+'...'}
+                                     <ArrowForwardIcon style={{ color:'#00c9a7' }}/>
                                     </Text>
                                   </Flex>
                                 </Td>
                                 <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
-                                    {tx.to.substring(0, 10)+'...'}
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                                <Td>
-                                  <Flex direction="row" gap={1} align="center">
-                                    <Text>
-                                    {parseInt(tx.value, 16)}
+                                      <Clickable
+                                        href={`/address/${tx.to}`}
+                                        underline
+                                      >
+                                        {formatHex(tx.to)}
+                                      </Clickable>
                                     </Text>
                                   </Flex>
                                 </Td>
