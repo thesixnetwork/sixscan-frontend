@@ -177,3 +177,12 @@ export interface AccountTxs {
   page_limit: string;
   txs: Tx[];
 }
+
+export interface TxsAll {
+  hash: string;
+  hashEVM: string | null;
+}
+
+export interface TxsEVM {
+  hash: string[];
+}
