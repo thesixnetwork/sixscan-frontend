@@ -4,14 +4,38 @@ import { Balance } from "../types/Bank";
 
 export const getBalances = async (address: string): Promise<Balance[]> => {
   try {
-    const res = await axios.get(
-      `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}`
-    );
-    const balances = res.data.balances;
-    if (!balances) {
-      return [];
+    if (address.startsWith('0x')) {
+      const body = {
+        jsonrpc: "2.0",
+        method: "eth_getBalance",
+        id: "1",
+        params: [address, "latest"],
+      };
+      const res = await axios.post(`${ENV.Endpoint}/`, body);
+      // const balances = res.data;
+
+      const balances = [{
+        amount: (parseInt(res.data.result, 16)/ 1000000000000).toString(),
+        denom: 'asix',
+      }];
+      if (!balances) {
+        return [];
+      }
+
+      return balances;
+    } else {
+      const res = await axios.get(
+        `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}`
+      );
+      const balances = res.data.balances;
+      if (!balances) {
+        return [];
+      }
+      return balances;
     }
-    return balances;
+
+    console.log("grt_balss =====>");
+    
   } catch (error) {
     // console.error(error);
     return [];

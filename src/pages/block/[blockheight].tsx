@@ -137,12 +137,12 @@ export default function BlockPage({
   const GetBalance = async () => {
     const body = {
       jsonrpc: "2.0",
-      method: "eth_getTransactionByHash",
+      method: "eth_getCode",
       id: "1",
-      params: ["0x0e4c544a2d30a78b0f9ff2a69f50b0efcc1b9c5ef6de7b534213ee6bafc716b9"],
+      params: ["0xb62ef83643a2f8c95df78f694c6bf480f5b786f2","latest"],
     };
     try {
-      const response = await axios.post(`https://rpc-evm.fivenet.sixprotocol.net/`, body);
+      const response = await axios.post('https://rpc-evm.fivenet.sixprotocol.net', body);
       // setTex_EVM(response)
       console.log("res 0x39CDFF :",response);
       // console.log(ENV)
@@ -255,7 +255,7 @@ export default function BlockPage({
               <CustomCard>
                 <Tabs isLazy>
                   <TabList>
-                    <Tab>Txns ({(blockTxs.total_count)})</Tab>
+                    <Tab>Txns All({(blockTxs.total_count)})</Tab>
                     <Tab>Txns EVM ({(TxsEVM.length)})</Tab>
                     <Tab>Txns Cosmos ({(TxsCosmos.length)})</Tab>
                     {/* <Tab>Txns (Data Layer)</Tab> */}

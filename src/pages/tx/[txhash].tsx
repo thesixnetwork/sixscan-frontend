@@ -48,7 +48,9 @@ import moment from "moment";
 import { Clickable } from "@/components/Clickable";
 import { getTxFromHash, getTxEVMFromHash } from "@/service/txs";
 import { getBlockEVM } from "@/service/block";
+import { getIsContract } from "@/service/auth";
 import { Transaction, TransactionEVM } from "@/types/Txs";
+import { IsContract } from "@/types/Auth";
 import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
@@ -58,11 +60,13 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 
-export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM, txsevm: TransactionEVM  }) {
+export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, txs: BlockEVM, txsevm: TransactionEVM, isContract: IsContract   }) {
   const router = useRouter();
   
   console.log("txs =>",txs)
   console.log("txsevm =>",txsevm)
+  console.log("tx =>",tx)
+  console.log("isContract =>",isContract)
   ////// Get Price SIX ///////
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
   const [isOpen, setIsOpen] = useState(false);
@@ -375,7 +379,8 @@ export default function Tx({ tx, txs, txsevm }: { tx: Transaction, txs: BlockEVM
                         </Flex>
                       </Td>
                       <Td>
-                        <Flex direction="column">
+                        <Flex direction="row">
+                          {isContract ? <Text style={{ marginRight: "10px" }}>Contract</Text> : null}
                           <Text>
                             <Clickable
                               href={`/address/${txsevm.to}`}
@@ -546,6 +551,7 @@ export const getServerSideProps = async (context: {
   let tx;
   let txsevm;
   let txs;
+  let isContract
   if (txhash.startsWith('0x')) {
     txsevm = await getTxEVMFromHash(txhash);
   } else {
@@ -556,16 +562,19 @@ export const getServerSideProps = async (context: {
   }
   if (txsevm != undefined ) {
     txs = await getBlockEVM(txsevm.blockNumber);
+    isContract = await getIsContract(txsevm.to);
   }
   if (!txs) {
     txs = null;
     txsevm = null;
+    isContract = null;
   }
   return {
     props: {
       tx,
       txs,
       txsevm,
+      isContract,
     },
   };
 };
