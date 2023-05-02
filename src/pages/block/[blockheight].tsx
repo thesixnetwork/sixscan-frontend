@@ -22,9 +22,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-import {
-  ArrowForwardIcon
-} from "@chakra-ui/icons";
+import { ArrowForwardIcon } from "@chakra-ui/icons";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 // ------------- Components ----------------
@@ -32,7 +30,7 @@ import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 
 import { getBlock, getBlockEVM } from "@/service/block";
-import { Block,BlockEVM } from "@/types/Block";
+import { Block, BlockEVM } from "@/types/Block";
 import { getTxsFromBlock } from "@/service/txs";
 import { Transaction, TxsAll, TxsEVM } from "@/types/Txs";
 import moment from "moment";
@@ -44,7 +42,14 @@ import axios from "axios";
 import ENV from "../../utils/ENV";
 import { formatHex } from "@/utils/format";
 
-
+interface Props {
+  block: Block;
+  blockTxs: { txs: Transaction[]; total_count: number };
+  blockEVM: BlockEVM;
+  TxsAll: TxsAll[];
+  TxsEVM: TxsEVM[];
+  TxsCosmos: TxsEVM[];
+}
 
 export default function BlockPage({
   block,
@@ -53,46 +58,31 @@ export default function BlockPage({
   TxsAll,
   TxsEVM,
   TxsCosmos,
-}: {
-  block: Block;
-  blockEVM: BlockEVM;
-  blockTxs: { txs: Transaction[]; total_count: number };
-  TxsAll: TxsAll[];
-  TxsEVM: TxsEVM[];
-  TxsCosmos: TxsEVM[];
-}) {
+}: Props) {
   const router = useRouter();
-  console.log("block =>",block)
-  console.log("blockEVM =>",blockEVM)
-  console.log("TxsEVM =>",TxsEVM)
+  console.log("block =>", block);
+  console.log("blockEVM =>", blockEVM);
+  console.log("TxsEVM =>", TxsEVM);
   // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) => ({hash:JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx").attributes.find((x:any) => x.key === "ethereumTxHash").value})))
   // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => !x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) =>  x.hash))
-  
-  
-  
-  
+
   const mockdata = {
-    count: '2',
+    count: "2",
     txs: [
       {
-        hash: 'shk1',
-        event: [
-          {type : 'cosmos', value: 'ssd1'}
-        ]
+        hash: "shk1",
+        event: [{ type: "cosmos", value: "ssd1" }],
       },
       {
-        hash: 'shk2',
-        event: [
-          {type : 'eth', value: 'ssd2'}
-        ]
+        hash: "shk2",
+        event: [{ type: "eth", value: "ssd2" }],
       },
     ],
-  }
-  
-  console.log(mockdata.txs.filter(tx => !tx.event.find(event => event.type === 'eth')));
+  };
 
-  
-
+  console.log(
+    mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth"))
+  );
 
   if (!block) {
     return (
@@ -139,19 +129,21 @@ export default function BlockPage({
       jsonrpc: "2.0",
       method: "eth_getCode",
       id: "1",
-      params: ["0xb62ef83643a2f8c95df78f694c6bf480f5b786f2","latest"],
+      params: ["0xb62ef83643a2f8c95df78f694c6bf480f5b786f2", "latest"],
     };
     try {
-      const response = await axios.post('https://rpc-evm.fivenet.sixprotocol.net', body);
+      const response = await axios.post(
+        "https://rpc-evm.fivenet.sixprotocol.net",
+        body
+      );
       // setTex_EVM(response)
-      console.log("res 0x39CDFF :",response);
+      console.log("res 0x39CDFF :", response);
       // console.log(ENV)
     } catch (error) {
       console.log(error);
     }
   };
   GetBalance();
-
 
   // console.log(blockTxs.txs.map((x) => ( x.tx_result.log )))
   // console.log(blockTxs.txs)
@@ -255,9 +247,9 @@ export default function BlockPage({
               <CustomCard>
                 <Tabs isLazy>
                   <TabList>
-                    <Tab>Txns All({(blockTxs.total_count)})</Tab>
-                    <Tab>Txns EVM ({(TxsEVM.length)})</Tab>
-                    <Tab>Txns Cosmos ({(TxsCosmos.length)})</Tab>
+                    <Tab>Txns All({blockTxs.total_count})</Tab>
+                    <Tab>Txns EVM ({TxsEVM.length})</Tab>
+                    <Tab>Txns Cosmos ({TxsCosmos.length})</Tab>
                     {/* <Tab>Txns (Data Layer)</Tab> */}
                   </TabList>
                   <TabPanels>
@@ -280,7 +272,6 @@ export default function BlockPage({
                               <Td>
                                 <Text>Txhash</Text>
                               </Td>
-
                             </Tr>
                           </Thead>
                           <Tbody>
@@ -296,16 +287,21 @@ export default function BlockPage({
                                     )} */}
                                     <Text>
                                       <Clickable
-                                        href={`/tx/${tx.hashEVM === null ? tx.hash : tx.hashEVM}`}
+                                        href={`/tx/${
+                                          tx.hashEVM === null
+                                            ? tx.hash
+                                            : tx.hashEVM
+                                        }`}
                                         underline
                                       >
-                                        {tx.hashEVM === null ? tx.hash : tx.hashEVM}
-                                        
+                                        {tx.hashEVM === null
+                                          ? tx.hash
+                                          : tx.hashEVM}
                                       </Clickable>
                                     </Text>
                                   </Flex>
                                 </Td>
-                                
+
                                 {/* <Td>
                                   <Flex direction="row" gap={1} align="center">
                                     <Text>
@@ -330,9 +326,7 @@ export default function BlockPage({
                         color={"dark"}
                       >
                         <FaSortAmountDown fontSize={12} />
-                        <Text>
-                          {`${TxsEVM.length} total transactions`}
-                        </Text>
+                        <Text>{`${TxsEVM.length} total transactions`}</Text>
                       </Flex>
                       <TableContainer>
                         <Table>
@@ -364,7 +358,7 @@ export default function BlockPage({
                         </Table>
                       </TableContainer>
                     </TabPanel>
-                      
+
                     <TabPanel>
                       <Flex
                         direction="row"
@@ -373,9 +367,7 @@ export default function BlockPage({
                         color={"dark"}
                       >
                         <FaSortAmountDown fontSize={12} />
-                        <Text>
-                          {`${TxsCosmos.length} total transactions`}
-                        </Text>
+                        <Text>{`${TxsCosmos.length} total transactions`}</Text>
                       </Flex>
                       <TableContainer>
                         <Table>
@@ -407,8 +399,6 @@ export default function BlockPage({
                         </Table>
                       </TableContainer>
                     </TabPanel>
-
-
                   </TabPanels>
                 </Tabs>
               </CustomCard>
@@ -425,23 +415,45 @@ export const getServerSideProps = async (context: {
   params: { blockheight: string };
 }) => {
   const { blockheight } = context.params;
-  let TxsAll
-  let TxsEVM
-  let TxsCosmos
+  let TxsAll;
+  let TxsEVM;
+  let TxsCosmos;
   const [block, blockTxs] = await Promise.all([
     getBlock(blockheight),
     getTxsFromBlock(blockheight),
   ]);
-  console.log(block)
-  if(blockTxs){
-    TxsAll = blockTxs.txs.map((x:any) => ({hash: x.hash,hashEVM: JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx") ? JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx")?.attributes.find((x:any) => x.key === "ethereumTxHash").value : null}) );
-    TxsEVM = blockTxs.txs.filter((x:any) => x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) => ({hash:JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx").attributes.find((x:any) => x.key === "ethereumTxHash").value}));
-    TxsCosmos = blockTxs.txs.filter((x:any) => !x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) =>  ({hash: x.hash}));
+  console.log(block);
+  if (blockTxs) {
+    TxsAll = blockTxs.txs.map((x: any) => ({
+      hash: x.hash,
+      hashEVM: JSON.parse(x.tx_result.log)[0].events.find(
+        (x: any) => x.type === "ethereum_tx"
+      )
+        ? JSON.parse(x.tx_result.log)[0]
+            .events.find((x: any) => x.type === "ethereum_tx")
+            ?.attributes.find((x: any) => x.key === "ethereumTxHash").value
+        : null,
+    }));
+    TxsEVM = blockTxs.txs
+      .filter((x: any) =>
+        x.tx_result.events.find((x: any) => x.type === "ethereum_tx")
+      )
+      .map((x: any) => ({
+        hash: JSON.parse(x.tx_result.log)[0]
+          .events.find((x: any) => x.type === "ethereum_tx")
+          .attributes.find((x: any) => x.key === "ethereumTxHash").value,
+      }));
+    TxsCosmos = blockTxs.txs
+      .filter(
+        (x: any) =>
+          !x.tx_result.events.find((x: any) => x.type === "ethereum_tx")
+      )
+      .map((x: any) => ({ hash: x.hash }));
   }
   // if(TxsAll === undefined){
   //   TxsAll = null;
   // }
-  const blockEVM = await getBlockEVM(blockheight)
+  const blockEVM = await getBlockEVM(blockheight);
   return {
     props: {
       block,

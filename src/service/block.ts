@@ -87,7 +87,7 @@ export const getBlockEVM = async (height: string): Promise<any> => {
     params: [height, true],
   };
   try {
-    const res = await axios.post(`${ENV.Endpoint}/`, body);
+    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
     const result = res.data.result;
     if (!result) {
       return null;

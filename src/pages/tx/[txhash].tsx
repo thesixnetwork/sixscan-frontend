@@ -59,12 +59,18 @@ import { formatNumber, convertAsixToSix } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
+interface Props {
+  tx: Transaction;
+  block_evm: BlockEVM;
+  tx_evm: TransactionEVM;
+  isContract: IsContract;
+}
 
-export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, txs: BlockEVM, txsevm: TransactionEVM, isContract: IsContract   }) {
+export default function Tx({ tx, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   
-  console.log("txs =>",txs)
-  console.log("txsevm =>",txsevm)
+  console.log("block_evm =>",block_evm)
+  console.log("tx_evm =>",tx_evm)
   console.log("tx =>",tx)
   console.log("isContract =>",isContract)
   ////// Get Price SIX ///////
@@ -81,10 +87,10 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
 
     fetchPrice();
   }, []);
-  console.log(txs)
+  console.log(block_evm)
   ///////////////////////////////
 
-  if (!tx && !txs) {
+  if (!tx && !block_evm) {
     return (
       <Flex minHeight={"100vh"} direction={"column"}>
         <Head>
@@ -123,7 +129,7 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
     );
   }
 
-  if (!txs) {
+  if (!block_evm) {
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
@@ -300,8 +306,8 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                       </Td>
                       <Td borderBottom="none">
                         <Flex direction="row">
-                          <Text style={{marginRight: '5px'}}>{txsevm.hash}</Text>
-                          <CopyIcon onClick={() => navigator.clipboard.writeText(txsevm.hash)}/>
+                          <Text style={{marginRight: '5px'}}>{tx_evm.hash}</Text>
+                          <CopyIcon onClick={() => navigator.clipboard.writeText(tx_evm.hash)}/>
                         </Flex>
                       </Td>
                     </Tr>
@@ -315,7 +321,7 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                         <Flex direction="column">
                           <Text>
                             <Badge colorScheme={"green"}>
-                              {txsevm.transactionIndex === null ? "Failed" : "Success"}
+                              {tx_evm.transactionIndex === null ? "Failed" : "Success"}
                             </Badge>
                           </Text>
                         </Flex>
@@ -330,8 +336,8 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                       <Td borderBottom="none">
                         <Flex direction="column">
                           <Text>
-                            <Clickable underline href={`/block/${parseInt(txs.number, 16)}`}>
-                              {parseInt(txs.number, 16)}
+                            <Clickable underline href={`/block/${parseInt(block_evm.number, 16)}`}>
+                              {parseInt(block_evm.number, 16)}
                             </Clickable>
                           </Text>
                         </Flex>
@@ -346,9 +352,9 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                       <Td>
                         <Flex direction="column">
                         {`${moment(
-                                  parseInt(txs.timestamp, 16) * 1000
+                                  parseInt(block_evm.timestamp, 16) * 1000
                                 ).fromNow()} (${moment(
-                                  parseInt(txs.timestamp, 16) * 1000
+                                  parseInt(block_evm.timestamp, 16) * 1000
                                 ).format("YYYY-MM-DD HH:mm:ss")})`}
                         </Flex>
                       </Td>
@@ -363,10 +369,10 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                         <Flex direction="column">
                           <Text>
                             <Clickable
-                              href={`/address/${txsevm.from}`}
+                              href={`/address/${tx_evm.from}`}
                               underline
                             >
-                            {txsevm.from}
+                            {tx_evm.from}
                             </Clickable>
                           </Text>
                         </Flex>
@@ -383,10 +389,10 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                           {isContract ? <Text style={{ marginRight: "10px" }}>Contract</Text> : null}
                           <Text>
                             <Clickable
-                              href={`/address/${txsevm.to}`}
+                              href={`/address/${tx_evm.to}`}
                               underline
                             >
-                            {txsevm.to}
+                            {tx_evm.to}
                             </Clickable>
                           </Text>
                         </Flex>
@@ -401,8 +407,8 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                       <Td borderBottom="none">
                         <Flex direction="row">
                           <Image src="/six.png" alt="coin" height={20} width={20} style={{marginRight: '5px'}} />
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.value, 16))} SIX </Text>
-                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `($${formatNumber(convertAsixToSix(parseInt(txsevm.value, 16)) * price.usd)})` : ''}</Text>
+                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(tx_evm.value, 16))} SIX </Text>
+                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `($${formatNumber(convertAsixToSix(parseInt(tx_evm.value, 16)) * price.usd)})` : ''}</Text>
                         </Flex>
                       </Td>
                     </Tr>
@@ -414,8 +420,8 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                       </Td>
                       <Td>
                         <Flex direction="row">
-                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.gas, 16) * parseInt(txsevm.gasPrice, 16))} SIX </Text>
-                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(txsevm.gas, 16) * parseInt(txsevm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
+                          <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(tx_evm.gas, 16) * parseInt(tx_evm.gasPrice, 16))} SIX </Text>
+                          <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(tx_evm.gas, 16) * parseInt(tx_evm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
 
                         </Flex>
                       </Td>
@@ -450,7 +456,7 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                           </Td>
                           <Td borderBottom="none">
                             <Flex direction="column">
-                              <Text>{parseInt(txsevm.gas, 16)}</Text>
+                              <Text>{parseInt(tx_evm.gas, 16)}</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -462,8 +468,8 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                           </Td>
                           <Td borderBottom="none">
                             <Flex direction="row">
-                              <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(txsevm.gasPrice, 16))} SIX</Text>
-                              <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(txsevm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
+                              <Text style={{marginRight: '5px'}} >{convertAsixToSix(parseInt(tx_evm.gasPrice, 16))} SIX</Text>
+                              <Text style={{color: '#6c757d'}} >{price && price.usd ? `(${formatNumber(convertAsixToSix(parseInt(tx_evm.gasPrice, 16)) * price?.usd)})` : ''}</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -475,7 +481,7 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                           </Td>
                           <Td>
                             <Flex direction="column">
-                              <Text>{parseInt(txs.gasLimit, 16)} | {parseInt(txsevm.gas, 16)} ({((parseInt(txsevm.gas, 16) / parseInt(txs.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
+                              <Text>{parseInt(block_evm.gasLimit, 16)} | {parseInt(tx_evm.gas, 16)} ({((parseInt(tx_evm.gas, 16) / parseInt(block_evm.gasLimit, 16)) * 100).toFixed(2)}%)</Text>
                             </Flex>
                           </Td>
                         </Tr>
@@ -491,9 +497,9 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                                   gap={2}
                                   alignItems="center"
                             >
-                              <Badge>Txn Type: {parseInt(txsevm.type, 16)}(EIP-2718)</Badge>
-                              <Badge>Nonce: {parseInt(txsevm.nonce, 16)}</Badge>
-                              <Badge>Position: {parseInt(txsevm.transactionIndex, 16)}</Badge>                            
+                              <Badge>Txn Type: {parseInt(tx_evm.type, 16)}(EIP-2718)</Badge>
+                              <Badge>Nonce: {parseInt(tx_evm.nonce, 16)}</Badge>
+                              <Badge>Position: {parseInt(tx_evm.transactionIndex, 16)}</Badge>                            
                             </Flex>
                           </Td>
                         </Tr>
@@ -507,7 +513,7 @@ export default function Tx({ tx, txs, txsevm, isContract }: { tx: Transaction, t
                             <Flex direction="column">
                             <Card style={{ resize: "both", overflow: "auto", minHeight: "50px", minWidth: "680px", backgroundColor:"#f8f9fa", borderRadius:"10px"  }}>
                               <CardBody>
-                                <Text>{txsevm.input}</Text>
+                                <Text>{tx_evm.input}</Text>
                               </CardBody>
                             </Card>
                             </Flex>
@@ -549,31 +555,31 @@ export const getServerSideProps = async (context: {
 }) => {
   const { txhash } = context.params;
   let tx;
-  let txsevm;
-  let txs;
+  let tx_evm;
+  let block_evm;
   let isContract
   if (txhash.startsWith('0x')) {
-    txsevm = await getTxEVMFromHash(txhash);
+    tx_evm = await getTxEVMFromHash(txhash);
   } else {
     tx = await getTxFromHash(txhash);
   }
   if (!tx) {
     tx = null;
   }
-  if (txsevm != undefined ) {
-    txs = await getBlockEVM(txsevm.blockNumber);
-    isContract = await getIsContract(txsevm.to);
+  if (tx_evm != undefined ) {
+    block_evm = await getBlockEVM(tx_evm.blockNumber);
+    isContract = await getIsContract(tx_evm.to);
   }
-  if (!txs) {
-    txs = null;
-    txsevm = null;
+  if (!block_evm) {
+    block_evm = null;
+    tx_evm = null;
     isContract = null;
   }
   return {
     props: {
       tx,
-      txs,
-      txsevm,
+      block_evm,
+      tx_evm,
       isContract,
     },
   };

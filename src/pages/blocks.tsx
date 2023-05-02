@@ -45,15 +45,17 @@ import { Validator } from "@/types/Staking";
 import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 import { formatHex } from "@/utils/format";
 
+interface Props {
+  latestBlocks: BlockchainResult;
+  blocksResult: BlockResult[];
+  validators: Validator[];
+}
+
 export default function Blocks({
   latestBlocks,
   blocksResult,
   validators,
-}: {
-  latestBlocks: BlockchainResult;
-  blocksResult: BlockResult[];
-  validators: Validator[];
-}) {
+}: Props) {
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
