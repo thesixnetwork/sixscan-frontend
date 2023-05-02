@@ -11,7 +11,7 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
         id: "1",
         params: [address, "latest"],
       };
-      const res = await axios.post(`${ENV.Endpoint}/`, body);
+      const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
       // const balances = res.data;
 
       const balances = [{

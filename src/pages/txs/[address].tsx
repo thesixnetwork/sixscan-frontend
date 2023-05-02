@@ -56,17 +56,19 @@ import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
 
+interface Props {
+  address: string;
+  validator: Validator | null;
+  account: Account | null;
+  accountTxs: AccountTxs;
+}
+
 export default function Address({
   address,
   validator,
   account,
   accountTxs,
-}: {
-  address: string;
-  validator: Validator | null;
-  account: Account | null;
-  accountTxs: AccountTxs;
-}) {
+}: Props) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
   let totalValueTmp = 0;

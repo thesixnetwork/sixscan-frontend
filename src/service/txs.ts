@@ -88,7 +88,7 @@ export const getTxEVMFromHash = async (hash: string): Promise<any> => {
     params: [hash],
   };
   try {
-    const res = await axios.post(`${ENV.Endpoint}/`, body);
+    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
     const tx = res.data.result;
     if (!tx) {
       return null;

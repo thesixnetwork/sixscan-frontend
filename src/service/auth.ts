@@ -41,7 +41,7 @@ export const getIsContract = async (address: string): Promise<any> => {
     params: [address, "latest"],
   };
   try {
-    const res = await axios.post(`${ENV.Endpoint}/`, body);
+    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
     const result = res.data.result;
     if (result.length <= 2) {
       return false;

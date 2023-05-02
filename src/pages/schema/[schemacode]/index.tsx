@@ -64,6 +64,16 @@ type Txns = {
   totalPage: number;
 };
 
+interface Props {
+  schemacode: string;
+  schema: NFTSchema;
+  openseaCollection: Collection;
+  nftCollection: any;
+  txns: Txns;
+  pageNumber: string;
+  metadataPageNumber: string;
+}
+
 export default function Schema({
   schemacode,
   schema,
@@ -72,15 +82,7 @@ export default function Schema({
   txns,
   pageNumber,
   metadataPageNumber,
-}: {
-  schemacode: string;
-  schema: NFTSchema;
-  openseaCollection: Collection;
-  nftCollection: any;
-  txns: Txns;
-  pageNumber: string;
-  metadataPageNumber: string;
-}) {
+}: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NftData[]>([]);
   const [sortedTxs, setSortedTxs] = useState<any[]>([]);
