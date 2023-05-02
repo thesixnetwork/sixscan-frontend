@@ -48,13 +48,20 @@ import {
   Skeleton,
   Center,
 } from "@chakra-ui/react";
+
+import {
+  StarIcon
+} from "@chakra-ui/icons";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 //---------------------------       ------------------------
 import { useEffect, useState } from "react";
+import { Clickable } from "@/components/Clickable";
+import CustomCard from "@/components/CustomCard";
 
 
-const CType = ['[Please Select]', 'Solidity (Single file)', 'Solidity (Multi-Part files)', 'Solidity (Standard-Json-Input)'];
+
+const CType = ['[Please Select]', 'Solidity (Single file/concatenated method)', 'Solidity (Multi-Part files)', 'Solidity (Standard-Json-Input)'];
 const CVersion = ['[Please Select]', 'v0.8.20-nightly.2023.4.28+commit.0cb27949', 'v0.8.20-nightly.2023.4.27+commit.7c870c95', 'v0.8.20-nightly.2023.4.26+commit.302d46c1',
   'v0.8.20-nightly.2023.4.25+commit.14c25c38', 'v0.8.20-nightly.2023.4.24+commit.4a8d6618', 'v0.8.20-nightly.2023.4.23+commit.cd5ae26e',
   'v0.8.20-nightly.2023.4.21+commit.b75bddbd', 'v0.8.20-nightly.2023.4.20+commit.a297a687', 'v0.8.20-nightly.2023.4.18+commit.a77d4e28', 'v0.8.20-nightly.2023.4.17+commit.02e936ad',
@@ -77,10 +84,10 @@ export default function VerifyContract({
   const [selectedOption, setSelectedOption] = useState('Please Select');
   const [isVerify, setIsVerify] = useState({ contract: address || '', compiler_type: '', compiler_version: '', license: '' })
 
-  const handleOptionChange = (event:any) => {
+  const handleOptionChange = (event: any) => {
     setIsVerify(event.target.value);
   }
-  const handleChange_verify = async (e:any, name:string) => {
+  const handleChange_verify = async (e: any, name: string) => {
     setIsVerify((prev) => ({ ...prev, [name]: e.target.value }));
   }
 
@@ -108,13 +115,58 @@ export default function VerifyContract({
       <Box>
         <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <Text style={{ fontSize: '32px', fontWeight: 'bold', marginTop: '30px' }}>Verify & Publish Contract Source Code</Text>
-          <Text style={{ fontSize: '16px', color: '#8C95A4' }}>COMPILER TYPE AND VERSION SELECTION</Text>
+          {!selectedVerify && (<Text style={{ fontSize: '16px', color: '#8C95A4' }}>COMPILER TYPE AND VERSION SELECTION</Text>)}
+          {selectedVerify && (isVerify.compiler_type === "Solidity (Single file/concatenated method)" ? (
+            <Button p={2} style={{ backgroundColor: '#00C9A7', height: '100%', marginTop: '5px' }}>
+              <Text style={{ fontSize: '11px', color: '#fff', marginRight: '5px' }}>Compiler Type:</Text>
+              <Text style={{ fontSize: '11px', color: '#fff' }}>SOLIDITY (SINGLE FILE/CONCATENATED METHOD)</Text>
+            </Button>
+          ) : isVerify.compiler_type === "Solidity (Multi-Part files)" ? (
+            <Button p={2} style={{ backgroundColor: '#1a90ff', height: '100%', marginTop: '5px' }}>
+              <Text style={{ fontSize: '11px', color: '#fff', marginRight: '5px' }}>Compiler Type:</Text>
+              <Text style={{ fontSize: '11px', color: '#fff' }}>SOLIDITY (MULTI-PART FILES)</Text>
+            </Button>
+          ) : isVerify.compiler_type === "Solidity (Standard-Json-Input)" ? (
+            <Button p={2} style={{ backgroundColor: '#77838f', height: '100%', marginTop: '5px' }}>
+              <Text style={{ fontSize: '11px', color: '#fff', marginRight: '5px' }}>Compiler Type:</Text>
+              <Text style={{ fontSize: '11px', color: '#fff' }}>SOLIDITY (STANDARD-JSON-INPUT)</Text>
+            </Button>
+          ) : null
+          )}
+
         </Box>
       </Box>
 
       <Box px={6} pt={4}>
         <Divider />
       </Box>
+      {/* ----------- INFO ------- */}
+      {selectedVerify && (
+        <Box px={6} pt={3} style={{ display: 'flex', alignItems: 'center' }}>
+          <Button p={2} style={{ backgroundColor: '#77838F0D', height: '100%', width: '20px', marginTop: '5px', marginRight: '5px' }}>
+            <Text style={{ fontSize: '11px', color: '#6c757e' }}>Info:</Text>
+          </Button>
+          {isVerify.compiler_type === "Solidity (Single file/concatenated method)" ? (
+            <Text style={{ fontSize: '14px', color: '#6c757e', fontWeight: 'bold' }}>A simple and structured interface for verifying smart contracts that fit in a single file</Text>
+          ) : isVerify.compiler_type === "Solidity (Multi-Part files)" ? (
+            <Text style={{ fontSize: '14px', color: '#6c757e', fontWeight: 'bold' }}>This is an experimental source code verifier which supports verification of multi-part solidity files (imports).</Text>
+          ) : isVerify.compiler_type === "Solidity (Standard-Json-Input)" ? (
+            <Box style={{ display: 'flex' }}>
+              <Text style={{ marginRight: '5px' }}>
+                <Clickable
+                  href='https://docs.soliditylang.org/en/v0.5.7/using-the-compiler.html#compiler-input-and-output-json-description'
+                  underline
+                >
+                  Standard Json-Input
+                </Clickable>
+              </Text>
+              <Text style={{ fontSize: '14px', color: '#6c757e', fontWeight: 'bold', marginTop: '3px' }}>is the recommended way to interface with the Solidity compiler especially for more complex and automated setups.</Text>
+            </Box>
+          ) : null
+          }
+        </Box>
+      )
+      }
 
       {!selectedVerify &&
         (<Box>
@@ -184,8 +236,43 @@ export default function VerifyContract({
       }
 
       {selectedVerify &&
-        (<Box>
-          ssss
+        (<Box pt={5}>
+          <Container maxW="container.xl">
+            <Flex direction={"column"} gap={6}>
+              <CustomCard>
+                <Tabs isLazy px={0}>
+                  <TabList borderBottom="none">
+                    <Tab borderBottom="none">Contract Source Code</Tab>
+                  </TabList>
+                  <Divider />
+                  <TabPanels>
+                    <TabPanel >
+                      <Box style={{ display: 'flex' }}>
+                        <Box style={{ width: '50%', marginRight: ' 10px' }}>
+                          <Text style={{ marginBottom: '5px' }}>Contract Address</Text>
+                          <Input style={{ backgroundColor: '#f8fafd' }} value={isVerify.contract} readOnly></Input>
+                        </Box>
+                        <Box style={{ width: '50%' }}>
+                          <Text style={{ marginBottom: '5px' }}>Compiler</Text>
+                          <Input style={{ backgroundColor: '#f8fafd' }} value={isVerify.compiler_version} readOnly></Input>
+                        </Box>
+                      </Box>
+
+                      <Box>
+                        <Box pt={5} style={{ display: 'flex' }}>
+                          <Text style={{ marginRight: '5px', fontWeight: 'bold' }}>Enter the Solidity Contract Code below</Text>
+                          <StarIcon style={{ color: 'red', height: '5px', width: '5px', marginTop: '5px' }} />
+                        </Box>
+                        <Input
+                          defaultValue={'0x'}
+                        />
+                      </Box>
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </CustomCard>
+            </Flex>
+          </Container>
         </Box>)
       }
 
