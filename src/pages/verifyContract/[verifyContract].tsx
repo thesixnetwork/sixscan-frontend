@@ -543,8 +543,8 @@ export default function VerifyContract({ address }: Props) {
               </CustomCard>
             </Flex>
           </Container>
-        </Box>
-      )}
+        </Box>)
+      }
     </Flex>
   );
 }
