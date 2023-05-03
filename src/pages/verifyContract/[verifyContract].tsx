@@ -275,7 +275,6 @@ export default function VerifyContract({
           </Container>
         </Box>)
       }
-
     </Flex>
   );
 }
