@@ -167,7 +167,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-
+ 
         <Box>
           <Container maxW="container.xl">
             <Flex direction="column" gap={3} p={3}>
