@@ -80,6 +80,10 @@ export interface Transactions {
         receiver: string;
         from_address: string,
         to_address: string,
+        nft_schema_code: string;
+        tokenId: string;
+        action: string;
+        ref_id: string;
         timeout_height: string;
         extension_options: string[];
         non_critical_extension_options: string[];

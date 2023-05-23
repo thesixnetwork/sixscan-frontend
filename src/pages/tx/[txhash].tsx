@@ -72,6 +72,7 @@ import { CoinGeckoPrice } from "@/types/Coingecko";
 import ENV from "@/utils/ENV";
 import axios from "axios";
 import { parse } from "path";
+import { DateTime } from "@cosmjs/tendermint-rpc";
 
 
 interface Props {
@@ -88,7 +89,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   let totalValueTmp = 0;
 
   // console.log("tx22 =>", JSON.parse(tx.tx_result.log)[0])
-  // console.log("isContract =>", txs.tx_response.logs)
+  console.log("Txs =>", txs)
+  // console.log("Txs2 =>", txs.tx.body.messages[0].amount[0].amount)
   ////// Get Price SIX ///////
   useEffect(() => {
     setTotalValue(totalValueTmp);
@@ -184,7 +186,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Overview</Tab>
-                      <Tab>Logs({Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0].events.length})</Tab>
+                      <Tab>Logs({Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined ? txs.tx_response.logs[0].events.length : "0"})</Tab>
                       <Tab>Events({Array.isArray(txs.tx_response.events) && txs.tx_response.events.length})</Tab>
                     </TabList>
                     <TabPanels>
@@ -213,9 +215,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="column">
                                   <Text>
-                                    <Badge colorScheme={"green"}>
-                                      {txs.tx_response.code === 0 ? "Success" : "Failed"}
-                                    </Badge>
+                                    {txs.tx_response.code === 0 ?
+                                      <Badge colorScheme={"green"}>
+                                        Success
+                                      </Badge>
+                                      : <Badge colorScheme={"red"}>
+                                        Failed
+                                      </Badge>
+                                    }
                                   </Text>
                                 </Flex>
                               </Td>
@@ -245,7 +252,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td>
                                 <Flex direction="row">
                                   <TimeIcon style={{ marginRight: '5px' }} />
-                                  <Text>{txs.tx_response.timestamp}</Text>
+                                  {moment(txs.tx_response.timestamp).format("HH:mm:ss YYYY-MM-DD")}{" "}
+                                  ({moment(txs.tx_response.timestamp).fromNow()})
                                 </Flex>
                               </Td>
                             </Tr>
@@ -298,37 +306,81 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Tr>
                             }
 
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].creator &&
+                            {/* //// action nft //// */}
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].nft_schema_code &&
                               <Tr>
                                 <Td borderBottom="none">
                                   <Flex direction="column">
-                                    <Text>{`Creator:`}</Text>
+                                    <Text>{`NFT Schema Code:`}</Text>
                                   </Flex>
                                 </Td>
                                 <Td borderBottom="none">
                                   <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                        <Clickable
-                                          href={`/address/${txs.tx.body.messages[0].creator}`}
-                                          underline
-                                        >
-                                          {txs.tx.body.messages[0].creator}
-                                        </Clickable>
-                                      )}
-                                    </Text>
+                                    {Array.isArray(txs.tx.body.messages) && (
+                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.nft_schema_code}</Text>
+                                    )}
                                   </Flex>
                                 </Td>
                               </Tr>
                             }
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].action &&
+                              <Tr>
+                                <Td borderBottom="none">
+                                  <Flex direction="column">
+                                    <Text>{`Action:`}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td borderBottom="none">
+                                  <Flex direction="row">
+                                    {Array.isArray(txs.tx.body.messages) && (
+                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.action}</Text>
+                                    )}
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            }
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].tokenId &&
+                              <Tr>
+                                <Td borderBottom="none">
+                                  <Flex direction="column">
+                                    <Text>{`Token ID:`}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td borderBottom="none">
+                                  <Flex direction="row">
+                                    {Array.isArray(txs.tx.body.messages) && (
+                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.tokenId}</Text>
+                                    )}
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            }
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].ref_id &&
+                              <Tr>
+                                <Td borderBottom="none">
+                                  <Flex direction="column">
+                                    <Text>{`Ref ID:`}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td borderBottom="none">
+                                  <Flex direction="row">
+                                    {Array.isArray(txs.tx.body.messages) && (
+                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.ref_id}</Text>
+                                    )}
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            }
+                            {/* //////////////////// */}
+
                             {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].receiver &&
                               <Tr>
-                                <Td>
+                                <Td borderBottom="none">
                                   <Flex direction="column">
                                     <Text>{`Receiver:`}</Text>
                                   </Flex>
                                 </Td>
-                                <Td>
+                                <Td borderBottom="none">
                                   <Flex direction="row">
                                     <Text style={{ marginRight: '5px' }}>
                                       {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
@@ -344,22 +396,46 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Td>
                               </Tr>
                             }
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].creator &&
+                              <Tr>
+                                <Td>
+                                  <Flex direction="column">
+                                    <Text>{`Creator:`}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row">
+                                    <Text style={{ marginRight: '5px' }}>
+                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
+                                        <Clickable
+                                          href={`/address/${txs.tx.body.messages[0].creator}`}
+                                          underline
+                                        >
+                                          {txs.tx.body.messages[0].creator}
+                                        </Clickable>
+                                      )}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            }
                             {/* ///////////////////////// */}
-
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Value:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row">
-                                  <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                  <Text style={{ marginRight: '5px' }} >{Array.isArray(txs.tx.body.messages) && convertUsixToSix(parseInt(txs.tx.body.messages[0].amount.amount))} SIX </Text>
-                                  <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
+                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount !== undefined &&
+                              <Tr>
+                                <Td borderBottom="none">
+                                  <Flex direction="column">
+                                    <Text>{`Value:`}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td borderBottom="none">
+                                  <Flex direction="row">
+                                    <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
+                                    <Text style={{ marginRight: '5px' }} >{Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount.amount !== undefined ? convertUsixToSix(parseInt(txs.tx.body.messages[0].amount.amount)) : convertUsixToSix(parseInt(txs.tx.body.messages[0].amount[0].amount))} SIX </Text>
+                                    <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            }
                             <Tr>
                               <Td borderBottom="none">
                                 <Flex direction="column">
@@ -404,6 +480,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Td>
                             </Tr>
 
+
+
                           </Tbody>
                         </Table>
                       </TabPanel>
@@ -412,7 +490,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                       <TabPanel>
                         <Table>
                           <Tbody>
-                            {Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0].events.map((event: any, index: any) => (
+                            {Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined && txs.tx_response.logs[0].events.map((event: any, index: any) => (
                               <Tr key={index}>
                                 <Td>
                                   <Badge>{event.type}</Badge>
@@ -818,6 +896,7 @@ export const getServerSideProps = async (context: {
     tx_evm = null;
     isContract = null;
   }
+  console.log("txsssss ==>", txs.tx_response.logs)
   return {
     props: {
       tx,
