@@ -65,6 +65,22 @@ export const getTxsFromBlock = async (height: string): Promise<any> => {
   }
 };
 
+export const getTxsFromHash = async (txhash: string): Promise<any> => {
+  try {
+    const res = await axios.get(
+      `${ENV.API_URL}/cosmos/tx/v1beta1/txs/${txhash}`
+    );
+    const blockTxs = res.data;
+    if (!blockTxs) {
+      return null;
+    }
+    return blockTxs;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const getTxFromHash = async (hash: string): Promise<any> => {
   try {
     const res = await axios.get(`${ENV.ARCH_RPC_URL}/tx?hash=0x${hash}`);
@@ -80,7 +96,6 @@ export const getTxFromHash = async (hash: string): Promise<any> => {
 };
 
 export const getTxEVMFromHash = async (hash: string): Promise<any> => {
-  console.log("hash =>",hash)
   const body = {
     jsonrpc: "2.0",
     method: "eth_getTransactionByHash",

@@ -83,7 +83,7 @@ import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { useEffect, useState } from "react";
-import { getDelegationsFromValidator, getValidator } from "@/service/staking";
+import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
 import { Delegation, Validator } from "@/types/Staking";
 import { Balance, BalanceETH } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
@@ -150,10 +150,10 @@ export default function Address({
   );
 
   // console.log("address =>",address)
-  console.log("isETHAddress =>", isETHAddress);
+  // console.log("isETHAddress =>", isETHAddress);
   // console.log("account =>",account)
   // console.log("balance =>",balance)
-  console.log("balances =>", balances);
+  // console.log("balances =>", balances);
   // console.log("accountTxs =>",accountTxs)
   // console.log("delegations =>",delegations)
   // console.log("filteredBalances =>",filteredBalances)
@@ -602,10 +602,10 @@ export default function Address({
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Txns</Tab>
-                      {/* <Tab>Txns (Data Layer)</Tab>*/}
+                      <Tab>Txns (Data Layer)</Tab>
                       <Tab>Txns (Evm)</Tab>
                       {isContract ? <Tab>Contract</Tab> : null}
-                      {/* {validator && <Tab>Proposed Blocks</Tab>} */}
+                      {validator && <Tab>Proposed Blocks</Tab>}
                       {validator && <Tab>Delegators</Tab>}
                     </TabList>
                     <TabPanels>
@@ -779,6 +779,120 @@ export default function Address({
                           </Table>
                         </TableContainer>
                       </TabPanel>
+
+                      {/* ----- Mock data layer ---- */}
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          color={"dark"}
+                        >
+                          <FaSortAmountDown fontSize={12} />
+                          <Text>
+                            Latest 25 from a total of{" "}
+                            <Clickable underline href="/">
+                              92
+                            </Clickable>{" "}
+                            transactions
+                          </Text>
+                        </Flex>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr>
+                                <Td>
+                                  <Text>Txhash</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Token ID</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Method</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Age</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Block</Text>
+                                </Td>
+                                <Td>
+                                  <Text>By</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Gas Fee</Text>
+                                </Td>
+                              </Tr>
+                              
+                            </Thead>
+                            {/* <Tbody> */}
+                            {/* {ACTIONS.map((action, index) => (
+                                <Tr key={index}>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {formatHex(action.txhash)}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable
+                                        href={`/schema/${
+                                          METADATA.find(
+                                            (metadatum) =>
+                                              metadatum.nftData.token_id ===
+                                              action.token_id
+                                          )?.nftData.nft_schema_code
+                                        }/${action.token_id}`}
+                                        underline
+                                      >
+                                        {
+                                          METADATA.find(
+                                            (metadatum) =>
+                                              metadatum.nftData.token_id ===
+                                              action.token_id
+                                          )?.nftData.token_id
+                                        }
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Badge>{action.method}</Badge>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{action.age}</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {action.block}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {formatHex(action.by)}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{`${action.gasfee} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              ))} */}
+                            {/* </Tbody> */}
+                            <Tbody>
+                              
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+
+
                       <TabPanel>
                         <Flex
                           direction="row"
@@ -1898,7 +2012,7 @@ export const getServerSideProps = async (context: {
   const { address } = context.params;
   const isContract = await getIsContract(address);
   const isETHAddress = await getIsETHAddress(address);
-  const [validator, account, balance, balances, accountTxs, delegations] =
+  const [validator, account, balance, balances, accountTxs, delegations, validators] =
     await Promise.all([
       getValidator(address),
       getAccount(address),
@@ -1906,10 +2020,12 @@ export const getServerSideProps = async (context: {
       getBalances(address),
       getTxsFromAddress(address, "1", "20"),
       getDelegationsFromValidator(address),
+      getValidators(),
     ]);
   const isAddressValid = await validateAddress(address);
-  console.log("isContract ==>", isContract);
-  console.log("balances 1551 ==>", balances);
+  // console.log("isContract ==>", isContract);
+  // console.log("balances 1551 ==>", balances);
+  // console.log("validators 1914 ==>", validators);
   return {
     props: isAddressValid
       ? {

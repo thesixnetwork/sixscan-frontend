@@ -33,8 +33,6 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
       }
       return balances;
     }
-
-    console.log("grt_balss =====>");
     
   } catch (error) {
     // console.error(error);

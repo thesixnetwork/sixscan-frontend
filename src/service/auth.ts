@@ -46,7 +46,6 @@ export const getIsContract = async (address: string): Promise<any> => {
     if (result.length <= 2) {
       return false;
     }
-    console.log("isContracttt ==>", result)
     return true;
   } catch (error) {
     console.error(error);
