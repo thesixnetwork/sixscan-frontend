@@ -793,8 +793,9 @@ export const getServerSideProps = async ({
   query: { page: string; metadata_page: string };
 }) => {
   const schema = await getSchema(schemacode);
-  console.log("schema: ", schema);
+  // console.log("schema: ", schema);
   if (!schema) {
+    console.log("schema is not")
     return {
       props: {
         schemacode: null,
@@ -814,7 +815,6 @@ export const getServerSideProps = async ({
     getNftCollection(schemacode, metadata_page),
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
-
   return {
     props: {
       schemacode,

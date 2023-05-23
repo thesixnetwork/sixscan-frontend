@@ -104,8 +104,6 @@ export default function VerifyContract({
   const handleReset = () => {
     if (isVerify.contract != '' && isVerify.compiler_type != '' && isVerify.compiler_version != '' && isVerify.license != '') {
       setSelectedVerify(true);
-      console.log(selectedVerify)
-      console.log(1)
     }
     // reset form or perform other actions
   }
@@ -113,9 +111,6 @@ export default function VerifyContract({
   const [isOpen, setIsOpen] = useState(false);
   const handleClick = () => setIsOpen(!isOpen);
 
-  console.log("isVerify ==>", isVerify)
-  console.log("selectedVerify ==>", selectedVerify)
-  console.log("isVerify_solc ==>", isVerify_solc)
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">

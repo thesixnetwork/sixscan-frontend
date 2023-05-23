@@ -60,9 +60,6 @@ export default function BlockPage({
   TxsCosmos,
 }: Props) {
   const router = useRouter();
-  console.log("block =>", block);
-  console.log("blockEVM =>", blockEVM);
-  console.log("TxsEVM =>", TxsEVM);
   // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) => ({hash:JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx").attributes.find((x:any) => x.key === "ethereumTxHash").value})))
   // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => !x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) =>  x.hash))
 
@@ -80,9 +77,9 @@ export default function BlockPage({
     ],
   };
 
-  console.log(
-    mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth"))
-  );
+  // console.log(
+  //   mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth"))
+  // );
 
   if (!block) {
     return (
@@ -422,7 +419,7 @@ export const getServerSideProps = async (context: {
     getBlock(blockheight),
     getTxsFromBlock(blockheight),
   ]);
-  console.log(block);
+  // console.log(block);
   if (blockTxs) {
     TxsAll = blockTxs.txs.map((x: any) => ({
       hash: x.hash,
