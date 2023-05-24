@@ -78,7 +78,7 @@ import { parseJsonText } from "typescript";
 
 interface Props {
   tx: Transaction;
-  txs: Transactions;
+  txs: any;
   block_evm: BlockEVM;
   tx_evm: TransactionEVM;
   isContract: IsContract;
@@ -87,6 +87,14 @@ interface Props {
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
+
+  // get object keys from txs.tx.body.messages[0]
+  const KeyMsg = Object.keys(txs.tx.body.messages[0]);
+  const message = txs.tx.body.messages[0];
+  console.log("message =>", message);
+  
+  console.log("keys =>", KeyMsg);
+  
   let totalValueTmp = 0;
 
   // console.log("tx22 =>", JSON.parse(tx.tx_result.log)[0])
@@ -258,185 +266,73 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                             </Tr>
-
-                            {/* ///// Form-to/lal ///// */}
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].from_address &&
-                              <Tr>
-                                <Td borderBottom="none">
+                            
+                            
+                            {KeyMsg.map((key:any, index) => {
+                              if (key == "amount" ){
+                                // console.log(message[key]);
+                                return (
+                                  <Tr>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{`Value:`}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
+                                        {/* <Text style={{ marginRight: '5px' }} >{Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount.amount !== undefined ? convertUsixToSix(parseInt(txs.tx.body.messages[0].amount.amount)) : convertUsixToSix(parseInt(txs.tx.body.messages[0].amount[0].amount))} SIX </Text> */}
+                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : convertUsixToSix(parseInt(message[key][0].amount))} SIX </Text>
+                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                )
+                              } 
+                              // if message[key] is string and start with "6x"
+                              else if (message[key].startsWith("6x")){
+                                console.log(message[key]);
+                                return (
+                                  <Tr key={index}>
+                                   <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <Text style={{ marginRight: '5px' }}>
+                                          <Clickable
+                                            href={`/address/${message[key]}`}
+                                            underline
+                                          >
+                                            {message[key]}
+                                          </Clickable>
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                  </Tr>
+                                );
+                              }
+                              // console.log(message[key]);
+                              return (
+                                <Tr key={index}>
+                                 <Td borderBottom="none">
                                   <Flex direction="column">
-                                    <Text>{`Form:`}</Text>
+                                    <Text>{key}</Text>
                                   </Flex>
                                 </Td>
                                 <Td borderBottom="none">
                                   <Flex direction="row">
                                     <Text style={{ marginRight: '5px' }}>
-                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                        <Clickable
-                                          href={`/address/${txs.tx.body.messages[0].from_address}`}
-                                          underline
-                                        >
-                                          {txs.tx.body.messages[0].from_address}
-                                        </Clickable>
-                                      )}
+                                      {message[key]}
                                     </Text>
                                   </Flex>
                                 </Td>
-                              </Tr>
-                            }
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].to_address &&
-                              <Tr>
-                                <Td>
-                                  <Flex direction="column">
-                                    <Text>{`To:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td>
-                                  <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                        <Clickable
-                                          href={`/address/${txs.tx.body.messages[0].to_address}`}
-                                          underline
-                                        >
-                                          {txs.tx.body.messages[0].to_address}
-                                        </Clickable>
-                                      )}
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-
-                            {/* //// action nft //// */}
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].nft_schema_code &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`NFT Schema Code:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    {Array.isArray(txs.tx.body.messages) && (
-                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.nft_schema_code}</Text>
-                                    )}
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].action &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Action:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    {Array.isArray(txs.tx.body.messages) && (
-                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.action}</Text>
-                                    )}
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].tokenId &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Token ID:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    {Array.isArray(txs.tx.body.messages) && (
-                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.tokenId}</Text>
-                                    )}
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].ref_id &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Ref ID:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    {Array.isArray(txs.tx.body.messages) && (
-                                      <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.ref_id}</Text>
-                                    )}
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {/* //////////////////// */}
-
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].receiver &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Receiver:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                        <Clickable
-                                          href={`/address/${txs.tx.body.messages[0].receiver}`}
-                                          underline
-                                        >
-                                          {txs.tx.body.messages[0].receiver}
-                                        </Clickable>
-                                      )}
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].creator &&
-                              <Tr>
-                                <Td>
-                                  <Flex direction="column">
-                                    <Text>{`Creator:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td>
-                                  <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                      {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                        <Clickable
-                                          href={`/address/${txs.tx.body.messages[0].creator}`}
-                                          underline
-                                        >
-                                          {txs.tx.body.messages[0].creator}
-                                        </Clickable>
-                                      )}
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
-                            {/* ///////////////////////// */}
-                            {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount !== undefined &&
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Value:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                    <Text style={{ marginRight: '5px' }} >{Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount.amount !== undefined ? convertUsixToSix(parseInt(txs.tx.body.messages[0].amount.amount)) : convertUsixToSix(parseInt(txs.tx.body.messages[0].amount[0].amount))} SIX </Text>
-                                    <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            }
+                                </Tr>
+                              );
+                            })}
+                            
                             <Tr>
                               <Td borderBottom="none">
                                 <Flex direction="column">
@@ -466,23 +362,6 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                             </Tr>
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`@Type:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row">
-                                  {Array.isArray(txs.tx.body.messages) && txs.tx.body.messages.length > 0 && (
-                                    <Text style={{ marginRight: '5px' }}>{txs.tx.body.messages[0]?.["@type"]}</Text>
-                                  )}
-                                </Flex>
-                              </Td>
-                            </Tr>
-
-
-
                           </Tbody>
                         </Table>
                       </TabPanel>
