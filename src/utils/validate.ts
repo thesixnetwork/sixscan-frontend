@@ -1,5 +1,5 @@
 export const validateAddress = (address: string) => {
-  const pattern = /^6x(1[a-zA-Z0-9]{38}|valoper1[a-zA-Z0-9]{38})$/;
+  const pattern = /^6x(1[a-zA-Z0-9]{38}|valoper1[a-zA-Z0-9]{38})|^0x[0-9a-fA-F]{40}$/;
   return pattern.test(address);
 };
 

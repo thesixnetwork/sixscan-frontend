@@ -75,11 +75,11 @@ const sortValidatorsByPower = (validators: Validator[]) => {
   });
 };
 
-export default function Validators({
-  validators,
-}: {
+interface ValidatorProps {
   validators: Validator[];
-}) {
+}
+
+export default function Validators({ validators }: ValidatorProps) {
   // sort validators by voting power and if status is not bonded, put it at the end
   sortValidatorsByPower(validators);
   return (
