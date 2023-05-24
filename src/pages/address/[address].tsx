@@ -270,13 +270,13 @@ export default function Address({
                               <Text>
                                 {balance && balance.amount !== null
                                   ? formatNumber(
-                                      convertUsixToSix(parseInt(balance.amount))
-                                    )
+                                    convertUsixToSix(parseInt(balance.amount))
+                                  )
                                   : null}
                                 {balances && isETHAddress
                                   ? convertUsixToSix(
-                                      parseInt(balances[0].amount)
-                                    )
+                                    parseInt(balances[0].amount)
+                                  )
                                   : null}
                               </Text>
                               <Image src="/six.png" alt="coin" height={4} />
@@ -291,7 +291,7 @@ export default function Address({
                             {price && price !== null && balance !== null ? (
                               <Text fontSize={"sm"}>{`$${formatNumber(
                                 convertUsixToSix(parseInt(balance.amount)) *
-                                  price?.usd
+                                price?.usd
                               )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
                             ) : isETHAddress &&
                               price &&
@@ -299,7 +299,7 @@ export default function Address({
                               balances !== null ? (
                               <Text fontSize={"sm"}>{`$${formatNumber(
                                 convertUsixToSix(parseInt(balances[0].amount)) *
-                                  price.usd
+                                price.usd
                               )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
                             ) : (
                               <Skeleton height="28px" width="150px" />
@@ -356,7 +356,7 @@ export default function Address({
                                 </PopoverHeader>
                                 <PopoverBody>
                                   {filteredBalances &&
-                                  filteredBalances.length > 0 ? (
+                                    filteredBalances.length > 0 ? (
                                     filteredBalances.map((token, index) => (
                                       <Flex
                                         direction="row"
@@ -485,18 +485,18 @@ export default function Address({
                               <Badge
                                 colorScheme={
                                   validator.status.split("BOND_STATUS_")[1] ==
-                                  "BONDED"
+                                    "BONDED"
                                     ? "green"
                                     : "red"
                                 }
                               >
                                 <Flex direction="row" align="center" gap={2}>
                                   {validator.status.split("BOND_STATUS_")[1] ==
-                                  "BONDED" ? (
+                                    "BONDED" ? (
                                     <FaCheck />
                                   ) : validator.status.split(
-                                      "BOND_STATUS_"
-                                    )[1] == "UNBONDED" ? (
+                                    "BOND_STATUS_"
+                                  )[1] == "UNBONDED" ? (
                                     <FaRegWindowClose />
                                   ) : (
                                     <FaSpinner />
@@ -618,9 +618,8 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            {`Latest ${
-                              (accountTxs && accountTxs.count) || 0
-                            } from a total of `}
+                            {`Latest ${(accountTxs && accountTxs.count) || 0
+                              } from a total of `}
                             <Clickable underline href={`/txs/${address}`}>
                               {accountTxs ? accountTxs.total_count : "0"}
                             </Clickable>{" "}
@@ -688,9 +687,9 @@ export default function Address({
                                       <Badge textAlign={"center"} width="100%">
                                         {tx.type
                                           .split(".")
-                                          [tx.type.split(".").length - 1].slice(
-                                            3
-                                          )}
+                                        [tx.type.split(".").length - 1].slice(
+                                          3
+                                        )}
                                       </Badge>
                                     </Td>
                                     <Td>
@@ -823,7 +822,7 @@ export default function Address({
                                   <Text>Gas Fee</Text>
                                 </Td>
                               </Tr>
-                              
+
                             </Thead>
                             {/* <Tbody> */}
                             {/* {ACTIONS.map((action, index) => (
@@ -886,7 +885,7 @@ export default function Address({
                               ))} */}
                             {/* </Tbody> */}
                             <Tbody>
-                              
+
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -939,12 +938,12 @@ export default function Address({
                                 <Td>
                                   <Text>Txhash</Text>
                                 </Td>
-                                <Td>
+                                {/* <Td>
                                   <Text>Method</Text>
                                 </Td>
                                 <Td>
                                   <Text>Age</Text>
-                                </Td>
+                                </Td> */}
                                 <Td>
                                   <Text>Block</Text>
                                 </Td>
@@ -955,12 +954,12 @@ export default function Address({
                                 <Td>
                                   <Text>To</Text>
                                 </Td>
-                                <Td>
+                                {/* <Td>
                                   <Text>Value</Text>
                                 </Td>
                                 <Td>
                                   <Text>Gas Fee</Text>
-                                </Td>
+                                </Td> */}
                               </Tr>
                             </Thead>
                             {/* <Tbody> */}
@@ -1040,16 +1039,25 @@ export default function Address({
                                           />
                                         )}
                                         <Text>
-                                          <Clickable
+                                          {/* <Clickable
                                             href={`/tx/${tx.txhash}`}
                                             underline
                                           >
                                             {formatHex(tx.txhash)}
-                                          </Clickable>
+                                          </Clickable> */}
+                                          <Link href={`https://fivenet.evm.sixscan.io/tx/${tx.txhash}`}>
+                                            <Text
+                                              as={"span"}
+                                              decoration={"none"}
+                                              color="primary.500"
+                                            >
+                                              {formatHex(tx.txhash)}
+                                            </Text>
+                                          </Link>
                                         </Text>
                                       </Flex>
                                     </Td>
-                                    <Td>
+                                    {/* <Td>
                                       <Badge textAlign={"center"} width="100%">
                                         {tx.type
                                           .split(".")
@@ -1057,12 +1065,12 @@ export default function Address({
                                             3
                                           )}
                                       </Badge>
-                                    </Td>
-                                    <Td>
+                                    </Td> */}
+                                    {/* <Td>
                                       <Text>
                                         {moment(tx.time_stamp).fromNow()}
                                       </Text>
-                                    </Td>
+                                    </Td> */}
                                     <Td>
                                       <Text>
                                         <Clickable
@@ -1076,20 +1084,31 @@ export default function Address({
                                     <Td>
                                       <Text>
                                         {tx.decode_tx.fromAddress && (
-                                          <Clickable
-                                            href={`/address/${tx.decode_tx.fromAddress}`}
-                                            underline
-                                          >
-                                            {formatHex(
-                                              tx.decode_tx.fromAddress
-                                            )}
-                                          </Clickable>
+                                          // <Clickable
+                                          //   href={`/address/${tx.decode_tx.fromAddress}`}
+                                          //   underline
+                                          // >
+                                          //   {formatHex(
+                                          //     tx.decode_tx.fromAddress
+                                          //   )}
+                                          // </Clickable>
+                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.fromAddress}`}>
+                                            <Text
+                                              as={"span"}
+                                              decoration={"none"}
+                                              color="primary.500"
+                                            >
+                                              {formatHex(
+                                                tx.decode_tx.fromAddress
+                                              )}
+                                            </Text>
+                                          </Link>
                                         )}
                                       </Text>
                                     </Td>
                                     <Td>
                                       {tx.decode_tx.toAddress ===
-                                      addressMock ? (
+                                        addressMock ? (
                                         <Badge
                                           textAlign={"center"}
                                           width="100%"
@@ -1111,16 +1130,27 @@ export default function Address({
                                     <Td>
                                       <Text>
                                         {tx.decode_tx.toAddress && (
-                                          <Clickable
-                                            href={`/address/${tx.decode_tx.toAddress}`}
-                                            underline
-                                          >
-                                            {formatHex(tx.decode_tx.toAddress)}
-                                          </Clickable>
+                                          // <Clickable
+                                          //   href={`/address/${tx.decode_tx.toAddress}`}
+                                          //   underline
+                                          // >
+                                          //   {formatHex(tx.decode_tx.toAddress)}
+                                          // </Clickable>
+                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.toAddress}`}>
+                                            <Text
+                                              as={"span"}
+                                              decoration={"none"}
+                                              color="primary.500"
+                                            >
+                                              {formatHex(
+                                                tx.decode_tx.toAddress
+                                              )}
+                                            </Text>
+                                          </Link>
                                         )}
                                       </Text>
                                     </Td>
-                                    <Td isNumeric>
+                                    {/* <Td isNumeric>
                                       {tx.decode_tx.amount &&
                                         tx.decode_tx.amount[0]?.amount && (
                                           <Text>{`${formatNumber(
@@ -1131,14 +1161,14 @@ export default function Address({
                                             )
                                           )} SIX`}</Text>
                                         )}
-                                    </Td>
-                                    <Td>
+                                    </Td> */}
+                                    {/* <Td>
                                       <Text>{`${formatNumber(
                                         convertUsixToSix(
                                           parseInt(tx.decode_tx.fee_amount)
                                         )
                                       )} SIX`}</Text>
-                                    </Td>
+                                    </Td> */}
                                   </Tr>
                                 ))}
                             </Tbody>
@@ -2029,26 +2059,26 @@ export const getServerSideProps = async (context: {
   return {
     props: isAddressValid
       ? {
-          address,
-          validator,
-          account,
-          balance,
-          balances,
-          accountTxs,
-          delegations,
-          isContract,
-          isETHAddress,
-        }
+        address,
+        validator,
+        account,
+        balance,
+        balances,
+        accountTxs,
+        delegations,
+        isContract,
+        isETHAddress,
+      }
       : {
-          address: null,
-          validator: null,
-          account: null,
-          balance: null,
-          balances: null,
-          accountTxs: null,
-          delegations: null,
-          isContract: null,
-          isETHAddress: null,
-        },
+        address: null,
+        validator: null,
+        account: null,
+        balance: null,
+        balances: null,
+        accountTxs: null,
+        delegations: null,
+        isContract: null,
+        isETHAddress: null,
+      },
   };
 };

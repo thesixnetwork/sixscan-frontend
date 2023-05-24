@@ -73,6 +73,7 @@ import ENV from "@/utils/ENV";
 import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
+import { parseJsonText } from "typescript";
 
 
 interface Props {
@@ -167,7 +168,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
- 
+
         <Box>
           <Container maxW="container.xl">
             <Flex direction="column" gap={3} p={3}>
@@ -186,7 +187,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Overview</Tab>
-                      <Tab>Logs({Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined ? txs.tx_response.logs[0].events.length : "0"})</Tab>
+                      <Tab>Logs({Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined ? txs.tx_response.logs[0].events.length : "1"})</Tab>
                       <Tab>Events({Array.isArray(txs.tx_response.events) && txs.tx_response.events.length})</Tab>
                     </TabList>
                     <TabPanels>
@@ -487,58 +488,77 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                       </TabPanel>
 
                       {/* ///// Logs ///// */}
-                      <TabPanel>
-                        <Table>
-                          <Tbody>
-                            {Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined && txs.tx_response.logs[0].events.map((event: any, index: any) => (
-                              <Tr key={index}>
-                                <Td>
-                                  <Badge>{event.type}</Badge>
-                                </Td>
-                                <Td>
-                                  {event.attributes.map((attr: any, index: any) => (
-                                    <Flex
-                                      direction="row"
-                                      gap={2}
-                                      alignItems="center"
-                                      key={index}
-                                    >
-                                      {attr.key && (
-                                        <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
-                                          {attr.key}
-                                        </Text>
-                                      )}
-                                      {attr.value && (
-                                        <Text style={{ marginBottom: '10px' }}>
-                                          {/* {attr.value} */}
-                                          {attr.key === 'action' && <Text>{attr.value}</Text>}
-                                          {attr.value.startsWith('6x') && <Text>
-                                            <Clickable
-                                              href={`/address/${attr.value}`}
-                                              underline
-                                            >
-                                              {attr.value}
-                                            </Clickable>
-                                          </Text>}
-                                          {attr.value.endsWith('usix') && <Text style={{ display: 'flex' }}>
-                                            {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                            <Text style={{ marginLeft: '5px' }}> SIX</Text>
-                                          </Text>}
-                                          {attr.value.endsWith('asix') && <Text style={{ display: 'flex' }}>
-                                            {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                            <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
-                                          </Text>}
-                                        </Text>
-                                      )}
+                      {txs.tx_response.code === 0 &&
+                        <TabPanel>
+                          <Table>
+                            <Tbody>
+                              {Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined && txs.tx_response.logs[0].events.map((event: any, index: any) => (
+                                <Tr key={index}>
+                                  <Td>
+                                    <Badge>{event.type}</Badge>
+                                  </Td>
+                                  <Td>
+                                    {event.attributes.map((attr: any, index: any) => (
+                                      <Flex
+                                        direction="row"
+                                        gap={2}
+                                        alignItems="center"
+                                        key={index}
+                                      >
+                                        {attr.key && (
+                                          <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                            {attr.key}
+                                          </Text>
+                                        )}
+                                        {attr.value && (
+                                          <Text style={{ marginBottom: '10px' }}>
+                                            {/* {attr.value} */}
+                                            {attr.key === 'action' && <Text>{attr.value}</Text>}
+                                            {attr.value.startsWith('6x') && <Text>
+                                              <Clickable
+                                                href={`/address/${attr.value}`}
+                                                underline
+                                              >
+                                                {attr.value}
+                                              </Clickable>
+                                            </Text>}
+                                            {attr.value.endsWith('usix') && <Text style={{ display: 'flex' }}>
+                                              {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                              <Text style={{ marginLeft: '5px' }}> SIX</Text>
+                                            </Text>}
+                                            {attr.value.endsWith('asix') && <Text style={{ display: 'flex' }}>
+                                              {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                              <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
+                                            </Text>}
+                                          </Text>
+                                        )}
 
-                                    </Flex>
-                                  ))}
-                                </Td>
-                              </Tr>
-                            ))}
-                          </Tbody>
-                        </Table>
-                      </TabPanel>
+                                      </Flex>
+                                    ))}
+                                  </Td>
+                                </Tr>
+                              ))}
+                            </Tbody>
+                          </Table>
+                        </TabPanel>
+                      }
+                      {/* ///// log fail //// */}
+                      {txs.tx_response.code !== 0 &&
+                        <TabPanel>
+                          <Table>
+                            <Tbody>
+                                <Tr>
+                                  <Td borderBottom="none">
+                                    <Badge colorScheme={"red"}>Fail</Badge>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Text> {txs.tx_response.raw_log.substring(txs.tx_response.raw_log.indexOf("state.go:763") + "state.go:763".length + 1)} </Text>
+                                  </Td>
+                                </Tr>
+                            </Tbody>
+                          </Table>
+                        </TabPanel>
+                      }
 
                       <TabPanel>
                         <Table>
