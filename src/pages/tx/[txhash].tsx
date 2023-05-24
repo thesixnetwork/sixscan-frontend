@@ -65,7 +65,7 @@ import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
 
-import { formatNumber, convertAsixToSix, convertUsixToSix } from "@/utils/format";
+import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -272,7 +272,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               if (key == "amount" ){
                                 // console.log(message[key]);
                                 return (
-                                  <Tr>
+                                  <Tr key={index}>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
                                         <Text>{`Value:`}</Text>
@@ -290,13 +290,13 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 )
                               } 
                               // if message[key] is string and start with "6x"
-                              else if (message[key].startsWith("6x")){
+                              else if (typeof message[key] === "string" && message[key].startsWith("6x")){
                                 console.log(message[key]);
                                 return (
                                   <Tr key={index}>
                                    <Td borderBottom="none">
                                     <Flex direction="column">
-                                      <Text>{key}</Text>
+                                      <Text>{typeof key === "string"? formatEng(key) : key}</Text>
                                     </Flex>
                                   </Td>
                                   <Td borderBottom="none">
@@ -314,18 +314,18 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-                              // console.log(message[key]);
+                              console.log(message[key]);
                               return (
                                 <Tr key={index}>
                                  <Td borderBottom="none">
                                   <Flex direction="column">
-                                    <Text>{key}</Text>
+                                    <Text>{typeof key === "string"? formatEng(key) : key}</Text>
                                   </Flex>
                                 </Td>
                                 <Td borderBottom="none">
                                   <Flex direction="row">
                                     <Text style={{ marginRight: '5px' }}>
-                                      {message[key]}
+                                      {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
                                     </Text>
                                   </Flex>
                                 </Td>

@@ -50,3 +50,13 @@ export const convertUsixToSix = (usix: number) => {
 export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
 };
+
+
+export const formatEng = (key:string) => {
+  if (key == "@type"){
+    return "@Type"
+  }
+  const splitParts = key.split('_');
+  const formattedKey = splitParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  return `${formattedKey}`;
+};
