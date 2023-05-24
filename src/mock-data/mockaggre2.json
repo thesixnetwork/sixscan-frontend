@@ -1,0 +1,26 @@
+{
+    "_id": {
+      "$oid": "645a0dd16061853b4d9a6107"
+    },
+    "nft_schema_code": "sixnetwork.whalegate",
+    "total_action_call": 0,
+    "monthly": [
+      {
+        "total_action_count": 0,
+        "month": 5,
+        "year": 2023,
+        "actoions_count": [
+          {
+            "action": "chenk_in",
+            "count": 0
+          }
+        ]
+      }
+    ],
+    "actions_count": [
+      {
+        "action": "chenk_in",
+        "count": 0
+      }
+    ]
+  }

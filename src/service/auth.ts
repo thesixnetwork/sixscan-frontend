@@ -2,6 +2,7 @@ import axios from "axios";
 import ENV from "../utils/ENV";
 import { Account } from "../types/Auth";
 
+
 export const getAccounts = async (): Promise<Account[]> => {
   try {
     const res = await axios.get(`${ENV.API_URL}/cosmos/auth/v1beta1/accounts`);
@@ -30,4 +31,39 @@ export const getAccount = async (address: string): Promise<Account | null> => {
     // console.error(error);
     return null;
   }
+};
+
+export const getIsContract = async (address: string): Promise<any> => {
+  const body = {
+    jsonrpc: "2.0",
+    method: "eth_getCode",
+    id: "1",
+    params: [address, "latest"],
+  };
+  try {
+    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
+    const result = res.data.result;
+    if (result.length <= 2) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+
+};
+
+export const getIsETHAddress = async (address: string): Promise<any> => {
+  try {
+    if (address.startsWith('0x')) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+
 };

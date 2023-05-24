@@ -58,6 +58,16 @@ import { formatNumber } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
+interface Props {
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
+  pool: Pool;
+  inflation: string;
+  supply: Balance;
+  latestBlocks: BlockchainResult;
+  blocksResult: BlockResult[];
+  validators: Validator[];
+}
+
 export default function Home({
   modalstate,
   pool,
@@ -66,15 +76,7 @@ export default function Home({
   latestBlocks,
   blocksResult,
   validators,
-}: {
-  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
-  pool: Pool;
-  inflation: string;
-  supply: Balance;
-  latestBlocks: BlockchainResult;
-  blocksResult: BlockResult[];
-  validators: Validator[];
-}) {
+}: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
 
   useEffect(() => {

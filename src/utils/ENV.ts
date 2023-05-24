@@ -6,6 +6,7 @@ const ENV = {
   NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
   TXS_API_URL: process.env.TXS_API_URL || "",
   DATA_CHAIN_TXS_API_URL: process.env.DATA_CHAIN_TXS_API_URL || "",
+  EVM_RPC_URL: process.env.EVM_RPC_URL || "https://rpc-evm.fivenet.sixprotocol.net:443",
 };
 
 export default ENV;

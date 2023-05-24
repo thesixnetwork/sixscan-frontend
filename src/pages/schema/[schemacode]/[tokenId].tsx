@@ -48,13 +48,12 @@ import { NFTSchema } from "@/types/Nftmngr";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
-export default function Schema({
-  metadata,
-  schema,
-}: {
+interface Props {
   metadata: Metadata;
   schema: NFTSchema;
-}) {
+}
+
+export default function Schema({ metadata, schema }: Props) {
   const STATS = [
     {
       title: "Chain",
