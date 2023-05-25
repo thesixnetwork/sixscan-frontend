@@ -179,7 +179,7 @@ export default function Schema({ metadata, schema }: Props) {
                 <Box mb={6}>
                   <CustomCard title="Static Attributes">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
-                      {metadata.attributes.map(
+                      {metadata.attributes?.map(
                         (attr, index) =>
                           attr.is_origin &&
                           !attr.display_type &&
@@ -195,7 +195,7 @@ export default function Schema({ metadata, schema }: Props) {
                 <Box mb={6}>
                   <CustomCard title="Dynamic Attributes (Gen2)">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
-                      {metadata.attributes.map(
+                      {metadata.attributes?.map(
                         (attr, index) =>
                           !attr.is_origin &&
                           !attr.display_type &&
@@ -208,7 +208,7 @@ export default function Schema({ metadata, schema }: Props) {
                     </Grid>
                   </CustomCard>
                 </Box>
-                {metadata.attributes.find(
+                {metadata.attributes?.find(
                   (attr) => attr.display_type == "number"
                 ) && (
                   <Box>
@@ -220,7 +220,7 @@ export default function Schema({ metadata, schema }: Props) {
                         maxH={"230px"}
                         overflow={"auto"}
                       >
-                        {metadata.attributes.map(
+                        {metadata.attributes?.map(
                           (attr, index) =>
                             !attr.is_origin &&
                             attr.display_type && (

@@ -88,8 +88,8 @@ import { Delegation, Validator } from "@/types/Staking";
 import { Balance, BalanceETH } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
 import moment from "moment";
-import { getAccount, getIsContract, getIsETHAddress } from "@/service/auth";
-import { Account, IsContract, IsETHAddress } from "@/types/Auth";
+import { getAccount } from "@/service/auth";
+import { Account} from "@/types/Auth";
 
 import { getBalance, getBalances } from "@/service/bank";
 import {
@@ -127,8 +127,6 @@ interface Props {
   balances: Balance[] | null;
   accountTxs: AccountTxs;
   delegations: Delegation[] | null;
-  isContract: IsContract | null;
-  isETHAddress: IsETHAddress | null;
 }
 
 export default function Address({
@@ -139,8 +137,6 @@ export default function Address({
   balances,
   accountTxs,
   delegations,
-  isContract,
-  isETHAddress,
 }: Props) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
@@ -221,7 +217,7 @@ export default function Address({
             <Flex direction="column" gap={3} p={3}>
               <Flex direction="row" align="center" gap={4}>
                 <Text fontSize="xl" fontWeight="bold" color={"dark"}>
-                  {isContract ? "Contract" : "Address"}
+                  {"Address"}
                 </Text>
                 <Text fontWeight="bold" color={address ? "medium" : "error"}>
                   {address ? address : "Invalid Address"}
@@ -244,7 +240,6 @@ export default function Address({
                 {validator && validator.jailed && (
                   <Badge colorScheme={"red"}>Jailed</Badge>
                 )}
-                {isETHAddress ? <Badge>ETHACCOUNT</Badge> : null}
               </Flex>
               <Divider />
               {!address && (
@@ -273,11 +268,6 @@ export default function Address({
                                     convertUsixToSix(parseInt(balance.amount))
                                   )
                                   : null}
-                                {balances && isETHAddress
-                                  ? convertUsixToSix(
-                                    parseInt(balances[0].amount)
-                                  )
-                                  : null}
                               </Text>
                               <Image src="/six.png" alt="coin" height={4} />
                             </Flex>
@@ -292,14 +282,6 @@ export default function Address({
                               <Text fontSize={"sm"}>{`$${formatNumber(
                                 convertUsixToSix(parseInt(balance.amount)) *
                                 price?.usd
-                              )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
-                            ) : isETHAddress &&
-                              price &&
-                              price !== null &&
-                              balances !== null ? (
-                              <Text fontSize={"sm"}>{`$${formatNumber(
-                                convertUsixToSix(parseInt(balances[0].amount)) *
-                                price.usd
                               )} (@ $${formatNumber(price?.usd)}/SIX)`}</Text>
                             ) : (
                               <Skeleton height="28px" width="150px" />
@@ -603,8 +585,6 @@ export default function Address({
                     <TabList>
                       <Tab>Txns</Tab>
                       <Tab>Txns (Data Layer)</Tab>
-                      <Tab>Txns (Evm)</Tab>
-                      {isContract ? <Tab>Contract</Tab> : null}
                       {validator && <Tab>Proposed Blocks</Tab>}
                       {validator && <Tab>Delegators</Tab>}
                     </TabList>
@@ -1175,713 +1155,6 @@ export default function Address({
                           </Table>
                         </TableContainer>
                       </TabPanel>
-
-                      {/* Contract */}
-                      {
-                        isContract && (
-                          <TabPanel px={0} pt={0}>
-                            <Box
-                              style={{ display: "flex", marginTop: "20px" }}
-                              px={4}
-                            >
-                              <Text style={{ marginRight: "4px" }}>
-                                Are you the contract creator?
-                              </Text>
-                              <Text style={{ marginRight: "4px" }}>
-                                <Clickable
-                                  href={`/verifyContract/${address}`}
-                                  underline
-                                >
-                                  Verify and Publish
-                                </Clickable>
-                              </Text>
-                              <Text>your contract source code today!</Text>
-                            </Box>
-                            <Tabs isLazy px={0}>
-                              <TabList borderBottom="none">
-                                <Tab borderBottom="none">
-                                  <Button
-                                    style={{
-                                      marginTop: "10px",
-                                      marginRight: "10px",
-                                      marginLeft: "20px",
-                                    }}
-                                    colorScheme="gray"
-                                  >
-                                    Code
-                                  </Button>
-                                </Tab>
-                                <Tab borderBottom="none">
-                                  <Button
-                                    style={{
-                                      marginTop: "10px",
-                                      marginRight: "10px",
-                                    }}
-                                    colorScheme="gray"
-                                  >
-                                    Read Contract
-                                  </Button>
-                                </Tab>
-                                <Tab borderBottom="none">
-                                  <Button
-                                    style={{ marginTop: "10px" }}
-                                    colorScheme="gray"
-                                  >
-                                    Wirte Contract
-                                  </Button>
-                                </Tab>
-                              </TabList>
-                              <TabPanels>
-                                <TabPanel>
-                                  <Box>
-                                    <Box style={{ display: "flex" }}>
-                                      <Box style={{ display: "flex" }}>
-                                        <CheckCircleIcon
-                                          style={{
-                                            marginRight: "5px",
-                                            color: "#00a186",
-                                          }}
-                                        />
-                                        <Text>
-                                          Contract Source Code Verified (Exact
-                                          Match)
-                                        </Text>
-                                        <WarningTwoIcon
-                                          style={{
-                                            position: "absolute",
-                                            right: "20px",
-                                            color: "#ffc107",
-                                          }}
-                                        />
-                                      </Box>
-                                    </Box>
-
-                                    <Box style={{ display: "flex" }} pt={4}>
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          width: "50%",
-                                        }}
-                                      >
-                                        <Text style={{ width: "50%" }}>
-                                          Contract Name:
-                                        </Text>
-                                        <Text style={{ width: "50%" }}>
-                                          Exchange
-                                        </Text>
-                                      </Box>
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          width: "50%",
-                                        }}
-                                      >
-                                        <Text style={{ width: "50%" }}>
-                                          Optimization Enabled:
-                                        </Text>
-                                        <Text style={{ width: "50%" }}>
-                                          Yes with 200 runs
-                                        </Text>
-                                      </Box>
-                                    </Box>
-                                    <Divider pt={3} />
-                                    <Box style={{ display: "flex" }} pt={4}>
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          width: "50%",
-                                        }}
-                                      >
-                                        <Text style={{ width: "50%" }}>
-                                          Compiler Version:
-                                        </Text>
-                                        <Text style={{ width: "50%" }}>
-                                          v0.4.16+commit.d7661dd9
-                                        </Text>
-                                      </Box>
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          width: "50%",
-                                        }}
-                                      >
-                                        <Text style={{ width: "50%" }}>
-                                          Other Settings:
-                                        </Text>
-                                        <Text style={{ width: "50%" }}>
-                                          default evmVersion
-                                        </Text>
-                                      </Box>
-                                    </Box>
-
-                                    <Box>
-                                      <Box
-                                        style={{
-                                          display: "flex",
-                                          justifyContent: "space-between",
-                                        }}
-                                      >
-                                        <Box style={{ marginTop: "20px" }}>
-                                          <Text>
-                                            Contract Source Code (Solidity)
-                                          </Text>
-                                        </Box>
-                                        <Box style={{ marginTop: "5px" }}>
-                                          <Button
-                                            style={{
-                                              marginTop: "10px",
-                                              marginRight: "10px",
-                                              height: "30px",
-                                              borderRadius: "5px",
-                                            }}
-                                            colorScheme="gray"
-                                          >
-                                            VS Code IDE
-                                          </Button>
-                                          <Button
-                                            style={{
-                                              marginTop: "10px",
-                                              marginRight: "10px",
-                                              height: "30px",
-                                              borderRadius: "5px",
-                                            }}
-                                            colorScheme="gray"
-                                          >
-                                            Read Contract
-                                          </Button>
-                                          <Button
-                                            style={{
-                                              marginTop: "10px",
-                                              marginRight: "10px",
-                                              height: "30px",
-                                              borderRadius: "5px",
-                                            }}
-                                            colorScheme="gray"
-                                          >
-                                            Read Contract
-                                          </Button>
-                                        </Box>
-                                      </Box>
-                                      <div
-                                        className="editor"
-                                        style={{
-                                          display: "flex",
-                                          border: "1px solid #ccc",
-                                          height: "200px",
-                                          fontSize: "14px",
-                                          fontFamily: "monospace",
-                                          overflow: "hidden",
-                                          marginTop: "20px",
-                                        }}
-                                      >
-                                        <div
-                                          className="lines"
-                                          style={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            justifyContent: "space-between",
-                                            borderRight: "1px solid #ccc",
-                                            padding: "4px",
-                                            backgroundColor: "#f5f5f5",
-                                            userSelect: "none",
-                                          }}
-                                        >
-                                          <span>1</span>
-                                          <span>2</span>
-                                          <span>3</span>
-                                          <span>4</span>
-                                          <span>5</span>
-                                          <span>6</span>
-                                          <span>7</span>
-                                          <span>8</span>
-                                          <span>9</span>
-                                          <span>10</span>
-                                        </div>
-                                        <pre
-                                          className="content"
-                                          style={{
-                                            margin: "0",
-                                            padding: "4px 0 4px 20px",
-                                            backgroundColor: "#fff",
-                                            overflowX: "hidden",
-                                            overflowY: "scroll",
-                                            whiteSpace: "pre-wrap",
-                                          }}
-                                        >
-                                          <code>
-                                            pragma solidity ^0.4.16;
-                                            {`contract Token {
-                                            bytes32 public standard;
-                                            bytes32 public name;
-                                            bytes32 public symbol;
-                                            uint256 public totalSupply;
-                                            uint8 public decimals;
-                                            bool public allowTransactions;
-                                            mapping (address => uint256) public balanceOf;
-                                            mapping (address => mapping (address => uint256)) public allowance;
-                                            function transfer(address _to, uint256 _value) returns (bool success);
-                                            function approveAndCall(address _spender, uint256 _value, bytes _extraData) returns (bool success);
-                                            function approve(address _spender, uint256 _value) returns (bool success);
-                                            function transferFrom(address _from, address _to, uint256 _value) returns (bool success);
-                                        }`}
-                                          </code>
-                                        </pre>
-                                      </div>
-                                    </Box>
-                                  </Box>
-                                </TabPanel>
-                                <TabPanel>
-                                  <Box>
-                                    <Box px={2} pt={4}>
-                                      <Button variant="outline" px={1}>
-                                        <Icon
-                                          viewBox="0 0 200 200"
-                                          color="red.500"
-                                        >
-                                          <path
-                                            fill="currentColor"
-                                            d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
-                                          />
-                                        </Icon>
-                                        Connect to Web3
-                                      </Button>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      1.WETH9
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex direction="row">
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "10px",
-                                                      }}
-                                                    >
-                                                      <Clickable href="">
-                                                        0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-                                                      </Clickable>
-                                                    </Text>
-                                                    <Text>address</Text>
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      2.checkOracleSlippage
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      path (bytes[])
-                                                    </Text>
-                                                    <Input placeholder="path (bytes[])" />
-                                                  </Flex>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      amounts (uint128[])
-                                                    </Text>
-                                                    <Input placeholder="amounts (uint128[])" />
-                                                  </Flex>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      maximumTickDivergence
-                                                      (uint24)
-                                                    </Text>
-                                                    <Input placeholder="maximumTickDivergence (uint24)" />
-                                                  </Flex>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      secondsAgo (uint32)
-                                                    </Text>
-                                                    <Input placeholder="secondsAgo (uint32)" />
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      3.checkOracleSlippage
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      path (bytes[])
-                                                    </Text>
-                                                    <Input placeholder="path (bytes[])" />
-                                                  </Flex>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      maximumTickDivergence
-                                                      (uint24)
-                                                    </Text>
-                                                    <Input placeholder="maximumTickDivergence (uint24)" />
-                                                  </Flex>
-                                                  <Flex
-                                                    direction="column"
-                                                    pb={2}
-                                                  >
-                                                    <Text pb={2}>
-                                                      secondsAgo (uint32)
-                                                    </Text>
-                                                    <Input placeholder="secondsAgo (uint32)" />
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      4.deploy
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex direction="row">
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "10px",
-                                                      }}
-                                                    >
-                                                      <Clickable href="">
-                                                        0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-                                                      </Clickable>
-                                                    </Text>
-                                                    <Text>address</Text>
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      5.factory
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex direction="row">
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "10px",
-                                                      }}
-                                                    >
-                                                      <Clickable href="">
-                                                        0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-                                                      </Clickable>
-                                                    </Text>
-                                                    <Text>address</Text>
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-
-                                    <Box pt={4}>
-                                      <Container px={0} maxW="container.xl">
-                                        <Flex direction={"column"} gap={6}>
-                                          <CustomCard>
-                                            <Accordion
-                                              allowMultiple
-                                              maxW="container.xl"
-                                            >
-                                              <AccordionItem>
-                                                <AccordionButton
-                                                  style={{
-                                                    display: "flex",
-                                                    justifyContent:
-                                                      "space-between",
-                                                    backgroundColor: "#f8f9fa",
-                                                  }}
-                                                  onClick={handleClick}
-                                                >
-                                                  <Box px={6}>
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "70px",
-                                                      }}
-                                                    >
-                                                      6.factoryV2
-                                                    </Text>
-                                                  </Box>
-                                                  {isOpen ? (
-                                                    <ArrowDownIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  ) : (
-                                                    <ArrowUpIcon
-                                                      style={{
-                                                        color: "#007bff",
-                                                        float: "right",
-                                                      }}
-                                                    />
-                                                  )}
-                                                </AccordionButton>
-                                                <AccordionPanel pb={4}>
-                                                  <Flex direction="row">
-                                                    <Text
-                                                      style={{
-                                                        marginRight: "10px",
-                                                      }}
-                                                    >
-                                                      <Clickable href="">
-                                                        0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
-                                                      </Clickable>
-                                                    </Text>
-                                                    <Text>address</Text>
-                                                  </Flex>
-                                                </AccordionPanel>
-                                              </AccordionItem>
-                                            </Accordion>
-                                          </CustomCard>
-                                        </Flex>
-                                      </Container>
-                                    </Box>
-                                  </Box>
-                                </TabPanel>
-                                <TabPanel>
-                                  Content for Write Contract tab
-                                </TabPanel>
-                              </TabPanels>
-                            </Tabs>
-                          </TabPanel>
-                        )
-                        // : null
-                      }
                       {validator && (
                         <TabPanel>
                           <Flex
@@ -2040,8 +1313,6 @@ export const getServerSideProps = async (context: {
   params: { address: string };
 }) => {
   const { address } = context.params;
-  const isContract = await getIsContract(address);
-  const isETHAddress = await getIsETHAddress(address);
   const [validator, account, balance, balances, accountTxs, delegations, validators] =
     await Promise.all([
       getValidator(address),
@@ -2066,8 +1337,6 @@ export const getServerSideProps = async (context: {
         balances,
         accountTxs,
         delegations,
-        isContract,
-        isETHAddress,
       }
       : {
         address: null,
@@ -2077,8 +1346,6 @@ export const getServerSideProps = async (context: {
         balances: null,
         accountTxs: null,
         delegations: null,
-        isContract: null,
-        isETHAddress: null,
       },
   };
 };

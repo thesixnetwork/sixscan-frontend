@@ -129,8 +129,8 @@ export default function Data(modalstate: {
                               <Flex direction="row" alignItems="center" gap={3}>
                                 <Text fontWeight={"bold"}>{index + 1}</Text>
                                 <Image
-                                  src="/mfer.png"
-                                  alt="mfer"
+                                  src="/logo-nftgen2-01.png"
+                                  alt="gen2"
                                   width={"40px"}
                                   height={"40px"}
                                 />

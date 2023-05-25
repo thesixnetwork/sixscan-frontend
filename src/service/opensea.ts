@@ -17,7 +17,8 @@ export const getOpenseaCollectionByName = async (
     }
     return collection;
   } catch (error) {
-    console.error(error);
+    // @ts-ignore
+    console.error(error?.message);
     return null;
   }
 };

@@ -9,7 +9,6 @@ export const getSchema = async (
     const res = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
     );
-    console.log(res);
     if (res.data.code && res.data.code !== 0) {
       return null;
     }
@@ -29,20 +28,19 @@ export const getNftCollection = async (
   metadataPage: string
 ): Promise<any | null> => {
   try {
-    const {
-      data: {
-        nftCollection,
-        pagination: { total },
-      },
-    } = await axios.get(
+    const {data: { nftCollection , pagination: { total }}} = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
-
-    const startingTokenId =
-      (parseInt(metadataPage) - 1) * 12 + parseInt(nftCollection[0].token_id);
+    console.log(total);
+    let tokenPerPage = 12
+    const lastToken = parseInt(total)
+    if (lastToken < 12) {
+      tokenPerPage = lastToken
+    }
+    const startingTokenId = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
     const promises = [];
 
-    for (let i = startingTokenId; i < startingTokenId + 12; i++) {
+    for (let i = startingTokenId; i < startingTokenId + tokenPerPage; i++) {
       promises.push(
         await (
           await axios.get(
@@ -52,14 +50,14 @@ export const getNftCollection = async (
       );
     }
     const metadata = await Promise.all(promises);
-
+    
     if (!metadata) {
       return null;
     }
-    // console.log("metadata: ", metadata);
+    console.log("metadata: ", metadata);
     return { metadata, pagination: { total } };
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     return null;
   }
 };
