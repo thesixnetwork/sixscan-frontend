@@ -121,30 +121,6 @@ export default function BlockPage({
     );
   }
 
-  ///
-  const GetBalance = async () => {
-    const body = {
-      jsonrpc: "2.0",
-      method: "eth_getCode",
-      id: "1",
-      params: ["0xb62ef83643a2f8c95df78f694c6bf480f5b786f2", "latest"],
-    };
-    try {
-      const response = await axios.post(
-        "https://rpc-evm.fivenet.sixprotocol.net",
-        body
-      );
-      // setTex_EVM(response)
-      console.log("res 0x39CDFF :", response);
-      // console.log(ENV)
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  GetBalance();
-
-  // console.log(blockTxs.txs.map((x) => ( x.tx_result.log )))
-  // console.log(blockTxs.txs)
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>

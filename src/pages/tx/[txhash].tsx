@@ -65,7 +65,7 @@ import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
 
-import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng } from "@/utils/format";
+import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -91,14 +91,22 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   // get object keys from txs.tx.body.messages[0]
   const KeyMsg = Object.keys(txs.tx.body.messages[0]);
   const message = txs.tx.body.messages[0];
-  console.log("message =>", message);
+  const txSuccess = txs.tx_response.code == 0 ? true : false;
+  let _Logs;
+  let _Events;
+  if (txSuccess === true){
+    _Logs = txs.tx_response.logs
+    _Events = txs.tx_response.events
+  }else{
+    _Logs = txs.tx_response.raw_log.split("\n").pop();
+    _Events = txs.tx_response.events
+  }
   
-  console.log("keys =>", KeyMsg);
-  
+
   let totalValueTmp = 0;
 
   // console.log("tx22 =>", JSON.parse(tx.tx_result.log)[0])
-  console.log("Txs =>", txs)
+  // console.log("Txs =>", txs)
   // console.log("Txs2 =>", txs.tx.body.messages[0].amount[0].amount)
   ////// Get Price SIX ///////
   useEffect(() => {
@@ -195,8 +203,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Overview</Tab>
-                      <Tab>Logs({Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined ? txs.tx_response.logs[0].events.length : "1"})</Tab>
-                      <Tab>Events({Array.isArray(txs.tx_response.events) && txs.tx_response.events.length})</Tab>
+                      <Tab>Logs({Array.isArray(_Logs) && _Logs[0].events !== undefined ? _Logs[0].events.length : "1"})</Tab>
+                      <Tab>Events({Array.isArray(_Events) && _Events.length})</Tab>
                     </TabList>
                     <TabPanels>
                       {/* ///// Over view //// */}
@@ -224,7 +232,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="column">
                                   <Text>
-                                    {txs.tx_response.code === 0 ?
+                                    {txSuccess === true ?
                                       <Badge colorScheme={"green"}>
                                         Success
                                       </Badge>
@@ -266,71 +274,85 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                             </Tr>
-                            
-                            
+
                             {KeyMsg.map((key:any, index) => {
-                              if (key == "amount" ){
-                                // console.log(message[key]);
+                             if (typeof message[key] === "string" && message[key].startsWith("6x")){
+                                if (key === "from_address") {
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{`Value:`}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        {/* <Text style={{ marginRight: '5px' }} >{Array.isArray(txs.tx.body.messages) && txs.tx.body.messages[0].amount.amount !== undefined ? convertUsixToSix(parseInt(txs.tx.body.messages[0].amount.amount)) : convertUsixToSix(parseInt(txs.tx.body.messages[0].amount[0].amount))} SIX </Text> */}
-                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : convertUsixToSix(parseInt(message[key][0].amount))} SIX </Text>
-                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                )
-                              } 
-                              // if message[key] is string and start with "6x"
-                              else if (typeof message[key] === "string" && message[key].startsWith("6x")){
-                                console.log(message[key]);
-                                return (
-                                  <Tr key={index}>
-                                   <Td borderBottom="none">
                                     <Flex direction="column">
-                                      <Text>{typeof key === "string"? formatEng(key) : key}</Text>
+                                      <Text>{typeof key === "string"? formatBank(key) : key}</Text>
                                     </Flex>
-                                  </Td>
-                                  <Td borderBottom="none">
+                                    </Td>
+                                    <Td borderBottom="none">
                                     <Flex direction="row">
-                                      <Text style={{ marginRight: '5px' }}>
-                                          <Clickable
+                                      <Clickable
                                             href={`/address/${message[key]}`}
                                             underline
                                           >
                                             {message[key]}
                                           </Clickable>
-                                      </Text>
                                     </Flex>
-                                  </Td>
-                                  </Tr>
+                                    </Td>
+                                    </Tr>
                                 );
                               }
-                              console.log(message[key]);
                               return (
                                 <Tr key={index}>
-                                 <Td borderBottom="none">
+                                <Td>
                                   <Flex direction="column">
-                                    <Text>{typeof key === "string"? formatEng(key) : key}</Text>
+                                    <Text>{typeof key === "string"? formatBank(key) : key}</Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex direction="row">
+                                    <Text style={{ marginRight: '5px' }}>
+                                        <Clickable
+                                          href={`/address/${message[key]}`}
+                                          underline
+                                        >
+                                          {message[key]}
+                                        </Clickable>
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            );
+                            }else if (key == "amount" ){
+                              return (
+                                <Tr key={index}>
+                                <Td borderBottom="none">
+                                  <Flex direction="column">
+                                    <Text>{`Value:`}</Text>
                                   </Flex>
                                 </Td>
                                 <Td borderBottom="none">
                                   <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                      {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
-                                    </Text>
-                                  </Flex>
-                                </Td>
+                                    <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
+                                      <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : convertUsixToSix(parseInt(message[key][0].amount))} SIX </Text>
+                                      <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                    </Flex>
+                                  </Td>
                                 </Tr>
-                              );
+                              )
+                            }
+                            return (
+                              <Tr key={index}>
+                               <Td borderBottom="none">
+                                <Flex direction="column">
+                                  <Text>{typeof key === "string"? formatEng(key) : key}</Text>
+                                </Flex>
+                              </Td>
+                              <Td borderBottom="none">
+                                <Flex direction="row">
+                                  <Text style={{ marginRight: '5px' }}>
+                                    {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
+                                  </Text>
+                                </Flex>
+                              </Td>
+                              </Tr>
+                            );
                             })}
                             
                             <Tr>
@@ -366,54 +388,59 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                         </Table>
                       </TabPanel>
 
-                      {/* ///// Logs ///// */}
-                      {txs.tx_response.code === 0 &&
+                      {/* ##################### Logs  ##################### */}
+                      {txSuccess === true &&
                         <TabPanel>
                           <Table>
                             <Tbody>
-                              {Array.isArray(txs.tx_response.logs) && txs.tx_response.logs[0] !== undefined && txs.tx_response.logs[0].events.map((event: any, index: any) => (
+                              {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) =>(
+                                
                                 <Tr key={index}>
                                   <Td>
                                     <Badge>{event.type}</Badge>
                                   </Td>
                                   <Td>
-                                    {event.attributes.map((attr: any, index: any) => (
-                                      <Flex
-                                        direction="row"
-                                        gap={2}
-                                        alignItems="center"
-                                        key={index}
-                                      >
-                                        {attr.key && (
-                                          <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
-                                            {attr.key}
-                                          </Text>
-                                        )}
-                                        {attr.value && (
-                                          <Text style={{ marginBottom: '10px' }}>
-                                            {/* {attr.value} */}
-                                            {attr.key === 'action' && <Text>{attr.value}</Text>}
-                                            {attr.value.startsWith('6x') && <Text>
-                                              <Clickable
-                                                href={`/address/${attr.value}`}
-                                                underline
-                                              >
-                                                {attr.value}
-                                              </Clickable>
-                                            </Text>}
-                                            {attr.value.endsWith('usix') && <Text style={{ display: 'flex' }}>
-                                              {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                              <Text style={{ marginLeft: '5px' }}> SIX</Text>
-                                            </Text>}
-                                            {attr.value.endsWith('asix') && <Text style={{ display: 'flex' }}>
-                                              {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                              <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
-                                            </Text>}
-                                          </Text>
-                                        )}
-
-                                      </Flex>
-                                    ))}
+                                    {event.attributes.map((attr: any, index: any) => {
+                                      return (
+                                        <Flex
+                                          direction="row"
+                                          gap={2}
+                                          alignItems="center"
+                                          key={index}
+                                        >
+                                          {attr.key && (
+                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                              {attr.key}
+                                            </Text>
+                                          )}
+                                          {attr.value && (
+                                            <Text style={{ marginBottom: '10px' }}>
+                                              {attr.value.startsWith('6x') ? (
+                                                <Text>
+                                                  <Clickable href={`/address/${attr.value}`} underline>
+                                                    {attr.value}
+                                                  </Clickable>
+                                                </Text>
+                                              ) : attr.value.endsWith('usix') ? (
+                                                <Text style={{ display: 'flex' }}>
+                                                {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                                <Text style={{ marginLeft: '5px' }}> SIX</Text>
+                                                </Text>
+                                              ) : attr.value.endsWith('asix') ? (
+                                                <Text style={{ display: 'flex' }}>
+                                                  {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                                  <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
+                                                </Text>
+                                              )
+                                                :(
+                                                <Text>{attr.value}</Text>
+                                              )}
+                                            </Text>
+                                          )}
+                                        
+                                        </Flex>
+                                      )
+                                    })}
                                   </Td>
                                 </Tr>
                               ))}
@@ -422,7 +449,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                         </TabPanel>
                       }
                       {/* ///// log fail //// */}
-                      {txs.tx_response.code !== 0 &&
+                      {txSuccess === false &&
                         <TabPanel>
                           <Table>
                             <Tbody>
@@ -431,7 +458,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Badge colorScheme={"red"}>Fail</Badge>
                                   </Td>
                                   <Td borderBottom="none">
-                                    <Text> {txs.tx_response.raw_log.substring(txs.tx_response.raw_log.indexOf("state.go:763") + "state.go:763".length + 1)} </Text>
+                                    <Text> {_Logs} </Text>
                                   </Td>
                                 </Tr>
                             </Tbody>
@@ -439,10 +466,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                         </TabPanel>
                       }
 
+                      {/* ##################### Events  ##################### */}
                       <TabPanel>
                         <Table>
                           <Tbody>
-                            {Array.isArray(txs.tx_response.events) && txs.tx_response.events.map((event: any, index: any) => (
+                            {Array.isArray(_Events) && _Events.map((event: any, index: any) => (
                               <Tr key={index}>
                                 <Td>
                                   <Badge>{event.type}</Badge>
@@ -795,7 +823,6 @@ export const getServerSideProps = async (context: {
     tx_evm = null;
     isContract = null;
   }
-  console.log("txsssss ==>", txs.tx_response.logs)
   return {
     props: {
       tx,

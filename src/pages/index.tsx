@@ -260,7 +260,7 @@ export default function Home({
                               Txns{` `}
                               <Clickable
                                 href={`/block/${block.header.height}`}
-                                underline
+                                underline={true}
                               >
                                 {block.num_txs}
                               </Clickable>

@@ -106,7 +106,7 @@ export default function Schema({
       icon: `/klaytn-logo.png`,
     },
   };
-  const [organisation, code] = schema
+  const [organization, code] = schema
     ? schema.code.includes(".")
       ? schema.code.split(".")
       : ["", schema.code]
@@ -117,8 +117,8 @@ export default function Schema({
     //   value: "0",
     // },
     {
-      title: "organisation",
-      value: organisation,
+      title: "organization",
+      value: organization,
     },
     {
       title: "whalegate",
@@ -127,9 +127,8 @@ export default function Schema({
   ];
   const [page, setPage] = useState(1);
   const perPage = 12;
-  const totalPages = schema
-    ? Math.ceil(nftCollection.pagination.total / perPage)
-    : 0;
+  const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
+  console.log("totalPages", nftCollection);
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -167,10 +166,8 @@ export default function Schema({
     if (!schema) {
       return;
     }
-    nftCollection.metadata.sort(
-      (a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id)
-    );
-    const newItems = nftCollection.metadata.slice(
+    nftCollection?.metadata.sort((a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id));
+    const newItems = nftCollection?.metadata.slice(
       (page - 1) * perPage,
       page * perPage
     );
@@ -249,7 +246,7 @@ export default function Schema({
                 {openseaCollection && openseaCollection.image_url ? (
                   <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={openseaCollection.image_url}
+                    src={openseaCollection.image_url? openseaCollection.image_url : "/logo-nftgen2-01.png"}
                     alt={schema.name}
                     width="100%"
                   />
@@ -725,7 +722,7 @@ export default function Schema({
                           </Button>
                         </Flex>
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                          {items.map((metadata, index) => (
+                          {items?.map((metadata, index) => (
                             <GridItem
                               colSpan={{ base: 6, md: 4, lg: 2 }}
                               key={index}
@@ -738,11 +735,9 @@ export default function Schema({
                                   }}
                                 >
                                   <motion.div whileHover={{ scale: 1.05 }}>
-                                    <Image
+                                  <Image
                                       src={
-                                        metadata.onchain_image
-                                          ? metadata.onchain_image
-                                          : metadata.origin_image
+                                        metadata.onchain_image ? metadata.onchain_image : metadata.origin_image
                                       }
                                       alt="mfer"
                                       width="100%"
@@ -808,8 +803,8 @@ export const getServerSideProps = async ({
       },
     };
   }
-  const [organisation = "", code = schema?.code ?? ""] =
-    schema?.code?.split(".") ?? [];
+  const [organization = "", code = schema?.code ?? ""] =
+    schema.code?.split(".") ?? [];
   const [openseaCollection, nftCollection, txns] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollection(schemacode, metadata_page),

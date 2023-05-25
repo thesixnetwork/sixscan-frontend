@@ -60,3 +60,14 @@ export const formatEng = (key:string) => {
   const formattedKey = splitParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
   return `${formattedKey}`;
 };
+
+export const formatBank = (key:string) => {
+  if (key == "from_address"){
+    return "From"
+  }
+  if (key == "to_address"){
+    return "To"
+  }
+  key = formatEng(key)
+  return `${key}`;
+}
