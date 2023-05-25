@@ -87,6 +87,7 @@ export default function Schema({
   const [items, setItems] = useState<NftData[]>([]);
   const [sortedTxs, setSortedTxs] = useState<any[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const router = useRouter();
   const chainConfig: {
     [key: string]: {
@@ -128,7 +129,7 @@ export default function Schema({
   const [page, setPage] = useState(1);
   const perPage = 12;
   const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
-  console.log("totalPages", nftCollection);
+  // console.log("totalPages", nftCollection);
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -152,6 +153,10 @@ export default function Schema({
     }
     return chainConfig[schema.origin_data?.origin_chain].icon;
   };
+
+  const checkImage = () => {
+    setImageError(true);
+  };  
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2));
@@ -735,13 +740,26 @@ export default function Schema({
                                   }}
                                 >
                                   <motion.div whileHover={{ scale: 1.05 }}>
-                                  <Image
-                                      src={
-                                        metadata.onchain_image ? metadata.onchain_image : metadata.origin_image
-                                      }
-                                      alt="mfer"
-                                      width="100%"
-                                    />
+                                    {
+                                      imageError? (
+                                        <Image
+                                        src={
+                                          "/logo-nftgen2-01.png"
+                                        }
+                                        alt="mfer"
+                                        width="100%"
+                                      />
+                                      ): (
+                                        <Image
+                                        src={
+                                          metadata.onchain_image ? metadata.onchain_image : metadata.origin_image
+                                        }
+                                        onError={checkImage}
+                                        alt="mfer"
+                                        width="100%"
+                                      />
+                                      )
+                                    }
                                   </motion.div>
                                   <Flex direction="column" p={2}>
                                     <Flex

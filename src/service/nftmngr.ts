@@ -31,7 +31,7 @@ export const getNftCollection = async (
     const {data: { nftCollection , pagination: { total }}} = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
-    console.log(total);
+    // console.log(total);
     let tokenPerPage = 12
     const lastToken = parseInt(total)
     if (lastToken < 12) {
@@ -54,7 +54,7 @@ export const getNftCollection = async (
     if (!metadata) {
       return null;
     }
-    console.log("metadata: ", metadata);
+    // console.log("metadata: ", metadata);
     return { metadata, pagination: { total } };
   } catch (error) {
     // console.error(error);
