@@ -106,6 +106,11 @@ export default function Schema({
       blockscan: `https://www.klaytnfinder.io/account/`,
       icon: `/klaytn-logo.png`,
     },
+    GOERLI: {
+      opensea: `https://opensea.io/assets/goerli/`,
+      blockscan: `https://goerli.etherscan.io/address/`,
+      icon: `/eth-logo.png`,
+    },
   };
   const [organization, code] = schema
     ? schema.code.includes(".")
@@ -288,13 +293,7 @@ export default function Schema({
                             schema.origin_data.origin_contract_address
                           )}
                           underline={
-                            getExplorerLink(
-                              schema.origin_data.origin_chain,
-                              schema.origin_data.origin_contract_address
-                            ) === ""
-                              ? false
-                              : true
-                          }
+                            getExplorerLink(schema.origin_data.origin_chain,schema.origin_data.origin_contract_address) === ""? false: true }
                         >
                           {getExplorerLink(
                             schema.origin_data.origin_chain,
