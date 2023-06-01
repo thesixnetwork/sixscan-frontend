@@ -476,7 +476,7 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                               </Text>
                             </Td>
                             <Td>
-                            <Text>
+                            {/* <Text>
                                 <Clickable
                                   href={`/block/${x.block_height}`}
                                 >
@@ -488,7 +488,7 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                                       {x.decode_tx.nftSchemaCode ? x.decode_tx.nftSchemaCode : ""}
                                   </Text>
                                 </Clickable>
-                              </Text>
+                              </Text> */}
                             </Td>
                           </Tr>
                         ))}
