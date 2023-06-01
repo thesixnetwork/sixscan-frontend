@@ -26,9 +26,9 @@ export const getBlockRewardAmount = (
 
 export const getBlockRewardValidator = (
   block: BlockMeta,
-  blockResults: BlockResult[]
+  blockResults: BlockResult[]|null
 ): string | null => {
-  const targetBlockResult = blockResults.find(
+  const targetBlockResult = blockResults?.find(
     (blockResult) => blockResult.height === block.header.height
   );
   const rewardsAttribute = targetBlockResult?.begin_block_events
