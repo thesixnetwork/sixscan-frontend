@@ -185,3 +185,20 @@ export interface BlockNFTStat {
   nftFee: string,
   action24h: number,
 }
+
+export interface LatestAction {
+  txs: DataLatestAction[],
+  totalPage: number,
+  totalCount: number,
+}
+
+export interface DataLatestAction {
+  _id: string,
+  type: string,
+  hash: string,
+  block_height: string,
+  raw_tx: string,
+  decode_tx: any,
+  code: number,
+  memo: string
+}

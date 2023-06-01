@@ -92,11 +92,11 @@ export const getNFTActionCountStat = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountStat?schemaCode=${schemaCode}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      console.log("Error: Non-200 status code returned:", res.status);
+      // console.log("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      console.log("Error: API returned status code", res.data.statusCode);
+      // console.log("Error: API returned status code", res.data.statusCode);
       return null;
     }
     const actionCount = res.data.data;
@@ -122,11 +122,11 @@ export const getNFTActionCountStatDaily = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountStat?schemaCode=${schemaCode}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      console.log("Error: Non-200 status code returned:", res.status);
+      // console.log("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      console.log("Error: API returned status code", res.data.statusCode);
+      // console.log("Error: API returned status code", res.data.statusCode);
       return null;
     }
     const actionCountDaily = res.data.data;
@@ -197,11 +197,11 @@ export const getLatestAction = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/Txs?page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      console.log("Error: Non-200 status code returned:", res.status);
+      // console.log("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      console.log("Error: API returned status code", res.data);
+      // console.log("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;
@@ -225,11 +225,11 @@ export const getAllTransactionByAddress = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransactionByAddress?address=${address}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      console.log("Error: Non-200 status code returned:", res.status);
+      // console.log("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      console.log("Error: API returned status code", res.data);
+      // console.log("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;
@@ -254,11 +254,11 @@ export const getAllTransactionByTokenID = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransactionByTokenID?schemaCode=${schemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      console.log("Error: Non-200 status code returned:", res.status);
+      // console.log("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      console.log("Error: API returned status code", res.data);
+      // console.log("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;

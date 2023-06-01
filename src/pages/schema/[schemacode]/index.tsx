@@ -807,7 +807,6 @@ export const getServerSideProps = async ({
   const schema = await getSchema(schemacode);
   // console.log("schema: ", schema);
   if (!schema) {
-    console.log("schema is not")
     return {
       props: {
         schemacode: null,

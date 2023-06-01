@@ -44,14 +44,14 @@ import { formatTraitValue } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
 import { getMetadata, getSchema, getAllTransactionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
-import { NFTSchema } from "@/types/Nftmngr";
+import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 import { useState } from "react";
 import { useRouter } from "next/router";
 
 interface Props {
   metadata: Metadata;
   schema: NFTSchema;
-  latestAction: any;
+  latestAction: LatestAction;
 }
 
 export default function Schema({ metadata, schema, latestAction }: Props) {
@@ -285,7 +285,7 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                                   <Text>Txhash</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Method</Text>
+                                  <Text>Action</Text>
                                 </Td>
                                 <Td>
                                   <Text>Age</Text>
@@ -302,44 +302,19 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {latestAction.txs.map((action: any, index: number) => (
+                            {latestAction.txs && latestAction.txs.map((x: any, index: number) => 
                                 <Tr key={index}>
                                   <Td>
                                     <Text>
                                       <Clickable href="/">
                                         <Text>
-                                          {formatHex(action.txhash)}
+                                          {formatHex(x.txhash)}
                                         </Text>
                                       </Clickable>
                                     </Text>
                                   </Td>
-                                  <Td>
-                                    <Text>
-                                      <Badge>"unknow"</Badge>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{action.txhash}</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {action.txhash}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.txhash)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${action.txhash} SIX`}</Text>
-                                  </Td>
                                 </Tr>
-                              ))}
+                              )}
                             </Tbody>
                           </Table>
                         </TableContainer>
