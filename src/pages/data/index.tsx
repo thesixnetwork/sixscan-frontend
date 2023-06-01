@@ -32,9 +32,23 @@ import NavBar from "@/components/NavBar";
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
+import moment from "moment";
+
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex, formatNumber } from "@/utils/format";
+import { formatHex, formatNumber, formatSchema, formatSchemaAction, convertUsixToSix } from "@/utils/format";
+
+// -------- service ----------
+import {
+  getNFTActionCountStat,
+  getNFTActionCountStatDaily,
+  getTotalNFTCollection,
+  getTotalNFTS,
+  getNFTFee,
+  getLatestAction
+} from "@/service/nftmngr";
+import { DataNFTStat, BlockNFTStat } from "@/types/Nftmngr";
+
 
 const data = [
   {
@@ -63,11 +77,15 @@ const data = [
   },
 ];
 
-export default function Data(modalstate: {
-  isOpen: boolean;
-  onOpen: () => void;
-  onClose: () => void;
-}) {
+interface Props {
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
+  nftActionCount: DataNFTStat;
+  blockNFTStat: BlockNFTStat;
+  latestAction: any;
+}
+
+export default function Data({ modalstate, nftActionCount, blockNFTStat, latestAction }: Props) {
+  // console.log(blockNFTStat)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -78,9 +96,13 @@ export default function Data(modalstate: {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Box
-        bgGradient={"linear(to-r, #3FC2FA, #3759F0)"}
         paddingTop={10}
         paddingBottom={20}
+        style={{
+          backgroundImage: `url("/dot-map.png"), linear-gradient(269.41deg, #4E9DE7 1.01%, #9747FF 96.67%)`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+        }}
       >
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
@@ -95,7 +117,7 @@ export default function Data(modalstate: {
           </Flex>
         </Container>
       </Box>
-      <Box marginTop={-10}>
+      <Box marginTop={-10} >
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
             <Grid templateColumns="repeat(12, 1fr)" gap={6}>
@@ -123,7 +145,7 @@ export default function Data(modalstate: {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {TRENDING.map((item, index) => (
+                        {nftActionCount.data.map((item, index) => (
                           <Tr key={index}>
                             <Td>
                               <Flex direction="row" alignItems="center" gap={3}>
@@ -135,18 +157,18 @@ export default function Data(modalstate: {
                                   height={"40px"}
                                 />
                                 <Text fontWeight={"bold"}>
-                                  {item.collection}
+                                  {formatSchema(item._id.schema_code)}
                                 </Text>
                               </Flex>
                             </Td>
                             <Td>
                               <Flex direction="row" alignItems="center" gap={3}>
-                                <Text>{item.action}</Text>
+                                <Text>{formatSchemaAction(item._id.action)}</Text>
                               </Flex>
                             </Td>
                             <Td>
                               <Flex direction="row" alignItems="center" gap={3}>
-                                <Text>{item.actionCount}</Text>
+                                <Text>{item.count}</Text>
                               </Flex>
                             </Td>
                           </Tr>
@@ -159,25 +181,44 @@ export default function Data(modalstate: {
               <GridItem colSpan={{ base: 12, md: 6 }}>
                 <Grid templateColumns="repeat(2, 1fr)" gap={6}>
                   <GridItem colSpan={2}>
-                    <Card size="lg">
+                    <Card style={{
+                      background: "#DADEF2",
+                      mixBlendMode: "normal",
+                      border: "2px solid #DADEF2",
+                      backdropFilter: "blur(3px)",
+                      borderRadius: "12px",
+                      opacity: "0.8"
+                    }} size="lg">
                       <CardBody>
                         <Flex direction="column" py={2}>
                           <Text
                             fontSize="xl"
-                            color={"darkest"}
                             fontWeight="bold"
+                            style={{
+                              background: "linear-gradient(to right, #33337E 0%, #33337E 50%, #7C5CCE 50%, #7C5CCE 100%)",
+                              WebkitBackgroundClip: "text",
+                              WebkitTextFillColor: "transparent"
+                            }}
                           >
                             CONTACT HAMDEE
                           </Text>
                           <Text
                             fontSize="xl"
-                            color={"darkest"}
                             fontWeight="bold"
+                            style={{
+                              background: "linear-gradient(to right, #33337E 0%, #33337E 50%, #7C5CCE 50%, #7C5CCE 100%)",
+                              WebkitBackgroundClip: "text",
+                              WebkitTextFillColor: "transparent"
+                            }}
                           >
                             FOR FREE COINS
                           </Text>
                         </Flex>
-                        <Text fontSize="xs" color={"medium"}>
+                        <Text fontSize="xs" style={{
+                          background: "linear-gradient(to right, #33337E 0%, #33337E 50%, #7C5CCE 50%, #7C5CCE 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent"
+                        }}>
                           POWERED BY SIX PROTOCOL
                         </Text>
                       </CardBody>
@@ -187,54 +228,168 @@ export default function Data(modalstate: {
                     <Card size="lg">
                       <CardBody p={0}>
                         <Grid templateColumns="repeat(2, 1fr)">
-                          {data.map((item, index) => (
-                            <GridItem
-                              key={index}
-                              colSpan={{ base: 2, lg: 1 }}
-                              borderBottom={"1px solid"}
-                              borderRight={
-                                index - (1 % 2) !== 0 ? "1px solid" : "none"
-                              }
-                              borderColor={"light"}
+                          <GridItem
+                            colSpan={{ base: 2, lg: 1 }}
+                            borderBottom={"1px solid"}
+                            borderRight="1px solid"
+                            borderColor={"light"}
+                          >
+                            <Flex
+                              direction={"row"}
+                              p={4}
+                              alignItems={"center"}
+                              gap={3}
                             >
-                              <Flex
-                                direction={"row"}
-                                p={4}
-                                alignItems={"center"}
-                                gap={3}
-                              >
-                                <Icon
-                                  as={item.icon}
-                                  w={6}
-                                  h={6}
-                                  color={"dark"}
-                                />
-                                <Flex direction={"column"}>
-                                  <Text fontSize="sm" color={"medium"}>
-                                    {item.title}
-                                  </Text>
-                                  <Flex
-                                    direction={"row"}
-                                    alignItems={"center"}
-                                    gap={2}
+                              <Image
+                                src="/icon-stat1.png"
+                                alt="icon-stat"
+                                width={"20px"}
+                                height={"25px"}
+                              />
+                              <Flex direction={"column"}>
+                                <Text fontSize="sm" color={"medium"}>
+                                  TOTAL COLLECTIONS
+                                </Text>
+                                <Flex
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={2}
+                                >
+                                  <Text
+                                    fontSize="xl"
+                                    fontWeight="bold"
+                                    color={"darkest"}
                                   >
-                                    <Text
-                                      fontSize="xl"
-                                      fontWeight="bold"
-                                      color={"darkest"}
-                                    >
-                                      {typeof item.value === "number"
-                                        ? formatNumber(item.value)
-                                        : item.value}
-                                    </Text>
-                                    <Text fontSize="sm" color={"success"}>
-                                      {`(${item.badge})`}
-                                    </Text>
-                                  </Flex>
+                                    {blockNFTStat.totalNFTCollection.total}
+                                  </Text>
                                 </Flex>
                               </Flex>
-                            </GridItem>
-                          ))}
+                            </Flex>
+                          </GridItem>
+
+                          <GridItem
+                            colSpan={{ base: 2, lg: 1 }}
+                            borderBottom={"1px solid"}
+                            borderRight="1px solid"
+                            borderColor={"light"}
+                          >
+                            <Flex
+                              direction={"row"}
+                              p={4}
+                              alignItems={"center"}
+                              gap={3}
+                            >
+                              <Image
+                                src="/icon-stat1.png"
+                                alt="icon-stat"
+                                width={"20px"}
+                                height={"25px"}
+                              />
+                              <Flex direction={"column"}>
+                                <Text fontSize="sm" color={"medium"}>
+                                  TOTAL NFTS
+                                </Text>
+                                <Flex
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={2}
+                                >
+                                  <Text
+                                    fontSize="xl"
+                                    fontWeight="bold"
+                                    color={"darkest"}
+                                  >
+                                    {blockNFTStat.totalNFTS.total}
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                            </Flex>
+                          </GridItem>
+
+                          <GridItem
+                            colSpan={{ base: 2, lg: 1 }}
+                            borderBottom={"1px solid"}
+                            borderRight="1px solid"
+                            borderColor={"light"}
+                          >
+                            <Flex
+                              direction={"row"}
+                              p={4}
+                              alignItems={"center"}
+                              gap={3}
+                            >
+                              <Image
+                                src="/icon-stat1.png"
+                                alt="icon-stat"
+                                width={"20px"}
+                                height={"25px"}
+                              />
+                              <Flex direction={"column"}>
+                                <Text fontSize="sm" color={"medium"}>
+                                  SCHEMA FEE
+                                </Text>
+                                <Flex
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={2}
+                                >
+                                  <Text
+                                    fontSize="xl"
+                                    fontWeight="bold"
+                                    color={"darkest"}
+                                  >
+                                    {convertUsixToSix(parseInt((blockNFTStat.nftFee).replace("usix", "")))}
+                                  </Text>
+                                  <Text fontSize="sm" color={"medium"}>
+                                    SIX
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                            </Flex>
+                          </GridItem>
+
+                          <GridItem
+                            colSpan={{ base: 2, lg: 1 }}
+                            borderBottom={"1px solid"}
+                            borderRight="1px solid"
+                            borderColor={"light"}
+                          >
+                            <Flex
+                              direction={"row"}
+                              p={4}
+                              alignItems={"center"}
+                              gap={3}
+                            >
+                              <Image
+                                src="/icon-stat1.png"
+                                alt="icon-stat"
+                                width={"20px"}
+                                height={"25px"}
+                              />
+                              <Flex direction={"column"}>
+                                <Text fontSize="sm" color={"medium"}>
+                                  ACTIONS
+                                </Text>
+                                <Flex
+                                  direction={"row"}
+                                  alignItems={"center"}
+                                  gap={2}
+                                >
+                                  <Text
+                                    fontSize="xl"
+                                    fontWeight="bold"
+                                    color={"darkest"}
+                                  >
+                                    {blockNFTStat.action24h}
+                                  </Text>
+                                  <Text fontSize="sm" color={"medium"}>
+                                    (24h)
+                                  </Text>
+                                </Flex>
+                              </Flex>
+                            </Flex>
+                          </GridItem>
+
                         </Grid>
                       </CardBody>
                     </Card>
@@ -260,67 +415,83 @@ export default function Data(modalstate: {
                         </Tr>
                       </Thead>
                       <Tbody>
-                        <Tr>
-                          <Td>
-                            <Flex direction="column">
-                              <Text>
-                                <Clickable underline href="/">
-                                  {formatHex(
-                                    "0x35f7c2f5456aa996571a78c28d5895110a5dd23822df300a04e1d8297754e05e"
-                                  )}
-                                </Clickable>
-                              </Text>
-                              <Text color="medium" fontSize="sm">
-                                6 seconds ago
-                              </Text>
-                            </Flex>
-                          </Td>
-                          <Td>
-                            <Flex direction="column">
-                              <Text>
-                                <Badge>
-                                  <Clickable underline href="/">
-                                    check_in
+                        {latestAction.txs.map((x: any, index: number) => (
+                          <Tr key={index}>
+                            <Td>
+                              <Flex direction="column">
+                                <Text>
+                                  <Clickable
+                                    href={`/block/${x.txhash}`}
+                                  >
+                                    <Text style={{ color: "#5C34A2", 
+                                    textDecoration: "none",
+                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "12px"
+                                    }}>
+                                      {formatHex(x.txhash)}
+                                    </Text>
                                   </Clickable>
-                                </Badge>
-                              </Text>
-                            </Flex>
-                          </Td>
-                          <Td>
-                            <Flex direction="column">
-                              <Text>40 secs ago</Text>
-                            </Flex>
-                          </Td>
-                          <Td>
-                            <Flex direction="column">
+                                </Text>
+                              </Flex>
+                            </Td>
+                            <Td>
+                              <Badge>
+                                Action{" "}
+                                <Clickable>
+                                  UNKNOW
+                                </Clickable>{" "}
+                              </Badge>
+                            </Td>
+                            <Td>
+                             <Text>{moment(x.time_stamp).fromNow()}</Text>
+                            </Td>
+                            <Td>
                               <Text>
-                                <Clickable underline href="/">
-                                  345678
+                                <Clickable
+                                  href={`/block/${x.block_height}`}
+                                >
+                                  <Text style={{ color: "#5C34A2", 
+                                    textDecoration: "none",
+                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "12px"
+                                    }}>
+                                      {x.block_height}
+                                    </Text>
                                 </Clickable>
                               </Text>
-                            </Flex>
-                          </Td>
-                          <Td>
-                            <Flex direction="column">
-                              <Text>
-                                <Clickable underline href="/">
-                                  {formatHex(
-                                    "6x12090025857b9c7b24387741f120538e928a3a59"
-                                  )}
+                            </Td>
+                            <Td >
+                            <Text>
+                                <Clickable
+                                  href={`/block/${x.block_height}`}
+                                >
+                                  <Text style={{ color: "#5C34A2", 
+                                    textDecoration: "none",
+                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "12px"
+                                    }}>
+                                    unknow
+                                  </Text>
                                 </Clickable>
                               </Text>
-                            </Flex>
-                          </Td>
-                          <Td>
-                            <Flex direction="column">
-                              <Text>
-                                <Clickable underline href="/">
-                                  sixnetwork.whalegate
+                            </Td>
+                            <Td>
+                            <Text>
+                                <Clickable
+                                  href={`/block/${x.block_height}`}
+                                >
+                                  <Text style={{ color: "#5C34A2", 
+                                    textDecoration: "none",
+                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "12px"
+                                    }}>
+                                      {x.decode_tx.nftSchemaCode ? x.decode_tx.nftSchemaCode : ""}
+                                  </Text>
                                 </Clickable>
                               </Text>
-                            </Flex>
-                          </Td>
-                        </Tr>
+                            </Td>
+                          </Tr>
+                        ))}
                       </Tbody>
                     </Table>
                   </TableContainer>
@@ -362,3 +533,57 @@ const TRENDING = [
     actionCount: 100,
   },
 ];
+
+export const getServerSideProps = async () => {
+
+  const schemaCode = "";
+  const page = "1";
+  const pageSize = "5";
+  const endDate = new Date();
+  const preYear = endDate.getFullYear() - 3;
+  const startDate = new Date(preYear, endDate.getMonth(), endDate.getDate());
+
+  const start24h = new Date();
+  start24h.setHours(0);
+  start24h.setMinutes(0);
+  start24h.setSeconds(0);
+  start24h.setMilliseconds(0);
+  const end24h = start24h;
+  end24h.setHours(17);
+  end24h.setMinutes(0);
+  end24h.setSeconds(0);
+  end24h.setMilliseconds(0);
+  let count24h = 0;
+
+
+  const [nftActionCount, totalNFTCollection, totalNFTS, nftFee, action24h, latestAction] =
+    await Promise.all([
+      getNFTActionCountStat(schemaCode, startDate.toISOString(), endDate.toISOString(), page, pageSize),
+      getTotalNFTCollection(),
+      getTotalNFTS(),
+      getNFTFee(),
+      getNFTActionCountStatDaily(schemaCode, start24h.toISOString(), end24h.toISOString(), page, pageSize),
+      getLatestAction("1", "20")
+    ]);
+
+  if (action24h) {
+    for (let i = 0; i < action24h.length; i++) {
+      count24h += action24h[i].count;
+    }
+  }
+
+  const blockNFTStat = {
+    totalNFTCollection: totalNFTCollection,
+    totalNFTS: totalNFTS,
+    nftFee: nftFee,
+    action24h: count24h
+  }
+
+  return {
+    props: {
+      nftActionCount,
+      blockNFTStat,
+      latestAction,
+    },
+  };
+};
