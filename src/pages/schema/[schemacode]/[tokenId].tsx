@@ -42,7 +42,7 @@ import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
-import { getMetadata, getSchema } from "@/service/nftmngr";
+import { getMetadata, getSchema, getAllTransactionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
 import { NFTSchema } from "@/types/Nftmngr";
 import { useState } from "react";
@@ -51,9 +51,10 @@ import { useRouter } from "next/router";
 interface Props {
   metadata: Metadata;
   schema: NFTSchema;
+  latestAction: any;
 }
 
-export default function Schema({ metadata, schema }: Props) {
+export default function Schema({ metadata, schema, latestAction }: Props) {
   const STATS = [
     {
       title: "Chain",
@@ -256,11 +257,11 @@ export default function Schema({ metadata, schema }: Props) {
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
-                      {/* <Tab>Latest Actions</Tab> */}
+                      <Tab>Latest Actions</Tab>
                       <Tab>Metadata</Tab>
                     </TabList>
                     <TabPanels>
-                      {/* <TabPanel>
+                      <TabPanel>
                         <Flex
                           direction="row"
                           gap={2}
@@ -301,8 +302,32 @@ export default function Schema({ metadata, schema }: Props) {
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {ACTIONS.map((action, index) => (
+                              {latestAction.txs.map((action: any, index: number) => (
                                 <Tr key={index}>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/">
+                                        <Text>
+                                          {formatHex(action.txhash)}
+                                        </Text>
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Badge>"unknow"</Badge>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{action.txhash}</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {action.txhash}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
                                   <Td>
                                     <Text>
                                       <Clickable href="/" underline>
@@ -311,36 +336,14 @@ export default function Schema({ metadata, schema }: Props) {
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Badge>{action.method}</Badge>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{action.age}</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {action.block}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${action.gasfee} SIX`}</Text>
+                                    <Text>{`${action.txhash} SIX`}</Text>
                                   </Td>
                                 </Tr>
                               ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
-                      </TabPanel> */}
+                      </TabPanel>
                       <TabPanel>
                         <Flex
                           direction="row"
@@ -393,15 +396,16 @@ export const getServerSideProps = async ({
 }: {
   params: { schemacode: any; tokenId: any };
 }) => {
-  const [metadata, schema] = await Promise.all([
+  const [metadata, schema, latestAction] = await Promise.all([
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
+    getAllTransactionByTokenID(schemacode, tokenId, "1", "20")
   ]);
   if (!schema) {
     return { props: { metadata: null, schema: null } };
   }
   return {
-    props: { metadata, schema },
+    props: { metadata, schema, latestAction },
   };
 };
 

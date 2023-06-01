@@ -84,12 +84,13 @@ import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
+import { getAllTransactionByAddress } from "@/service/nftmngr";
 import { Delegation, Validator } from "@/types/Staking";
 import { Balance, BalanceETH } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
 import moment from "moment";
 import { getAccount } from "@/service/auth";
-import { Account} from "@/types/Auth";
+import { Account } from "@/types/Auth";
 
 import { getBalance, getBalances } from "@/service/bank";
 import {
@@ -100,7 +101,7 @@ import {
 } from "@/utils/format";
 
 import { validateAddress } from "@/utils/validate";
-
+import ENV from "@/utils/ENV";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
@@ -127,6 +128,7 @@ interface Props {
   balances: Balance[] | null;
   accountTxs: AccountTxs;
   delegations: Delegation[] | null;
+  latestAction: any;
 }
 
 export default function Address({
@@ -137,6 +139,7 @@ export default function Address({
   balances,
   accountTxs,
   delegations,
+  latestAction,
 }: Props) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
@@ -144,15 +147,6 @@ export default function Address({
   const [filteredBalances, setFilteredBalances] = useState<Balance[] | null>(
     balances
   );
-
-  // console.log("address =>",address)
-  // console.log("isETHAddress =>", isETHAddress);
-  // console.log("account =>",account)
-  // console.log("balance =>",balance)
-  // console.log("balances =>", balances);
-  // console.log("accountTxs =>",accountTxs)
-  // console.log("delegations =>",delegations)
-  // console.log("filteredBalances =>",filteredBalances)
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(address);
@@ -200,7 +194,6 @@ export default function Address({
 
   const handleClick = () => setIsOpen(!isOpen);
   // console.log("accountTxs",accountTxs)
-  // console.log("addressMock",addressMock)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -585,6 +578,7 @@ export default function Address({
                     <TabList>
                       <Tab>Txns</Tab>
                       <Tab>Txns (Data Layer)</Tab>
+                      {/* <Tab>Txns (EVM)</Tab> */}
                       {validator && <Tab>Proposed Blocks</Tab>}
                       {validator && <Tab>Delegators</Tab>}
                     </TabList>
@@ -769,9 +763,9 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest 25 from a total of{" "}
+                            Latest 20 from a total of{" "}
                             <Clickable underline href="/">
-                              92
+                              {latestAction.totalCount}
                             </Clickable>{" "}
                             transactions
                           </Text>
@@ -804,8 +798,8 @@ export default function Address({
                               </Tr>
 
                             </Thead>
-                            {/* <Tbody> */}
-                            {/* {ACTIONS.map((action, index) => (
+                            <Tbody>
+                              {/* {ACTIONS.map((action, index) => (
                                 <Tr key={index}>
                                   <Td>
                                     <Text>
@@ -863,7 +857,66 @@ export default function Address({
                                   </Td>
                                 </Tr>
                               ))} */}
-                            {/* </Tbody> */}
+                              {latestAction.txs.map((x: any, index: number) =>
+                                <Tr key={index}>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {formatHex(x.txhash)}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable
+                                        href={`/schema/1/1`}
+                                        underline
+                                      >
+                                        {x.decode_tx.tokenId}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Badge>
+                                        {x.type
+                                          .split(".")
+                                        [x.type.split(".").length - 1].slice(
+                                          3
+                                        )}
+                                      </Badge>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{moment(x.time_stamp).fromNow()}</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {x.block_height}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {formatHex(x.decode_tx.relate_addr[0])}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{`${formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(
+                                          x.decode_tx.fee_amount
+                                        )
+                                      )
+                                    )} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              )}
+
+                            </Tbody>
                             <Tbody>
 
                             </Tbody>
@@ -1025,7 +1078,7 @@ export default function Address({
                                           >
                                             {formatHex(tx.txhash)}
                                           </Clickable> */}
-                                          <Link href={`https://fivenet.evm.sixscan.io/tx/${tx.txhash}`}>
+                                          <Link href={`${ENV.Block_Scount_API_URL}/tx/${tx.txhash}`}>
                                             <Text
                                               as={"span"}
                                               decoration={"none"}
@@ -1064,15 +1117,7 @@ export default function Address({
                                     <Td>
                                       <Text>
                                         {tx.decode_tx.fromAddress && (
-                                          // <Clickable
-                                          //   href={`/address/${tx.decode_tx.fromAddress}`}
-                                          //   underline
-                                          // >
-                                          //   {formatHex(
-                                          //     tx.decode_tx.fromAddress
-                                          //   )}
-                                          // </Clickable>
-                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.fromAddress}`}>
+                                          <Link href={`${ENV.Block_Scount_API_URL}/address/${tx.decode_tx.fromAddress}`}>
                                             <Text
                                               as={"span"}
                                               decoration={"none"}
@@ -1116,7 +1161,7 @@ export default function Address({
                                           // >
                                           //   {formatHex(tx.decode_tx.toAddress)}
                                           // </Clickable>
-                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.toAddress}`}>
+                                          <Link href={`${ENV.Block_Scount_API_URL}/address/${tx.decode_tx.toAddress}`}>
                                             <Text
                                               as={"span"}
                                               decoration={"none"}
@@ -1313,7 +1358,7 @@ export const getServerSideProps = async (context: {
   params: { address: string };
 }) => {
   const { address } = context.params;
-  const [validator, account, balance, balances, accountTxs, delegations, validators] =
+  const [validator, account, balance, balances, accountTxs, delegations, validators, latestAction] =
     await Promise.all([
       getValidator(address),
       getAccount(address),
@@ -1322,11 +1367,9 @@ export const getServerSideProps = async (context: {
       getTxsFromAddress(address, "1", "20"),
       getDelegationsFromValidator(address),
       getValidators(),
+      getAllTransactionByAddress(address, "1", "10")
     ]);
   const isAddressValid = await validateAddress(address);
-  // console.log("isContract ==>", isContract);
-  // console.log("balances 1551 ==>", balances);
-  // console.log("validators 1914 ==>", validators);
   return {
     props: isAddressValid
       ? {
@@ -1337,6 +1380,7 @@ export const getServerSideProps = async (context: {
         balances,
         accountTxs,
         delegations,
+        latestAction
       }
       : {
         address: null,
@@ -1346,6 +1390,7 @@ export const getServerSideProps = async (context: {
         balances: null,
         accountTxs: null,
         delegations: null,
+        latestAction: null,
       },
   };
 };

@@ -161,3 +161,27 @@ export enum URIRetrievalMethod {
   TOKEN = 1,
   UNRECOGNIZED = -1,
 }
+
+export interface DataNFTStat {
+  totalRecords: number,
+  data: DataActionCount[],
+}
+
+export interface DataActionCount {
+  _id: {
+    schema_code: string,
+    action: string
+  },
+  count: number
+}
+
+export interface BlockNFTStat {
+  totalNFTCollection: {
+    total: string,
+  },
+  totalNFTS: {
+    total: string,
+  },
+  nftFee: string,
+  action24h: number,
+}

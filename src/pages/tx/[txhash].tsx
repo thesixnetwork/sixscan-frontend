@@ -25,6 +25,7 @@ import {
   TabPanels,
   Table,
   TableContainer,
+  Textarea,
   Thead,
   Tbody,
   Th,
@@ -94,14 +95,13 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const txSuccess = txs.tx_response.code == 0 ? true : false;
   let _Logs;
   let _Events;
-  if (txSuccess === true){
+  if (txSuccess === true) {
     _Logs = txs.tx_response.logs
     _Events = txs.tx_response.events
-  }else{
+  } else {
     _Logs = txs.tx_response.raw_log.split("\n").pop();
     _Events = txs.tx_response.events
   }
-  
 
   let totalValueTmp = 0;
 
@@ -275,86 +275,252 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Td>
                             </Tr>
 
-                            {KeyMsg.map((key:any, index) => {
-                             if (typeof message[key] === "string" && message[key].startsWith("6x")){
+                            {KeyMsg.map((key: any, index) => {
+                              if (typeof message[key] === "string" && message[key].startsWith("6x")) {
                                 if (key === "from_address") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                    <Flex direction="column">
-                                      <Text>{typeof key === "string"? formatBank(key) : key}</Text>
-                                    </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                    <Flex direction="row">
-                                      <Clickable
+                                  return (
+                                    <Tr key={index}>
+                                      <Td borderBottom="none">
+                                        <Flex direction="column">
+                                          <Text>{typeof key === "string" ? formatBank(key) : key}</Text>
+                                        </Flex>
+                                      </Td>
+                                      <Td borderBottom="none">
+                                        <Flex direction="row">
+                                          <Clickable
                                             href={`/address/${message[key]}`}
                                             underline
                                           >
                                             {message[key]}
                                           </Clickable>
-                                    </Flex>
-                                    </Td>
+                                        </Flex>
+                                      </Td>
                                     </Tr>
+                                  );
+                                }
+
+                                return (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td>
+                                      <Flex direction="row">
+                                        <Text style={{ marginRight: '5px' }}>
+                                          <Clickable
+                                            href={`/address/${message[key]}`}
+                                            underline
+                                          >
+                                            {message[key]}
+                                          </Clickable>
+                                        </Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              } else if (key == "amount") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{`Value:`}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
+                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : message[key][0]?.amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0]?.amount)) : convertUsixToSix(parseInt(message[key].amount))} SIX </Text>
+                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                )
+                              }
+                              if (key === "receiver") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Link href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                          <Text
+                                            as={"span"}
+                                            decoration={"none"}
+                                            color="primary.500"
+                                          >
+                                            {message[key]}
+                                          </Text>
+                                        </Link>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
                                 );
                               }
-                              return (
-                                <Tr key={index}>
-                                <Td>
-                                  <Flex direction="column">
-                                    <Text>{typeof key === "string"? formatBank(key) : key}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td>
-                                  <Flex direction="row">
-                                    <Text style={{ marginRight: '5px' }}>
-                                        <Clickable
-                                          href={`/address/${message[key]}`}
-                                          underline
-                                        >
+
+                              if (key === "nftSchemaBase64") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Textarea readOnly>
                                           {message[key]}
-                                        </Clickable>
-                                    </Text>
-                                  </Flex>
-                                </Td>
-                              </Tr>
-                            );
-                            }else if (key == "amount" ){
+                                        </Textarea>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+
+                              if (key === "data") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        {/* <CustomCard> */}
+                                        <TableContainer>
+                                          <Tabs isLazy>
+                                            <TabList>
+                                              {Object.keys(message[key]).map((keys: any, index) => {
+                                                return (
+                                                  <Tab key={index}>{keys}</Tab>
+                                                );
+                                              })}
+                                            </TabList>
+                                            <TabPanels>
+                                              {Object.values(message[key]).map((data: any, i) => {
+                                                return (
+                                                  <TabPanel key={i}>
+                                                    <Textarea readOnly>
+                                                      {data}
+                                                    </Textarea>
+                                                  </TabPanel>
+                                                );
+                                              })}
+                                            </TabPanels>
+                                          </Tabs>
+                                        </TableContainer>
+                                        {/* </CustomCard> */}
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+                              if (key === "hash") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Link href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                          <Text
+                                            as={"span"}
+                                            decoration={"none"}
+                                            color="primary.500"
+                                          >
+                                            {message[key]}
+                                          </Text>
+                                        </Link>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+
+                              if (key === "base64NFTData") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Textarea readOnly>
+                                          {message[key]}
+                                        </Textarea>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+
+                              if (key === "base64EncodedSetSignerAction") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Textarea readOnly>
+                                          {message[key]}
+                                        </Textarea>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+
+                              if (key === "parameters") {
+                                return (
+                                  <Tr key={index}>
+                                    <Td >
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td >
+                                      <Flex direction="row">
+                                        <Text style={{ marginRight: '5px' }}>
+                                          {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
+                                        </Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
+
                               return (
                                 <Tr key={index}>
-                                <Td borderBottom="none">
-                                  <Flex direction="column">
-                                    <Text>{`Value:`}</Text>
-                                  </Flex>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Flex direction="row">
-                                    <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                      <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : convertUsixToSix(parseInt(message[key][0].amount))} SIX </Text>
-                                      <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <Text style={{ marginRight: '5px' }}>
+                                        {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
+                                      </Text>
                                     </Flex>
                                   </Td>
                                 </Tr>
-                              )
-                            }
-                            return (
-                              <Tr key={index}>
-                               <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{typeof key === "string"? formatEng(key) : key}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row">
-                                  <Text style={{ marginRight: '5px' }}>
-                                    {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
-                                  </Text>
-                                </Flex>
-                              </Td>
-                              </Tr>
-                            );
+                              );
                             })}
-                            
+
                             <Tr>
                               <Td borderBottom="none">
                                 <Flex direction="column">
@@ -393,8 +559,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                         <TabPanel>
                           <Table>
                             <Tbody>
-                              {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) =>(
-                                
+                              {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) => (
+
                                 <Tr key={index}>
                                   <Td>
                                     <Badge>{event.type}</Badge>
@@ -423,8 +589,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                 </Text>
                                               ) : attr.value.endsWith('usix') ? (
                                                 <Text style={{ display: 'flex' }}>
-                                                {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                                <Text style={{ marginLeft: '5px' }}> SIX</Text>
+                                                  {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                                  <Text style={{ marginLeft: '5px' }}> SIX</Text>
                                                 </Text>
                                               ) : attr.value.endsWith('asix') ? (
                                                 <Text style={{ display: 'flex' }}>
@@ -432,12 +598,12 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                   <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
                                                 </Text>
                                               )
-                                                :(
-                                                <Text>{attr.value}</Text>
-                                              )}
+                                                : (
+                                                  <Text>{attr.value}</Text>
+                                                )}
                                             </Text>
                                           )}
-                                        
+
                                         </Flex>
                                       )
                                     })}
@@ -453,14 +619,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                         <TabPanel>
                           <Table>
                             <Tbody>
-                                <Tr>
-                                  <Td borderBottom="none">
-                                    <Badge colorScheme={"red"}>Fail</Badge>
-                                  </Td>
-                                  <Td borderBottom="none">
-                                    <Text> {_Logs} </Text>
-                                  </Td>
-                                </Tr>
+                              <Tr>
+                                <Td borderBottom="none">
+                                  <Badge colorScheme={"red"}>Fail</Badge>
+                                </Td>
+                                <Td borderBottom="none">
+                                  <Text> {_Logs} </Text>
+                                </Td>
+                              </Tr>
                             </Tbody>
                           </Table>
                         </TabPanel>
