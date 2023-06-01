@@ -54,6 +54,86 @@ export interface Transaction {
   };
 }
 
+export interface Transactions {
+  tx: {
+    auth_info: {
+      fee: {
+        amount: {
+          denom: string;
+          amount: string;
+        };
+        gas_limit: string;
+        granter: string ;
+        payer: string;
+      };
+    };
+    body: {
+      extension_options: string[];
+      memo: string;
+      messages: {
+        "@type": string;
+        amount: {
+          denom: string;
+          amount: string;
+        };
+        creator: string;
+        receiver: string;
+        from_address: string,
+        to_address: string,
+        nft_schema_code: string;
+        tokenId: string;
+        action: string;
+        ref_id: string;
+        timeout_height: string;
+        extension_options: string[];
+        non_critical_extension_options: string[];
+      };
+    };
+  };
+  tx_response: {
+    code: number;
+    codespace: string;
+    data: string;
+    events: {
+      type: string;
+      attributes: string[];
+    };
+    gas_used: string;
+    gas_wanted: string;
+    height: string;
+    info: string;
+    logs: {
+      events: string[];
+    };
+    raw_log: string;
+    timestamp: string;
+    tx: string[];
+    txhash: string;
+  };
+}
+
+export interface TransactionEVM {
+  blockHash: string;
+  blockNumber: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+  hash: string;
+  input: string;
+  nonce: string;
+  to: string;
+  transactionIndex: string;
+  value: string;
+  type: string;
+  accessList: string[];
+  chainId: string;
+  v: string;
+  r: string;
+  s: string;
+}
+
 export interface BlockTxs {
   txs: BlockTx[];
   block_id: {
@@ -154,4 +234,13 @@ export interface AccountTxs {
   page_total: number;
   page_limit: string;
   txs: Tx[];
+}
+
+export interface TxsAll {
+  hash: string;
+  hashEVM: string | null;
+}
+
+export interface TxsEVM {
+  hash: string[];
 }

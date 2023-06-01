@@ -7,3 +7,11 @@ export interface Account {
   account_number: string;
   sequence: string;
 }
+
+export interface IsContract {
+  isContract: boolean;
+}
+
+export interface IsETHAddress {
+  isContract: boolean;
+}
