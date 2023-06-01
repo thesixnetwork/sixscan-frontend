@@ -40,22 +40,69 @@ import {
   getLatestBlocks,
 } from "@/service/block";
 import { getValidators } from "@/service/staking";
-import { BlockchainResult, BlockResult } from "@/types/Block";
+import {  Block, BlockchainResult, BlockResult } from "@/types/Block";
 import { Validator } from "@/types/Staking";
 import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 import { formatHex } from "@/utils/format";
+import { useEffect, useState } from "react";
 
 interface Props {
+  latestBlock: Block;
   latestBlocks: BlockchainResult;
   blocksResult: BlockResult[];
   validators: Validator[];
 }
 
 export default function Blocks({
+  latestBlock,
   latestBlocks,
   blocksResult,
   validators,
 }: Props) {
+
+  const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
+  const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
+    latestBlocks
+  );
+  const [blocksResultState, setBlocksResult] = useState<BlockResult[]>(
+    blocksResult
+  );
+  const [validatorsState, setValidators] = useState<Validator[]>(validators);
+
+  // fetch last block interval
+  useEffect(() => {
+    const fetchData = async () => {
+      const latestBlock = await getLatestBlock();
+        setLatestBlock(latestBlock? latestBlock : latestBlockState);
+    };
+    // Fetch data initially
+    fetchData();
+    const intervalId = setInterval(fetchData, 6000);
+    return () => clearInterval(intervalId);
+  }, []);
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const latestBlock = latestBlockState
+      const latestBlockHeight = latestBlockState
+        ? parseInt(latestBlock?.block?.header?.height) ?? null
+        : null;
+      const minBlockHeight = latestBlockHeight ? latestBlockHeight - 20 : null;
+      const [latestBlocks, blocksResult, validators] = await Promise.all([
+        getLatestBlocks(minBlockHeight, latestBlockHeight),
+        getBlocksResult(minBlockHeight, latestBlockHeight),
+        getValidators(),
+      ]);
+      setLatestBlocks(latestBlocks? latestBlocks : latestBlocksState);
+      setBlocksResult(blocksResult? blocksResult : blocksResultState);
+      setValidators(validators ? validators : validatorsState);
+    };
+    fetchData();
+
+  }, [latestBlockState]);
+  
+
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
@@ -91,7 +138,7 @@ export default function Blocks({
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {latestBlocks.block_metas.map((block, index) => (
+                    {latestBlocksState?.block_metas.map((block, index) => (
                       <Tr key={index}>
                         <Td>
                           <Flex direction="column">
@@ -121,13 +168,12 @@ export default function Blocks({
                               underline
                               href={`/address/${getBlockRewardValidator(
                                 block,
-                                blocksResult
+                                blocksResultState
                               )}`}
                             >
-                              {validators.map((validator) => {
+                              {validatorsState.map((validator) => {
                                 if (
-                                  validator.operator_address ===
-                                  getBlockRewardValidator(block, blocksResult)
+                                  validator.operator_address === getBlockRewardValidator(block, blocksResultState)
                                 ) {
                                   return validator.description.moniker;
                                 }
@@ -139,7 +185,7 @@ export default function Blocks({
                           <Badge>
                             Reward{" "}
                             <Clickable>
-                              {getBlockRewardAmount(block, blocksResult)}
+                              {getBlockRewardAmount(block, blocksResultState)}
                             </Clickable>{" "}
                             SIX
                           </Badge>
@@ -170,6 +216,6 @@ export const getServerSideProps = async () => {
     getValidators(),
   ]);
   return {
-    props: { latestBlocks, blocksResult, validators },
+    props: {latestBlock,latestBlocks, blocksResult, validators },
   };
 };

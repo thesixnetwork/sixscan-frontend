@@ -1,8 +1,8 @@
 const ENV = {
-  API_URL: process.env.API_URL || "",
+  API_URL: process.env.API_URL || "https://api1.fivenet.sixprotocol.net",
   RPC_URL: process.env.RPC_URL || "",
   ARCH_API_URL: process.env.ARCH_API_URL || process.env.API_URL || "",
-  ARCH_RPC_URL: process.env.ARCH_RPC_URL || process.env.RPC_URL || "",
+  ARCH_RPC_URL: process.env.ARCH_RPC_URL || process.env.RPC_URL || "https://rpc1.fivenet.sixprotocol.net",
   NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
   TXS_API_URL: process.env.TXS_API_URL || "",
   DATA_CHAIN_TXS_API_URL: process.env.DATA_CHAIN_TXS_API_URL || "",
