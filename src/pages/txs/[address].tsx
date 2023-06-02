@@ -177,9 +177,8 @@ export default function Address({
                             </Text>
                             <Button
                               size="xs"
-                              href={`/txs/${address}?page=${
-                                parseInt(accountTxs.page_number) + 1
-                              }`}
+                              href={`/txs/${address}?page=${parseInt(accountTxs.page_number) + 1
+                                }`}
                               as="a"
                               isDisabled={
                                 parseInt(accountTxs.page_number) ===
@@ -212,9 +211,8 @@ export default function Address({
                           >
                             <FaSortAmountDown fontSize={12} />
                             <Text>
-                              {`A total of ${
-                                accountTxs ? accountTxs.total_count : "0"
-                              } txns found.`}
+                              {`A total of ${accountTxs ? accountTxs.total_count : "0"
+                                } txns found.`}
                             </Text>
                           </Flex>
                           <TableContainer>
@@ -263,14 +261,19 @@ export default function Address({
                                               fontSize={12}
                                             />
                                           )}
-                                          <Text>
-                                            <Clickable
-                                              href={`/tx/${tx.txhash}`}
-                                              underline
-                                            >
+                                          <Clickable
+                                            href={`/tx/${tx.txhash}`}
+                                          >
+                                            <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
                                               {formatHex(tx.txhash)}
-                                            </Clickable>
-                                          </Text>
+                                            </Text>
+
+                                          </Clickable>
                                         </Flex>
                                       </Td>
                                       <Td>
@@ -278,9 +281,9 @@ export default function Address({
                                           <Badge>
                                             {tx.type
                                               .split(".")
-                                              [
-                                                tx.type.split(".").length - 1
-                                              ].slice(3)}
+                                            [
+                                              tx.type.split(".").length - 1
+                                            ].slice(3)}
                                           </Badge>
                                         </Text>
                                       </Td>
@@ -290,39 +293,52 @@ export default function Address({
                                         </Text>
                                       </Td>
                                       <Td>
-                                        <Text>
-                                          <Clickable href="/" underline>
-                                            {tx.block_height}
+                                          <Clickable href="/">
+                                            <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
+                                              {tx.block_height}
+                                            </Text>
                                           </Clickable>
-                                        </Text>
                                       </Td>
                                       <Td>
-                                        <Text>
                                           {tx.decode_tx.toAddress && (
                                             <Clickable
                                               href={`/address/${tx.decode_tx.fromAddress}`}
-                                              underline
                                             >
+                                              <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
                                               {formatHex(
                                                 tx.decode_tx.fromAddress
                                               )}
+                                            </Text>
                                             </Clickable>
                                           )}
-                                        </Text>
                                       </Td>
                                       <Td>
-                                        <Text>
                                           {tx.decode_tx.toAddress && (
                                             <Clickable
                                               href={`/address/${tx.decode_tx.toAddress}`}
-                                              underline
                                             >
+                                              <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
                                               {formatHex(
                                                 tx.decode_tx.toAddress
                                               )}
+                                            </Text>
                                             </Clickable>
                                           )}
-                                        </Text>
                                       </Td>
                                       <Td>
                                         {tx.decode_tx.amount &&
