@@ -50,3 +50,41 @@ export const convertUsixToSix = (usix: number) => {
 export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
 };
+
+
+export const formatEng = (key:string) => {
+  if (key == "@type"){
+    return "@Type"
+  }
+  const splitParts = key.split('_');
+  const formattedKey = splitParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  return `${formattedKey}`;
+};
+
+export const formatBank = (key:string) => {
+  if (key == "from_address"){
+    return "From"
+  }
+  if (key == "to_address"){
+    return "To"
+  }
+  key = formatEng(key)
+  return `${key}`;
+}
+
+export const formatSchema = (schema: string) => {
+  const schema_code = schema.split('.')[1];
+  if (schema_code.length <= 10) {
+    return schema_code.slice(0, 10);
+  }else {
+    return schema_code.slice(0, 10) + '...';;
+  }
+};
+
+export const formatSchemaAction = (action: string) => {
+  if (action.length <= 8) {
+    return action;
+  }else {
+    return action.slice(0, 8) + '...';
+  }
+};

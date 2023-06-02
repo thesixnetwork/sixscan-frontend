@@ -20,12 +20,16 @@ export const Clickable = ({
       </Text>
     </Link>
   ) : (
-    <Text
-      as={"span"}
-      decoration={underline ? "underline" : "none"}
-      color="primary.500"
-    >
-      {children}
-    </Text>
+    <Link href={href} _hover={{
+      textDecoration: "none",
+    }}>
+      <Text
+        as={"span"}
+        decoration={underline ? "underline" : "none"}
+        color="primary.500"
+      >
+        {children}
+      </Text>
+    </Link>
   );
 };
