@@ -18,6 +18,36 @@ export const getBlockRewardAmount = (
   const rewardsValue = rewardsAttribute
     ? Buffer.from(rewardsAttribute.value, "base64").toString("utf-8")
     : null;
+
+  // if reward value ontain , then it is a multi reward
+  // so we need to find the usix reward 
+  // assume 558104723936170211.091643275000000000asix,135442.904680851063423458usix
+  if (rewardsValue?.includes("asix")) {
+    const rewards = rewardsValue?.split(",")
+    const asixValue = rewards[0]
+    const usixValue = rewards[1]
+
+    const _asixReward = asixValue.split("asix")
+    const _asixRewardValue = _asixReward? parseFloat(_asixReward[0]) : 0
+    const _usixFromAsix = _asixRewardValue * Math.pow(10, -12)
+
+    console.log("_asixRewardValue", _usixFromAsix);
+    
+
+
+    const _usixReward = usixValue.split("usix")
+    const _usixRewardValue = _usixReward? parseFloat(_usixReward[0]) : 0
+
+    const usixRewardValue = _usixFromAsix + _usixRewardValue
+    console.log("usixRewardValue", usixRewardValue);
+  
+
+    const formattedRewardsValue = usixRewardValue? (usixRewardValue * Math.pow(10, -6)).toFixed(6)
+    : null;
+    return formattedRewardsValue;
+  }
+
+
   const formattedRewardsValue = rewardsValue
     ? (parseFloat(rewardsValue) * Math.pow(10, -6)).toFixed(6)
     : null;
