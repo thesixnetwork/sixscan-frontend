@@ -55,7 +55,7 @@ import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
 import { useRouter } from "next/router";
 import { getTxsFromSchema } from "@/service/txs";
-import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
+import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
 import moment from "moment";
 
 type Txns = {
@@ -127,7 +127,7 @@ export default function Schema({
       value: organization,
     },
     {
-      title: "whalegate",
+      title: "collection",
       value: code,
     },
   ];
@@ -486,25 +486,25 @@ export default function Schema({
                             <Thead>
                               <Tr>
                                 <Td>
-                                  <Text>Txhash</Text>
+                                  <Text textAlign={'center'}>Txhash</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Token ID</Text>
+                                  <Text textAlign={'center'}>Token ID</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Method</Text>
+                                  <Text textAlign={'center'}>Method</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Age</Text>
+                                  <Text textAlign={'center'}>Age</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Block</Text>
+                                  <Text textAlign={'center'}>Block</Text>
                                 </Td>
                                 <Td>
-                                  <Text>By</Text>
+                                  <Text textAlign={'center'}>By</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Gas Fee</Text>
+                                  <Text textAlign={'center'}>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
@@ -530,7 +530,8 @@ export default function Schema({
                                             color: "#5C34A2",
                                             textDecoration: "none",
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "12px"
+                                            fontSize: "14px",
+                                            textAlign: "center",
                                           }}>
                                             {formatHex(tx.txhash)}
                                           </Text>
@@ -545,7 +546,8 @@ export default function Schema({
                                             color: "#5C34A2",
                                             textDecoration: "none",
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "12px"
+                                            fontSize: "14px",
+                                            textAlign: "center",
                                           }}>
                                             {tx.decode_tx.tokenId}
                                           </Text>
@@ -553,15 +555,11 @@ export default function Schema({
                                   </Td>
                                   <Td>
                                     <Badge textAlign={"center"} width="100%">
-                                      {tx.type
-                                        .split(".")
-                                        [tx.type.split(".").length - 1].slice(
-                                          3
-                                        )}
+                                      {formatMethod(tx.type)}
                                     </Badge>
                                   </Td>
                                   <Td>
-                                    <Text>
+                                    <Text textAlign={'center'}>
                                       {moment(tx.time_stamp).fromNow()}
                                     </Text>
                                   </Td>
@@ -573,7 +571,8 @@ export default function Schema({
                                             color: "#5C34A2",
                                             textDecoration: "none",
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "12px"
+                                            fontSize: "14px",
+                                            textAlign: "center"
                                           }}>
                                             {tx.block_height}
                                           </Text>
@@ -588,7 +587,8 @@ export default function Schema({
                                             color: "#5C34A2",
                                             textDecoration: "none",
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "12px"
+                                            fontSize: "14px",
+                                            textAlign: "center"
                                           }}>
                                             {formatHex(tx.decode_tx.creator)}
                                           </Text>
@@ -596,7 +596,7 @@ export default function Schema({
                                       )}
                                   </Td>
                                   <Td>
-                                    <Text>{`${formatNumber(
+                                    <Text textAlign={'center'}>{`${formatNumber(
                                       convertUsixToSix(
                                         parseInt(tx.decode_tx.fee_amount)
                                       )

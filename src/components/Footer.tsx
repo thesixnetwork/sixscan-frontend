@@ -27,7 +27,7 @@ const Footer = () => {
               //   index !== MENU_ITEMS.length - 1 ? "1px solid" : "none"
               // }
               borderColor={"light"}
-              px={2}
+              px={1}
             >
               <Link
                 href={item.href}
@@ -38,8 +38,8 @@ const Footer = () => {
                   <Image
                   src={item.icon}
                   alt="gen2"
-                  width={"20px"}
-                  height={"20px"}
+                  width={"28px"}
+                  height={"28px"}
                   />
                 ) : (
                   <Text fontSize={"sm"} fontWeight={"bold"}>
@@ -50,7 +50,7 @@ const Footer = () => {
             </Flex>
           ))}
         </Flex>
-        <Divider marginTop="15px" />
+        <Divider size="xl" marginTop="15px" borderColor={'black'} />
         <Flex
           direction={{ base: "column", md: "row" }}
           justify="space-between"
@@ -85,33 +85,33 @@ const Footer = () => {
 
 const MENU_ITEMS = [
   {
-    label: "Blocks",
-    icon: "/twitter-icon.png",
+    label: "Twitter",
+    icon: "/socials/twitter.png",
     href: "https://twitter.com/theSIXnetwork",
   },
   {
-    label: "Blocks",
-    icon: "/icon-facebook.png",
+    label: "Facebook",
+    icon: "/socials/facebook.png",
     href: "https://web.facebook.com/thesixnetwork",
   },
   {
-    label: "Blocks",
-    icon: "/Icondiscord.png",
+    label: "Discord",
+    icon: "/socials/discord.png",
     href: "https://discord.com/invite/5gJQCXzcWf",
   },
   {
-    label: "Blocks",
-    icon: "/Icontelagram.png",
+    label: "Telegram",
+    icon: "/socials/telegram.png",
     href: "https://t.me/SIXnetwork",
   },
   {
-    label: "Blocks",
-    icon: "/Iconmail.png",
+    label: "Medium",
+    icon: "/socials/medium.png",
     href: "https://sixnetwork.medium.com/",
   },
   {
-    label: "Blocks",
-    icon: "/Iconline.png",
+    label: "Line/Kakao",
+    icon: "/socials/talk.png",
     href: "https://open.kakao.com/o/gQNRT5K",
   },
 ];

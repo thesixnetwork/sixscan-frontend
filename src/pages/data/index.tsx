@@ -39,10 +39,17 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-} from '@chakra-ui/react'
+} from "@chakra-ui/react";
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex, formatNumber, formatSchema, formatSchemaAction, convertUsixToSix } from "@/utils/format";
+import {
+  formatHex,
+  formatNumber,
+  formatSchema,
+  formatSchemaAction,
+  convertUsixToSix,
+  formatMethod,
+} from "@/utils/format";
 
 // -------- service ----------
 import {
@@ -51,10 +58,10 @@ import {
   getTotalNFTCollection,
   getTotalNFTS,
   getNFTFee,
-  getLatestAction
+  getLatestAction,
 } from "@/service/nftmngr";
 import { DataNFTStat, BlockNFTStat } from "@/types/Nftmngr";
-
+import { text } from "stream/consumers";
 
 const data = [
   {
@@ -83,7 +90,7 @@ const data = [
   },
 ];
 
-const maintain = true
+const maintain = true;
 
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
@@ -92,7 +99,12 @@ interface Props {
   latestAction: any;
 }
 
-export default function Data({ modalstate, nftActionCount, blockNFTStat, latestAction }: Props) {
+export default function Data({
+  modalstate,
+  nftActionCount,
+  blockNFTStat,
+  latestAction,
+}: Props) {
   // console.log(JSON.parse(latestAction.txs[5].rawTx))
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
@@ -112,7 +124,7 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
           backgroundRepeat: "no-repeat",
         }}
       >
-        <Container maxW="container.lg">
+        <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
             <Text fontSize="xl" fontWeight="bold" color={"lightest"}>
               Data Layer Explorer
@@ -125,18 +137,20 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
           </Flex>
         </Container>
       </Box>
-      <Box marginTop={-10} >
-        <Container maxW="container.lg">
+      <Box marginTop={-10}>
+        <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
             <Grid templateColumns="repeat(12, 1fr)" gap={6}>
               <GridItem colSpan={{ base: 12, md: 6 }}>
                 <CustomCard title={"Trending"}>
                   <TableContainer>
-                    {maintain ? <Alert status='info' height="350px">
-                      <AlertIcon />
-                      NFT Trending Will Be Support On Testnet Soon. <br />
-                      Please Stay tune.
-                    </Alert> :
+                    {maintain ? (
+                      <Alert status="loading" height="350px">
+                        <AlertIcon />
+                        NFT Trending Will Be Support On Testnet Soon. Please
+                        Stay tune.
+                      </Alert>
+                    ) : (
                       <Table>
                         <Thead>
                           <Tr>
@@ -158,60 +172,79 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {nftActionCount && nftActionCount.data.map((item, index) => (
-                            <Tr key={index}>
-                              <Td>
-                                <Flex direction="row" alignItems="center" gap={3}>
-                                  <Text fontWeight={"bold"}>{index + 1}</Text>
-                                  <Image
-                                    src="/logo-nftgen2-01.png"
-                                    alt="gen2"
-                                    width={"40px"}
-                                    height={"40px"}
-                                  />
-                                  <Text fontWeight={"bold"}>
-                                    {formatSchema(item._id.schema_code)}
-                                  </Text>
-                                </Flex>
-                              </Td>
-                              <Td>
-                                <Flex direction="row" alignItems="center" gap={3}>
-                                  <Text>{formatSchemaAction(item._id.action)}</Text>
-                                </Flex>
-                              </Td>
-                              <Td>
-                                <Flex direction="row" alignItems="center" gap={3}>
-                                  <Text>{item.count}</Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
-                          ))}
+                          {nftActionCount &&
+                            nftActionCount.data.map((item, index) => (
+                              <Tr key={index}>
+                                <Td>
+                                  <Flex
+                                    direction="row"
+                                    alignItems="center"
+                                    gap={3}
+                                  >
+                                    <Text fontWeight={"bold"}>{index + 1}</Text>
+                                    <Image
+                                      src="/logo-nftgen2-01.png"
+                                      alt="gen2"
+                                      width={"40px"}
+                                      height={"40px"}
+                                    />
+                                    <Text fontWeight={"bold"}>
+                                      {formatSchema(item._id.schema_code)}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex
+                                    direction="row"
+                                    alignItems="center"
+                                    gap={3}
+                                  >
+                                    <Text>
+                                      {formatSchemaAction(item._id.action)}
+                                    </Text>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Flex
+                                    direction="row"
+                                    alignItems="center"
+                                    gap={3}
+                                  >
+                                    <Text>{item.count}</Text>
+                                  </Flex>
+                                </Td>
+                              </Tr>
+                            ))}
                         </Tbody>
                       </Table>
-                    }
+                    )}
                   </TableContainer>
                 </CustomCard>
               </GridItem>
               <GridItem colSpan={{ base: 12, md: 6 }}>
                 <Grid templateColumns="repeat(2, 1fr)" gap={6}>
                   <GridItem colSpan={2}>
-                    <Card style={{
-                      background: "#DADEF2",
-                      mixBlendMode: "normal",
-                      border: "2px solid #DADEF2",
-                      backdropFilter: "blur(3px)",
-                      borderRadius: "12px",
-                      opacity: "0.8"
-                    }} size="lg">
+                    <Card
+                      style={{
+                        background: "#DADEF2",
+                        mixBlendMode: "normal",
+                        border: "2px solid #DADEF2",
+                        backdropFilter: "blur(3px)",
+                        borderRadius: "12px",
+                        opacity: "0.8",
+                      }}
+                      size="lg"
+                    >
                       <CardBody>
                         <Flex direction="column" py={2}>
                           <Text
                             fontSize="xl"
                             fontWeight="bold"
                             style={{
-                              background: "linear-gradient(to right, #33337E 0%, #33337E 80%, #7C5CCE 90%, #7C5CCE 100%)",
+                              background:
+                                "linear-gradient(to right, #33337E 0%, #33337E 80%, #7C5CCE 90%, #7C5CCE 100%)",
                               WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent"
+                              WebkitTextFillColor: "transparent",
                             }}
                           >
                             NFT Gen 2 is a Dynamic Data Layer
@@ -220,19 +253,24 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                             fontSize="xl"
                             fontWeight="bold"
                             style={{
-                              background: "linear-gradient(to right, #33337E 0%, #33337E 80%, #7C5CCE 90%, #7C5CCE 100%)",
+                              background:
+                                "linear-gradient(to right, #33337E 0%, #33337E 80%, #7C5CCE 90%, #7C5CCE 100%)",
                               WebkitBackgroundClip: "text",
-                              WebkitTextFillColor: "transparent"
+                              WebkitTextFillColor: "transparent",
                             }}
                           >
                             that runs on the SIX Protocol Chain
                           </Text>
                         </Flex>
-                        <Text fontSize="xs" style={{
-                          background: "linear-gradient(to right, #33337E 0%, #33337E 50%, #7C5CCE 50%, #7C5CCE 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent"
-                        }}>
+                        <Text
+                          fontSize="xs"
+                          style={{
+                            background:
+                              "linear-gradient(to right, #33337E 0%, #33337E 50%, #7C5CCE 50%, #7C5CCE 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                          }}
+                        >
                           POWERED BY SIX PROTOCOL
                         </Text>
                       </CardBody>
@@ -274,7 +312,9 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat ? blockNFTStat.totalNFTS.total : 0}
+                                    {blockNFTStat
+                                      ? blockNFTStat.totalNFTS.total
+                                      : 0}
                                   </Text>
                                 </Flex>
                               </Flex>
@@ -313,7 +353,9 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat ? blockNFTStat.totalNFTCollection.total : 0}
+                                    {blockNFTStat
+                                      ? blockNFTStat.totalNFTCollection.total
+                                      : 0}
                                   </Text>
                                 </Flex>
                               </Flex>
@@ -352,7 +394,16 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat ? convertUsixToSix(parseInt((blockNFTStat.nftFee).replace("usix", ""))) : 0}
+                                    {blockNFTStat
+                                      ? convertUsixToSix(
+                                          parseInt(
+                                            blockNFTStat.nftFee.replace(
+                                              "usix",
+                                              ""
+                                            )
+                                          )
+                                        )
+                                      : 0}
                                   </Text>
                                   <Text fontSize="sm" color={"medium"}>
                                     SIX
@@ -403,7 +454,6 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                               </Flex>
                             </Flex>
                           </GridItem>
-
                         </Grid>
                       </CardBody>
                     </Card>
@@ -420,93 +470,162 @@ export default function Data({ modalstate, nftActionCount, blockNFTStat, latestA
                     <Table>
                       <Thead>
                         <Tr>
-                          <Td>Txhash</Td>
-                          <Td>Action</Td>
-                          <Td>Age</Td>
-                          <Td>Block</Td>
-                          <Td>By</Td>
-                          <Td>Schema</Td>
+                          <Td textAlign={"center"}>Txhash</Td>
+                          <Td textAlign={"center"}>Action</Td>
+                          <Td textAlign={"center"}>TokenID</Td>
+                          <Td textAlign={"center"}>Age</Td>
+                          <Td textAlign={"center"}>Block</Td>
+                          <Td textAlign={"center"}>By</Td>
+                          <Td textAlign={"center"}>Schema</Td>
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {latestAction && latestAction.txs.map((x: any, index: number) => (
-                          <Tr key={index}>
-                            <Td>
-                              <Flex direction="column">
-                                <Clickable
-                                  href={`/block/${x.txhash}`}
-                                >
-                                  <Text style={{
-                                    color: "#5C34A2",
-                                    textDecoration: "none",
-                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                    fontSize: "12px"
-                                  }}>
-                                    {formatHex(x.txhash)}
+                        {latestAction &&
+                          latestAction.txs.map((tx: any, index: number) => (
+                            <Tr key={index}>
+                              <Td>
+                                <Flex direction="column">
+                                  <Clickable href={`/tx/${tx.txhash}`}>
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {formatHex(tx.txhash)}
+                                    </Text>
+                                  </Clickable>
+                                </Flex>
+                              </Td>
+                              <Td>
+                                  <Badge textAlign={"center"} width="100%">
+                                    {formatMethod(tx.type)}
+                                  </Badge>
+                              </Td>
+                              <Td>
+                                {tx.tokenId ? (
+                                  <Clickable
+                                    href={`/schema/${tx.nftSchemaCode}/${tx.tokenId}`}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {tx.tokenId}
+                                    </Text>
+                                  </Clickable>
+                                ) : (
+                                  <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                )}
+                              </Td>
+                              <Td>
+                                <Text>{moment(tx.time_stamp).fromNow()}</Text>
+                              </Td>
+                              <Td>
+                                <Clickable href={`/block/${tx.block_height}`}>
+                                  <Text
+                                    style={{
+                                      color: "#5C34A2",
+                                      textDecoration: "none",
+                                      fontFamily:
+                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                      fontSize: "14px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {tx.block_height}
                                   </Text>
                                 </Clickable>
-                              </Flex>
-                            </Td>
-                            <Td>
-                              <Badge>
-                                Action{" "}
-                                <Clickable>
-                                {x.type
-                                          .split(".")
-                                        [x.type.split(".").length - 1].slice(
-                                          3
-                                        )}
-                                </Clickable>{" "}
-                              </Badge>
-                            </Td>
-                            <Td>
-                              <Text>{moment(x.time_stamp).fromNow()}</Text>
-                            </Td>
-                            <Td>
-                              <Clickable
-                                href={`/block/${x.block_height}`}
-                              >
-                                <Text style={{
-                                  color: "#5C34A2",
-                                  textDecoration: "none",
-                                  fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                  fontSize: "12px"
-                                }}>
-                                  {x.block_height}
-                                </Text>
-                              </Clickable>
-                            </Td>
-                            <Td >
-                              <Clickable
-                                href={`/block/${x.block_height}`}
-                              >
-                                <Text style={{
-                                  color: "#5C34A2",
-                                  textDecoration: "none",
-                                  fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                  fontSize: "12px"
-                                }}>
-                                  
-                                </Text>
-                              </Clickable>
-                            </Td>
-                            <Td>
-                              {/* <Text>
-                                <Clickable
-                                  href={`/block/${x.block_height}`}
-                                >
-                                  <Text style={{ color: "#5C34A2", 
-                                    textDecoration: "none",
-                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                    fontSize: "12px"
-                                    }}>
-                                      {x.decode_tx.nftSchemaCode ? x.decode_tx.nftSchemaCode : ""}
+                              </Td>
+                              <Td>
+                                {tx.decode_tx.creator ? (
+                                  <Clickable
+                                    href={`/addreess/${tx.decode_tx.creator}`}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {formatHex(tx.decode_tx.creator)}
+                                    </Text>
+                                  </Clickable>
+                                ) : (
+                                  <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                )}
+                              </Td>
+                              <Td>
+                                {tx.decode_tx.nftSchemaCode ? (
+                                  <Clickable
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode}`}
+                                  >
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {formatHex(tx.decode_tx.nftSchemaCode)}
+                                    </Text>
+                                  </Clickable>
+                                ) : (
+                                  <Text
+                                    style={{
+                                      color: "#5C34A2",
+                                      textDecoration: "none",
+                                      fontFamily:
+                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                      fontSize: "14px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {"Will be available"}
                                   </Text>
-                                </Clickable>
-                              </Text> */}
-                            </Td>
-                          </Tr>
-                        ))}
+                                )}
+                              </Td>
+                            </Tr>
+                          ))}
                       </Tbody>
                     </Table>
                   </TableContainer>
@@ -550,7 +669,6 @@ const TRENDING = [
 ];
 
 export const getServerSideProps = async () => {
-
   const schemaCode = "";
   const page = "1";
   const pageSize = "5";
@@ -570,16 +688,33 @@ export const getServerSideProps = async () => {
   end24h.setMilliseconds(0);
   let count24h = 0;
 
-
-  const [nftActionCount, totalNFTCollection, totalNFTS, nftFee, action24h, latestAction] =
-    await Promise.all([
-      getNFTActionCountStat(schemaCode, startDate.toISOString(), endDate.toISOString(), page, pageSize),
-      getTotalNFTCollection(),
-      getTotalNFTS(),
-      getNFTFee(),
-      getNFTActionCountStatDaily(schemaCode, start24h.toISOString(), end24h.toISOString(), page, pageSize),
-      getLatestAction("1", "6")
-    ]);
+  const [
+    nftActionCount,
+    totalNFTCollection,
+    totalNFTS,
+    nftFee,
+    action24h,
+    latestAction,
+  ] = await Promise.all([
+    getNFTActionCountStat(
+      schemaCode,
+      startDate.toISOString(),
+      endDate.toISOString(),
+      page,
+      pageSize
+    ),
+    getTotalNFTCollection(),
+    getTotalNFTS(),
+    getNFTFee(),
+    getNFTActionCountStatDaily(
+      schemaCode,
+      start24h.toISOString(),
+      end24h.toISOString(),
+      page,
+      pageSize
+    ),
+    getLatestAction("1", "20"),
+  ]);
 
   if (action24h) {
     for (let i = 0; i < action24h.length; i++) {
@@ -592,8 +727,8 @@ export const getServerSideProps = async () => {
     totalNFTCollection: totalNFTCollection,
     totalNFTS: totalNFTS,
     nftFee: nftFee,
-    action24h: count24h
-  }
+    action24h: count24h,
+  };
 
   if (!latestAction) {
     return {

@@ -28,8 +28,27 @@ export const formatNumberAndRoundUp = (
 };
 
 export const formatHex = (hash: string) => {
+  // check input in not null
+  if (!hash) {
+    return "";
+  }
   return hash.slice(0, 6) + "..." + hash.slice(hash.length - 6, hash.length);
 };
+
+export const formatMethod = (method: string) => {
+  // check input in not null
+  if (!method) {
+    return "";
+  }
+  if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMACTIONBYADMIN"){
+    return "ACTION"
+  }else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMMULTITOKENACTION"){
+    return "MULTIACION"
+  }else {
+    return method.split(".")[method.split(".").length - 1].slice(3).toUpperCase()
+  }
+};
+
 
 export const formatTraitValue = (value: string | number) => {
   if (typeof value === "string" && value.length > 10) {

@@ -56,6 +56,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
+import { formatMethod } from "@/utils/format";
 
 interface Props {
     address: string;
@@ -291,13 +292,9 @@ export default function Address({
                                                                             </Td>
                                                                             <Td>
                                                                                 <Text>
-                                                                                    <Badge>
-                                                                                        {tx.type
-                                                                                            .split(".")
-                                                                                        [
-                                                                                            tx.type.split(".").length - 1
-                                                                                        ].slice(3)}
-                                                                                    </Badge>
+                                                                                <Badge textAlign={"center"} width="100%">
+                                                                                {formatMethod(tx.type)}
+                                                                                </Badge>
                                                                                 </Text>
                                                                             </Td>
                                                                             <Td>
