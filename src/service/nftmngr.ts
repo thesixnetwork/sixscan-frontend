@@ -194,7 +194,7 @@ export const getLatestAction = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/Txs?page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionTxs?page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       // console.log("Error: Non-200 status code returned:", res.status);

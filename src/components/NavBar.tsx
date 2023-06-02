@@ -43,7 +43,6 @@ export default function WithSubnavigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   // const isBlockRunning = status ? new Date(status.block.header.time).getTime() > Date.now() - 60000 : false;
-
   const [isBlockRunning, setIsBlockRunning] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
 
@@ -100,7 +99,7 @@ export default function WithSubnavigation({
           <Box style={{ display: "flex" }}>
             <Link href="/" _hover={{ textDecoration: "none" }}>
               <Flex alignItems="center" direction={"row"} gap={2}>
-                <Image src="/sixscan-logo.png" alt="logo" height={6} />
+                <Image style={{ marginTop: "6px", marginBottom: "6px" }} src="/sixscan-logo.png" alt="logo" height={6} />
               </Flex>
             </Link>
             <Flex direction="column">
@@ -109,7 +108,9 @@ export default function WithSubnavigation({
                   <Link href={ENV.Block_Scount_API_URL} _hover={{ textDecoration: "none" }}>
                   <Text style={{
                     marginLeft: "10px", marginRight: "10px", color: "#878CA8",
-                    fontStyle: "normal",fontWeight: "500"
+                    fontStyle: "normal",fontWeight: "550",
+                    fontFamily: "Inter, sans-serif",
+                    marginTop: "6px", marginBottom: "6px"
                   }}>
                     EVM
                   </Text>
@@ -119,7 +120,9 @@ export default function WithSubnavigation({
                   <Link href="/" _hover={{ textDecoration: "none" }}>
                   <Text style={{
                     marginLeft: "10px", marginRight: "10px", color: "#FFFFFF",
-                    fontStyle: "normal",fontWeight: "500"
+                    fontStyle: "normal",fontWeight: "550",
+                    fontFamily: "Inter, sans-serif",
+                    marginTop: "6px", marginBottom: "6px"
                   }}>
                     Cosmos
                   </Text>

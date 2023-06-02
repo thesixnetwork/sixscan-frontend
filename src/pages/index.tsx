@@ -222,14 +222,18 @@ export default function Home({
                       <Tr key={index}>
                         <Td>
                           <Flex direction="column">
-                            <Text>
-                              <Clickable
-                                underline
-                                href={`/block/${block.header.height}`}
-                              >
+                            <Clickable
+                              href={`/block/${block.header.height}`}
+                            >
+                              <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "15px"
+                              }}>
                                 {block.header.height}
-                              </Clickable>
-                            </Text>
+                              </Text>
+                            </Clickable>
                             <Text fontSize="xs" color="medium">
                               {new Date(block.header.time).toLocaleString()}
                             </Text>
@@ -237,15 +241,22 @@ export default function Home({
                         </Td>
                         <Td>
                           <Flex direction="column">
-                            <Text>
+                            <Flex direction="row">
                               Fee Recipient{` `}
                               <Clickable
-                                underline
+                                
                                 href={`/address/${getBlockRewardValidator(
                                   block,
                                   blocksResult
                                 )}`}
                               >
+                                <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                              }}>
                                 {validators.map((validator) => {
                                   if (
                                     validator.operator_address ===
@@ -254,13 +265,15 @@ export default function Home({
                                     return validator.description.moniker;
                                   }
                                 })}
+                                </Text>
+                                
                               </Clickable>
-                            </Text>
+                            </Flex>
                             <Text fontSize="xs" color="medium">
                               Txns{` `}
                               <Clickable
                                 href={`/block/${block.header.height}`}
-                                underline={true}
+                                underline={false}
                               >
                                 {block.num_txs}
                               </Clickable>
@@ -268,11 +281,18 @@ export default function Home({
                           </Flex>
                         </Td>
                         <Td isNumeric>
-                          <Badge>
+                          <Badge display={"inline-flex"}>
                             Reward{" "}
-                            <Clickable>
+                            <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                                marginRight: "6px",
+                              }}>
                               {getBlockRewardAmount(block, blocksResult)}
-                            </Clickable>{" "}
+                            </Text>{" "}
                             SIX
                           </Badge>
                         </Td>
@@ -307,9 +327,9 @@ export const getServerSideProps = async () => {
   const [latestBlocks, blocksResult] =
     latestBlockHeight && minBlockHeight
       ? await Promise.all([
-          getLatestBlocks(minBlockHeight, latestBlockHeight),
-          getBlocksResult(minBlockHeight, latestBlockHeight),
-        ])
+        getLatestBlocks(minBlockHeight, latestBlockHeight),
+        getBlocksResult(minBlockHeight, latestBlockHeight),
+      ])
       : [null, null];
 
   return {
