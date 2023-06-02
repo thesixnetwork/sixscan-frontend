@@ -6,6 +6,7 @@ import {
   AccordionIcon,
   AccordionPanel,
   Box,
+  CardFooter,
   Flex,
   Text,
   Container,
@@ -570,7 +571,7 @@ export default function Address({
                 </CustomCard>
               </GridItem>
               <GridItem colSpan={12}>
-                <CustomCard footer={"VIEW TXNS"} href={`/txs/${address}`}>
+                <CustomCard>
                   <Tabs isLazy>
                     <TabList>
                       <Tab>Txns</Tab>
@@ -643,14 +644,18 @@ export default function Address({
                                             fontSize={12}
                                           />
                                         )}
-                                        <Text>
-                                          <Clickable
-                                            href={`/tx/${tx.txhash}`}
-                                            underline
-                                          >
+                                        <Clickable
+                                          href={`/tx/${tx.txhash}`}
+                                        >
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
                                             {formatHex(tx.txhash)}
-                                          </Clickable>
-                                        </Text>
+                                          </Text>
+                                        </Clickable>
                                       </Flex>
                                     </Td>
                                     <Td>
@@ -668,28 +673,36 @@ export default function Address({
                                       </Text>
                                     </Td>
                                     <Td>
-                                      <Text>
-                                        <Clickable
-                                          href={`/block/${tx.block_height}`}
-                                          underline
-                                        >
+                                      <Clickable
+                                        href={`/block/${tx.block_height}`}
+                                      >
+                                        <Text style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "12px"
+                                        }}>
                                           {tx.block_height}
-                                        </Clickable>
-                                      </Text>
+                                        </Text>
+                                      </Clickable>
                                     </Td>
                                     <Td>
-                                      <Text>
-                                        {tx.decode_tx.fromAddress && (
-                                          <Clickable
-                                            href={`/address/${tx.decode_tx.fromAddress}`}
-                                            underline
-                                          >
+                                      {tx.decode_tx.fromAddress && (
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.fromAddress}`}
+                                        >
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
                                             {formatHex(
                                               tx.decode_tx.fromAddress
                                             )}
-                                          </Clickable>
-                                        )}
-                                      </Text>
+                                          </Text>
+                                        </Clickable>
+                                      )}
                                     </Td>
                                     <Td>
                                       {tx.decode_tx.toAddress === address ? (
@@ -712,16 +725,20 @@ export default function Address({
                                       ) : null}
                                     </Td>
                                     <Td>
-                                      <Text>
-                                        {tx.decode_tx.toAddress && (
-                                          <Clickable
-                                            href={`/address/${tx.decode_tx.toAddress}`}
-                                            underline
-                                          >
+                                      {tx.decode_tx.toAddress && (
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.toAddress}`}
+                                        >
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
                                             {formatHex(tx.decode_tx.toAddress)}
-                                          </Clickable>
-                                        )}
-                                      </Text>
+                                          </Text>
+                                        </Clickable>
+                                      )}
                                     </Td>
                                     <Td isNumeric>
                                       {tx.decode_tx.amount &&
@@ -746,6 +763,11 @@ export default function Address({
                                 ))}
                             </Tbody>
                           </Table>
+                          <CardFooter>
+                            <Link href={`/txs/${address}`}>
+                              <Text decoration={"underline"}>VIEW TXNS</Text>
+                            </Link>
+                          </CardFooter>
                         </TableContainer>
                       </TabPanel>
 
@@ -759,10 +781,11 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest 20 from a total of{" "}
-                            <Clickable underline href="/">
-                              {latestAction.totalCount}
-                            </Clickable>{" "}
+                            Latest {latestAction.txs.length} from a total of{" "}
+                            {/* <Clickable underline href="/"> */}
+                            {latestAction.totalCount}
+                            {/* </Clickable> */}
+                            {" "}
                             transactions
                           </Text>
                         </Flex>
@@ -798,24 +821,33 @@ export default function Address({
                               {latestAction.txs.map((x: any, index: number) =>
                                 <Tr key={index}>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
+                                    <Clickable href={`/tx/${x.txhash}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
                                         {formatHex(x.txhash)}
-                                      </Clickable>
-                                    </Text>
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable
-                                        href={`/schema/1/1`}
-                                        underline
-                                      >
+                                    <Clickable
+                                      href={`/schema/${x.decode_tx.nftSchemaCode}/${x.decode_tx.tokenId}`}
+                                    >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
                                         {x.decode_tx.tokenId}
-                                      </Clickable>
-                                    </Text>
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
+                                    {/* <Text> */}
                                       <Badge>
                                         {x.type
                                           .split(".")
@@ -823,24 +855,34 @@ export default function Address({
                                           3
                                         )}
                                       </Badge>
-                                    </Text>
+                                    {/* </Text> */}
                                   </Td>
                                   <Td>
                                     <Text>{moment(x.time_stamp).fromNow()}</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
+                                    <Clickable href={`/block/${x.block_height}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
                                         {x.block_height}
-                                      </Clickable>
-                                    </Text>
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
+                                    <Clickable href={`/address/${x.decode_tx.relate_addr[0]}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
                                         {formatHex(x.decode_tx.relate_addr[0])}
-                                      </Clickable>
-                                    </Text>
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
                                     <Text>{`${formatNumber(
@@ -855,15 +897,17 @@ export default function Address({
                               )}
 
                             </Tbody>
-                            <Tbody>
-
-                            </Tbody>
                           </Table>
+                          <CardFooter>
+                            <Link href={`/datachain/${address}`}>
+                              <Text decoration={"underline"}>VIEW TXNS</Text>
+                            </Link>
+                          </CardFooter>
                         </TableContainer>
                       </TabPanel>
 
 
-                      
+
                       {validator && (
                         <TabPanel>
                           <Flex
@@ -1028,7 +1072,7 @@ export const getServerSideProps = async (context: {
       getAccount(address),
       getBalance(address),
       getBalances(address),
-      getTxsFromAddress(address, "1", "20"),
+      getTxsFromAddress(address, "1", "10"),
       getDelegationsFromValidator(address),
       getValidators(),
       getAllTransactionByAddress(address, "1", "10")

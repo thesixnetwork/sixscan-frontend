@@ -523,25 +523,33 @@ export default function Schema({
                                           fontSize={12}
                                         />
                                       )}
-                                      <Text>
                                         <Clickable
                                           href={`/tx/${tx.txhash}`}
-                                          underline
                                         >
-                                          {formatHex(tx.txhash)}
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {formatHex(tx.txhash)}
+                                          </Text>
                                         </Clickable>
-                                      </Text>
                                     </Flex>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       <Clickable
                                         href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
-                                        underline
                                       >
-                                        {tx.decode_tx.tokenId}
+                                        <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {tx.decode_tx.tokenId}
+                                          </Text>
                                       </Clickable>
-                                    </Text>
                                   </Td>
                                   <Td>
                                     <Badge textAlign={"center"} width="100%">
@@ -558,26 +566,34 @@ export default function Schema({
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       <Clickable
                                         href={`/block/${tx.block_height}`}
-                                        underline
                                       >
-                                        {tx.block_height}
+                                        <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {tx.block_height}
+                                          </Text>
                                       </Clickable>
-                                    </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       {tx.decode_tx.creator && (
                                         <Clickable
                                           href={`/address/${tx.decode_tx.creator}`}
-                                          underline
                                         >
-                                          {formatHex(tx.decode_tx.creator)}
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {formatHex(tx.decode_tx.creator)}
+                                          </Text>
                                         </Clickable>
                                       )}
-                                    </Text>
                                   </Td>
                                   <Td>
                                     <Text>{`${formatNumber(

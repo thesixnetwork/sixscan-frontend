@@ -31,7 +31,7 @@ export const getBlockRewardAmount = (
     const _asixRewardValue = _asixReward? parseFloat(_asixReward[0]) : 0
     const _usixFromAsix = _asixRewardValue * Math.pow(10, -12)
 
-    console.log("_asixRewardValue", _usixFromAsix);
+    // console.log("_asixRewardValue", _usixFromAsix);
     
 
 
@@ -39,7 +39,7 @@ export const getBlockRewardAmount = (
     const _usixRewardValue = _usixReward? parseFloat(_usixReward[0]) : 0
 
     const usixRewardValue = _usixFromAsix + _usixRewardValue
-    console.log("usixRewardValue", usixRewardValue);
+    // console.log("usixRewardValue", usixRewardValue);
   
 
     const formattedRewardsValue = usixRewardValue? (usixRewardValue * Math.pow(10, -6)).toFixed(6)
