@@ -84,12 +84,13 @@ import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
+import { getAllTransactionByAddress } from "@/service/nftmngr";
 import { Delegation, Validator } from "@/types/Staking";
 import { Balance, BalanceETH } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
 import moment from "moment";
 import { getAccount } from "@/service/auth";
-import { Account} from "@/types/Auth";
+import { Account } from "@/types/Auth";
 
 import { getBalance, getBalances } from "@/service/bank";
 import {
@@ -100,15 +101,12 @@ import {
 } from "@/utils/format";
 
 import { validateAddress } from "@/utils/validate";
-
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
-import Act from "@/mock-data/atc.json";
 
 // create a tokens map
-// console.log(Act)
 
 const tokens: any = {
   usix: {
@@ -127,6 +125,7 @@ interface Props {
   balances: Balance[] | null;
   accountTxs: AccountTxs;
   delegations: Delegation[] | null;
+  latestAction: any;
 }
 
 export default function Address({
@@ -137,6 +136,7 @@ export default function Address({
   balances,
   accountTxs,
   delegations,
+  latestAction,
 }: Props) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
@@ -144,15 +144,6 @@ export default function Address({
   const [filteredBalances, setFilteredBalances] = useState<Balance[] | null>(
     balances
   );
-
-  // console.log("address =>",address)
-  // console.log("isETHAddress =>", isETHAddress);
-  // console.log("account =>",account)
-  // console.log("balance =>",balance)
-  // console.log("balances =>", balances);
-  // console.log("accountTxs =>",accountTxs)
-  // console.log("delegations =>",delegations)
-  // console.log("filteredBalances =>",filteredBalances)
 
   const handleCopyClick = () => {
     navigator.clipboard.writeText(address);
@@ -200,7 +191,6 @@ export default function Address({
 
   const handleClick = () => setIsOpen(!isOpen);
   // console.log("accountTxs",accountTxs)
-  // console.log("addressMock",addressMock)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -769,9 +759,9 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest 25 from a total of{" "}
+                            Latest 20 from a total of{" "}
                             <Clickable underline href="/">
-                              92
+                              {latestAction.totalCount}
                             </Clickable>{" "}
                             transactions
                           </Text>
@@ -804,357 +794,76 @@ export default function Address({
                               </Tr>
 
                             </Thead>
-                            {/* <Tbody> */}
-                            {/* {ACTIONS.map((action, index) => (
+                            <Tbody>
+                              {latestAction.txs.map((x: any, index: number) =>
                                 <Tr key={index}>
                                   <Td>
                                     <Text>
                                       <Clickable href="/" underline>
-                                        {formatHex(action.txhash)}
+                                        {formatHex(x.txhash)}
                                       </Clickable>
                                     </Text>
                                   </Td>
                                   <Td>
                                     <Text>
                                       <Clickable
-                                        href={`/schema/${
-                                          METADATA.find(
-                                            (metadatum) =>
-                                              metadatum.nftData.token_id ===
-                                              action.token_id
-                                          )?.nftData.nft_schema_code
-                                        }/${action.token_id}`}
+                                        href={`/schema/1/1`}
                                         underline
                                       >
-                                        {
-                                          METADATA.find(
-                                            (metadatum) =>
-                                              metadatum.nftData.token_id ===
-                                              action.token_id
-                                          )?.nftData.token_id
-                                        }
+                                        {x.decode_tx.tokenId}
                                       </Clickable>
                                     </Text>
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Badge>{action.method}</Badge>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{action.age}</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {action.block}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${action.gasfee} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              ))} */}
-                            {/* </Tbody> */}
-                            <Tbody>
-
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
-
-
-                      <TabPanel>
-                        <Flex
-                          direction="row"
-                          gap={2}
-                          align="center"
-                          color={"dark"}
-                        >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
-                            </Clickable>{" "}
-                            transactions
-                          </Text>
-                        </Flex>
-                        <TableContainer>
-                          <Table>
-                            <Thead>
-                              {/* <Tr>
-                                <Td>
-                                  <Text>Txhash</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Token ID</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Method</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Age</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Block</Text>
-                                </Td>
-                                <Td>
-                                  <Text>By</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Gas Fee</Text>
-                                </Td>
-                              </Tr> */}
-                              <Tr>
-                                <Td>
-                                  <Text>Txhash</Text>
-                                </Td>
-                                {/* <Td>
-                                  <Text>Method</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Age</Text>
-                                </Td> */}
-                                <Td>
-                                  <Text>Block</Text>
-                                </Td>
-                                <Td>
-                                  <Text>From</Text>
-                                </Td>
-                                <Td></Td>
-                                <Td>
-                                  <Text>To</Text>
-                                </Td>
-                                {/* <Td>
-                                  <Text>Value</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Gas Fee</Text>
-                                </Td> */}
-                              </Tr>
-                            </Thead>
-                            {/* <Tbody> */}
-                            {/* {ACTIONS.map((action, index) => (
-                                <Tr key={index}>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.txhash)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable
-                                        href={`/schema/${
-                                          METADATA.find(
-                                            (metadatum) =>
-                                              metadatum.nftData.token_id ===
-                                              action.token_id
-                                          )?.nftData.nft_schema_code
-                                        }/${action.token_id}`}
-                                        underline
-                                      >
-                                        {
-                                          METADATA.find(
-                                            (metadatum) =>
-                                              metadatum.nftData.token_id ===
-                                              action.token_id
-                                          )?.nftData.token_id
-                                        }
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Badge>{action.method}</Badge>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{action.age}</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {action.block}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${action.gasfee} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              ))} */}
-                            {/* </Tbody> */}
-                            <Tbody>
-                              {Act &&
-                                Act.txs.map((tx, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        gap={1}
-                                        align="center"
-                                      >
-                                        {tx.code !== 0 && (
-                                          <FaRegWindowClose
-                                            color="red"
-                                            fontSize={12}
-                                          />
-                                        )}
-                                        <Text>
-                                          {/* <Clickable
-                                            href={`/tx/${tx.txhash}`}
-                                            underline
-                                          >
-                                            {formatHex(tx.txhash)}
-                                          </Clickable> */}
-                                          <Link href={`https://fivenet.evm.sixscan.io/tx/${tx.txhash}`}>
-                                            <Text
-                                              as={"span"}
-                                              decoration={"none"}
-                                              color="primary.500"
-                                            >
-                                              {formatHex(tx.txhash)}
-                                            </Text>
-                                          </Link>
-                                        </Text>
-                                      </Flex>
-                                    </Td>
-                                    {/* <Td>
-                                      <Badge textAlign={"center"} width="100%">
-                                        {tx.type
+                                      <Badge>
+                                        {x.type
                                           .split(".")
-                                          [tx.type.split(".").length - 1].slice(
-                                            3
-                                          )}
+                                        [x.type.split(".").length - 1].slice(
+                                          3
+                                        )}
                                       </Badge>
-                                    </Td> */}
-                                    {/* <Td>
-                                      <Text>
-                                        {moment(tx.time_stamp).fromNow()}
-                                      </Text>
-                                    </Td> */}
-                                    <Td>
-                                      <Text>
-                                        <Clickable
-                                          href={`/block/${tx.block_height}`}
-                                          underline
-                                        >
-                                          {tx.block_height}
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        {tx.decode_tx.fromAddress && (
-                                          // <Clickable
-                                          //   href={`/address/${tx.decode_tx.fromAddress}`}
-                                          //   underline
-                                          // >
-                                          //   {formatHex(
-                                          //     tx.decode_tx.fromAddress
-                                          //   )}
-                                          // </Clickable>
-                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.fromAddress}`}>
-                                            <Text
-                                              as={"span"}
-                                              decoration={"none"}
-                                              color="primary.500"
-                                            >
-                                              {formatHex(
-                                                tx.decode_tx.fromAddress
-                                              )}
-                                            </Text>
-                                          </Link>
-                                        )}
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      {tx.decode_tx.toAddress ===
-                                        addressMock ? (
-                                        <Badge
-                                          textAlign={"center"}
-                                          width="100%"
-                                          colorScheme="green"
-                                        >
-                                          IN
-                                        </Badge>
-                                      ) : tx.decode_tx.fromAddress ===
-                                        addressMock ? (
-                                        <Badge
-                                          textAlign={"center"}
-                                          width="100%"
-                                          colorScheme="orange"
-                                        >
-                                          OUT
-                                        </Badge>
-                                      ) : null}
-                                    </Td>
-                                    <Td>
-                                      <Text>
-                                        {tx.decode_tx.toAddress && (
-                                          // <Clickable
-                                          //   href={`/address/${tx.decode_tx.toAddress}`}
-                                          //   underline
-                                          // >
-                                          //   {formatHex(tx.decode_tx.toAddress)}
-                                          // </Clickable>
-                                          <Link href={`https://fivenet.evm.sixscan.io/address/${tx.decode_tx.toAddress}`}>
-                                            <Text
-                                              as={"span"}
-                                              decoration={"none"}
-                                              color="primary.500"
-                                            >
-                                              {formatHex(
-                                                tx.decode_tx.toAddress
-                                              )}
-                                            </Text>
-                                          </Link>
-                                        )}
-                                      </Text>
-                                    </Td>
-                                    {/* <Td isNumeric>
-                                      {tx.decode_tx.amount &&
-                                        tx.decode_tx.amount[0]?.amount && (
-                                          <Text>{`${formatNumber(
-                                            convertUsixToSix(
-                                              parseInt(
-                                                tx.decode_tx.amount[0].amount
-                                              )
-                                            )
-                                          )} SIX`}</Text>
-                                        )}
-                                    </Td> */}
-                                    {/* <Td>
-                                      <Text>{`${formatNumber(
-                                        convertUsixToSix(
-                                          parseInt(tx.decode_tx.fee_amount)
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{moment(x.time_stamp).fromNow()}</Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {x.block_height}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Clickable href="/" underline>
+                                        {formatHex(x.decode_tx.relate_addr[0])}
+                                      </Clickable>
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Text>{`${formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(
+                                          x.decode_tx.fee_amount
                                         )
-                                      )} SIX`}</Text>
-                                    </Td> */}
-                                  </Tr>
-                                ))}
+                                      )
+                                    )} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              )}
+
+                            </Tbody>
+                            <Tbody>
+
                             </Tbody>
                           </Table>
                         </TableContainer>
                       </TabPanel>
+
+
+                      
                       {validator && (
                         <TabPanel>
                           <Flex
@@ -1313,7 +1022,7 @@ export const getServerSideProps = async (context: {
   params: { address: string };
 }) => {
   const { address } = context.params;
-  const [validator, account, balance, balances, accountTxs, delegations, validators] =
+  const [validator, account, balance, balances, accountTxs, delegations, validators, latestAction] =
     await Promise.all([
       getValidator(address),
       getAccount(address),
@@ -1322,11 +1031,9 @@ export const getServerSideProps = async (context: {
       getTxsFromAddress(address, "1", "20"),
       getDelegationsFromValidator(address),
       getValidators(),
+      getAllTransactionByAddress(address, "1", "10")
     ]);
   const isAddressValid = await validateAddress(address);
-  // console.log("isContract ==>", isContract);
-  // console.log("balances 1551 ==>", balances);
-  // console.log("validators 1914 ==>", validators);
   return {
     props: isAddressValid
       ? {
@@ -1337,6 +1044,7 @@ export const getServerSideProps = async (context: {
         balances,
         accountTxs,
         delegations,
+        latestAction
       }
       : {
         address: null,
@@ -1346,6 +1054,7 @@ export const getServerSideProps = async (context: {
         balances: null,
         accountTxs: null,
         delegations: null,
+        latestAction: null,
       },
   };
 };

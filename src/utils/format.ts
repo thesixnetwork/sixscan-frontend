@@ -71,3 +71,20 @@ export const formatBank = (key:string) => {
   key = formatEng(key)
   return `${key}`;
 }
+
+export const formatSchema = (schema: string) => {
+  const schema_code = schema.split('.')[1];
+  if (schema_code.length <= 10) {
+    return schema_code.slice(0, 10);
+  }else {
+    return schema_code.slice(0, 10) + '...';;
+  }
+};
+
+export const formatSchemaAction = (action: string) => {
+  if (action.length <= 8) {
+    return action;
+  }else {
+    return action.slice(0, 8) + '...';
+  }
+};

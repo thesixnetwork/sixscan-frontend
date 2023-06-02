@@ -94,14 +94,40 @@ export default function WithSubnavigation({
         </Flex>
         <Flex
           flex={{ base: 1 }}
-          justify={{ base: "center", md: "start" }}
+          justify={{ base: "center", md: "space-between" }}
           alignItems="center"
         >
-          <Link href="/" _hover={{ textDecoration: "none" }}>
-            <Flex alignItems="center" direction={"row"} gap={2}>
-              <Image src="/sixscan-logo.png" alt="logo" height={6} />
+          <Box style={{ display: "flex" }}>
+            <Link href="/" _hover={{ textDecoration: "none" }}>
+              <Flex alignItems="center" direction={"row"} gap={2}>
+                <Image src="/sixscan-logo.png" alt="logo" height={6} />
+              </Flex>
+            </Link>
+            <Flex direction="column">
+              <Box style={{ display: "flex", marginLeft: "10px", background: "#FFFFFF", border: "1px solid #DADEF2", borderRadius: "32px" }}>
+                <Box>
+                  <Link href={ENV.Block_Scount_API_URL} _hover={{ textDecoration: "none" }}>
+                  <Text style={{
+                    marginLeft: "10px", marginRight: "10px", color: "#878CA8",
+                    fontStyle: "normal",fontWeight: "500"
+                  }}>
+                    EVM
+                  </Text>
+                  </Link>
+                </Box>
+                <Box style={{ background: "#464B92", borderRadius: "32px" }}>
+                  <Link href="/" _hover={{ textDecoration: "none" }}>
+                  <Text style={{
+                    marginLeft: "10px", marginRight: "10px", color: "#FFFFFF",
+                    fontStyle: "normal",fontWeight: "500"
+                  }}>
+                    Cosmos
+                  </Text>
+                  </Link>
+                </Box>
+              </Box>
             </Flex>
-          </Link>
+          </Box>
 
           <Flex
             display={{ base: "none", md: "flex" }}
@@ -268,6 +294,7 @@ const DesktopNav = () => {
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
+
             <PopoverTrigger>
               {navItem.children ? (
                 <Flex alignItems="center" direction={"row"} gap={1}>
