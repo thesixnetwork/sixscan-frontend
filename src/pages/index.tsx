@@ -51,7 +51,7 @@ import {
   getLatestBlock,
   getLatestBlocks,
 } from "@/service/block";
-import { BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
+import { Block ,BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
 import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 // ------------------------- Helper Libs -------------------------
 import { formatNumber } from "@/utils/format";
@@ -63,6 +63,7 @@ interface Props {
   pool: Pool;
   inflation: string;
   supply: Balance;
+  latestBlock: Block;
   latestBlocks: BlockchainResult;
   blocksResult: BlockResult[];
   validators: Validator[];
@@ -73,11 +74,53 @@ export default function Home({
   pool,
   inflation,
   supply,
+  latestBlock,
   latestBlocks,
   blocksResult,
   validators,
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
+
+  const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
+  const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
+    latestBlocks
+  );
+  const [blocksResultState, setBlocksResult] = useState<BlockResult[]>(
+    blocksResult
+  );
+  const [validatorsState, setValidators] = useState<Validator[]>(validators);
+
+  // fetch last block interval
+  useEffect(() => {
+    const fetchData = async () => {
+      const latestBlock = await getLatestBlock();
+        setLatestBlock(latestBlock? latestBlock : latestBlockState);
+    };
+    // Fetch data initially
+    fetchData();
+    const intervalId = setInterval(fetchData, 6000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const latestBlock = latestBlockState
+      const latestBlockHeight = latestBlockState
+        ? parseInt(latestBlock?.block?.header?.height) ?? null
+        : null;
+      const minBlockHeight = latestBlockHeight ? latestBlockHeight - 20 : null;
+      const [latestBlocks, blocksResult, validators] = await Promise.all([
+        getLatestBlocks(minBlockHeight, latestBlockHeight),
+        getBlocksResult(minBlockHeight, latestBlockHeight),
+        getValidators(),
+      ]);
+      setLatestBlocks(latestBlocks? latestBlocks : latestBlocksState);
+      setBlocksResult(blocksResult? blocksResult : blocksResultState);
+      setValidators(validators ? validators : validatorsState);
+    };
+    fetchData();
+
+  }, [latestBlockState]);
 
   useEffect(() => {
     // async function fetchPrice() {
@@ -218,18 +261,22 @@ export default function Home({
               <TableContainer>
                 <Table variant="simple">
                   <Tbody>
-                    {latestBlocks.block_metas.map((block, index) => (
+                    {latestBlocksState?.block_metas.map((block, index) => (
                       <Tr key={index}>
                         <Td>
                           <Flex direction="column">
-                            <Text>
-                              <Clickable
-                                underline
-                                href={`/block/${block.header.height}`}
-                              >
+                            <Clickable
+                              href={`/block/${block.header.height}`}
+                            >
+                              <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "15px"
+                              }}>
                                 {block.header.height}
-                              </Clickable>
-                            </Text>
+                              </Text>
+                            </Clickable>
                             <Text fontSize="xs" color="medium">
                               {new Date(block.header.time).toLocaleString()}
                             </Text>
@@ -237,30 +284,39 @@ export default function Home({
                         </Td>
                         <Td>
                           <Flex direction="column">
-                            <Text>
+                            <Flex direction="row">
                               Fee Recipient{` `}
                               <Clickable
-                                underline
+                                
                                 href={`/address/${getBlockRewardValidator(
                                   block,
-                                  blocksResult
+                                  blocksResultState
                                 )}`}
                               >
-                                {validators.map((validator) => {
+                                <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                              }}>
+                                {validatorsState.map((validator) => {
                                   if (
                                     validator.operator_address ===
-                                    getBlockRewardValidator(block, blocksResult)
+                                    getBlockRewardValidator(block, blocksResultState)
                                   ) {
                                     return validator.description.moniker;
                                   }
                                 })}
+                                </Text>
+                                
                               </Clickable>
-                            </Text>
+                            </Flex>
                             <Text fontSize="xs" color="medium">
                               Txns{` `}
                               <Clickable
                                 href={`/block/${block.header.height}`}
-                                underline
+                                underline={false}
                               >
                                 {block.num_txs}
                               </Clickable>
@@ -268,11 +324,18 @@ export default function Home({
                           </Flex>
                         </Td>
                         <Td isNumeric>
-                          <Badge>
+                          <Badge display={"inline-flex"}>
                             Reward{" "}
-                            <Clickable>
-                              {getBlockRewardAmount(block, blocksResult)}
-                            </Clickable>{" "}
+                            <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                                marginRight: "6px",
+                              }}>
+                              {getBlockRewardAmount(block, blocksResultState)}
+                            </Text>{" "}
                             SIX
                           </Badge>
                         </Td>
@@ -307,9 +370,9 @@ export const getServerSideProps = async () => {
   const [latestBlocks, blocksResult] =
     latestBlockHeight && minBlockHeight
       ? await Promise.all([
-          getLatestBlocks(minBlockHeight, latestBlockHeight),
-          getBlocksResult(minBlockHeight, latestBlockHeight),
-        ])
+        getLatestBlocks(minBlockHeight, latestBlockHeight),
+        getBlocksResult(minBlockHeight, latestBlockHeight),
+      ])
       : [null, null];
 
   return {
@@ -317,6 +380,7 @@ export const getServerSideProps = async () => {
       pool,
       inflation,
       supply,
+      latestBlock,
       latestBlocks,
       blocksResult,
       validators,

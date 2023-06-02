@@ -7,6 +7,7 @@ import {
   Grid,
   GridItem,
   Divider,
+  Link,
   Table,
   TableContainer,
   Tbody,
@@ -120,30 +121,6 @@ export default function BlockPage({
     );
   }
 
-  ///
-  const GetBalance = async () => {
-    const body = {
-      jsonrpc: "2.0",
-      method: "eth_getCode",
-      id: "1",
-      params: ["0xb62ef83643a2f8c95df78f694c6bf480f5b786f2", "latest"],
-    };
-    try {
-      const response = await axios.post(
-        "https://rpc-evm.fivenet.sixprotocol.net",
-        body
-      );
-      // setTex_EVM(response)
-      console.log("res 0x39CDFF :", response);
-      // console.log(ENV)
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  GetBalance();
-
-  // console.log(blockTxs.txs.map((x) => ( x.tx_result.log )))
-  // console.log(blockTxs.txs)
   return (
     <Flex minHeight={"100vh"} direction={"column"}>
       <Head>
@@ -245,8 +222,8 @@ export default function BlockPage({
                 <Tabs isLazy>
                   <TabList>
                     <Tab>Txns All({blockTxs.total_count})</Tab>
-                    <Tab>Txns EVM ({TxsEVM.length})</Tab>
-                    <Tab>Txns Cosmos ({TxsCosmos.length})</Tab>
+                    {/* <Tab>Txns EVM ({TxsEVM.length})</Tab>
+                    <Tab>Txns Cosmos ({TxsCosmos.length})</Tab> */}
                     {/* <Tab>Txns (Data Layer)</Tab> */}
                   </TabList>
                   <TabPanels>
@@ -283,7 +260,7 @@ export default function BlockPage({
                                       />
                                     )} */}
                                     <Text>
-                                      <Clickable
+                                      {/* <Clickable
                                         href={`/tx/${
                                           tx.hashEVM === null
                                             ? tx.hash
@@ -294,7 +271,24 @@ export default function BlockPage({
                                         {tx.hashEVM === null
                                           ? tx.hash
                                           : tx.hashEVM}
-                                      </Clickable>
+                                      </Clickable> */}
+                                      {tx.hashEVM === null ? (
+                                        <Clickable
+                                          href={`/tx/${tx.hash}`}
+                                          underline
+                                        >
+                                          {tx.hash}
+                                        </Clickable>) : (
+                                        <Link href={`https://fivenet.evm.sixscan.io/tx/${tx.hashEVM}`}>
+                                          <Text
+                                            as={"span"}
+                                            decoration={"none"}
+                                            color="primary.500"
+                                          >
+                                            {tx.hashEVM}
+                                          </Text>
+                                        </Link>)
+                                      }
                                     </Text>
                                   </Flex>
                                 </Td>
@@ -427,8 +421,8 @@ export const getServerSideProps = async (context: {
         (x: any) => x.type === "ethereum_tx"
       )
         ? JSON.parse(x.tx_result.log)[0]
-            .events.find((x: any) => x.type === "ethereum_tx")
-            ?.attributes.find((x: any) => x.key === "ethereumTxHash").value
+          .events.find((x: any) => x.type === "ethereum_tx")
+          ?.attributes.find((x: any) => x.key === "ethereumTxHash").value
         : null,
     }));
     TxsEVM = blockTxs.txs
