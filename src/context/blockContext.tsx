@@ -8,10 +8,10 @@ import { Validator } from "@/types/Staking";
 import {  Block, BlockchainResult, BlockResult } from "@/types/Block";
 import {createContext, useContext, useEffect, useState, ReactNode } from "react";
 interface BlocksContextProps {
-  latestBlock: Block;
-  latestBlocks: BlockchainResult;
-  blocksResult: BlockResult[];
-  validators: Validator[];
+  latestBlockState: Block | null;
+  latestBlockChainState: BlockchainResult | null;
+  blocksResultState: BlockResult[];
+  validatorsState: Validator[];
 }
 
 interface BlocksProviderProps {
@@ -19,40 +19,53 @@ interface BlocksProviderProps {
 }
 
 
-const BlocksContext = createContext<BlocksContextProps | null>(null);
-
-export const useBlocksContext = (): BlocksContextProps => {
-  const context = useContext(BlocksContext);
-  if (!context) {
-    throw new Error("useBlocksContext must be used within a BlocksProvider");
-  }
-  return context;
-};
+export const BlocksContext = createContext<BlocksContextProps>({
+  latestBlockState: null,
+  latestBlockChainState: null,
+  blocksResultState: [],
+  validatorsState: [],
+});
 
 
 export const BlocksProvider = ({ children }: BlocksProviderProps) => {
-  const [latestBlock, setLatestBlock] = useState<any | null>(null);
-  const [latestBlocks, setLatestBlocks] = useState<any | null>(null);
-  const [blocksResult, setBlocksResult] = useState<any[]>([]);
-  const [validators, setValidators] = useState<any[]>([]);
+  const [latestBlockState, setLatestBlockState] = useState<Block | null>(null);
+  const [latestBlockChainState, setLatestBlockChainState] = useState<BlockchainResult | null>(null);
+  const [blocksResultState, setBlocksResultState] = useState<BlockResult[]>([]);
+  const [validatorsState, setValidators] = useState<Validator[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch data here and update the state variables
+      const latestBlock = await getLatestBlock();
+      setLatestBlockState(latestBlock? latestBlock : latestBlockState);
     };
-
     // Fetch data initially
     fetchData();
-
-    // Set interval to fetch data every 6 seconds
     const intervalId = setInterval(fetchData, 6000);
-
-    // Clean up the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
+  
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const latestBlockHeight = latestBlockState
+        ? parseInt(latestBlockState?.block?.header?.height) ?? null
+        : null;
+      const minBlockHeight = latestBlockHeight ? latestBlockHeight - 20 : null;
+      const [latestBlocks, blocksResult, validators] = await Promise.all([
+        getLatestBlocks(minBlockHeight, latestBlockHeight),
+        getBlocksResult(minBlockHeight, latestBlockHeight),
+        getValidators(),
+      ]);
+      setLatestBlockChainState(latestBlocks? latestBlocks : latestBlockChainState);
+      setBlocksResultState(blocksResult? blocksResult : blocksResultState);
+      setValidators(validators ? validators : validatorsState);
+    };
+    fetchData();
+
+  }, [latestBlockState]);
 
   return (
-    <BlocksContext.Provider value={{ latestBlock ,latestBlocks, blocksResult, validators }}>
+    <BlocksContext.Provider value={{ latestBlockState ,latestBlockChainState, blocksResultState, validatorsState }}>
       {children}
     </BlocksContext.Provider>
   );
