@@ -70,7 +70,6 @@ export default function Address({
     const [totalValue, setTotalValue] = useState(0);
     let totalValueTmp = 0;
 
-
     const addValueToTotalValue = (value: number) => {
         totalValueTmp += value;
         return value;
@@ -92,7 +91,7 @@ export default function Address({
 
             <Box>
                 <Box>
-                    <Container maxW="container.xl">
+                    <Container maxW="container.lg">
                         <Flex direction="column" gap={3} p={3}>
                             <Flex direction="row" align="center" gap={4}>
                                 <Text fontSize="xl" fontWeight="bold" color={"dark"}>
@@ -113,7 +112,7 @@ export default function Address({
                     </Container>
                 </Box>
                 <Box p={6}>
-                    <Container maxW="container.xl">
+                    <Container maxW="container.lg">
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                             {actions && (
                                 <GridItem colSpan={12}>
@@ -162,7 +161,7 @@ export default function Address({
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/actions?page=${actions.totalPage}`}
+                                                            href={`/action?page=${actions.totalPage}`}
                                                             as="a"
                                                             isDisabled={
                                                                 parseInt(actions.pageNumber) ===
@@ -199,6 +198,9 @@ export default function Address({
                                                                         <Text>Action</Text>
                                                                     </Td>
                                                                     <Td>
+                                                                        <Text>TokenID</Text>
+                                                                    </Td>                                                                   
+                                                                    <Td>
                                                                         <Text>Age</Text>
                                                                     </Td>
                                                                     <Td>
@@ -209,6 +211,9 @@ export default function Address({
                                                                     </Td>
                                                                     <Td>
                                                                         <Text>Gas Fee</Text>
+                                                                    </Td>
+                                                                    <Td>
+                                                                        <Text>Schema</Text>
                                                                     </Td>
                                                                 </Tr>
                                                             </Thead>
@@ -235,27 +240,13 @@ export default function Address({
                                                                                             color: "#5C34A2",
                                                                                             textDecoration: "none",
                                                                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                                                            fontSize: "12px"
+                                                                                            fontSize: "13px"
                                                                                         }}>
                                                                                             {formatHex(tx.txhash)}
                                                                                         </Text>
                                                                                     </Clickable>
                                                                                 </Flex>
                                                                             </Td>
-                                                                            {/* <Td>
-                                                                                <Clickable
-                                                                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
-                                                                                >
-                                                                                    <Text style={{
-                                                                                        color: "#5C34A2",
-                                                                                        textDecoration: "none",
-                                                                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                                                        fontSize: "12px"
-                                                                                    }}>
-                                                                                        {tx.decode_tx.tokenId}
-                                                                                    </Text>
-                                                                                </Clickable>
-                                                                            </Td> */}
                                                                             <Td>
                                                                                 <Text>
                                                                                     <Badge>
@@ -268,6 +259,21 @@ export default function Address({
                                                                                 </Text>
                                                                             </Td>
                                                                             <Td>
+                                                                                {
+                                                                                tx.decode_tx.nftSchemaCode?  
+                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}>
+                                                                                    <Text style={{
+                                                                                        color: "#5C34A2",
+                                                                                        textDecoration: "none",
+                                                                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                                                        fontSize: "14px"
+                                                                                    }}>
+                                                                                        {tx.decode_tx.tokenId}
+                                                                                    </Text>
+                                                                                </Clickable> : "Will be available"
+                                                                                }
+                                                                            </Td>
+                                                                            <Td>
                                                                                 <Text>
                                                                                     {moment(tx.time_stamp).fromNow()}
                                                                                 </Text>
@@ -278,23 +284,24 @@ export default function Address({
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
                                                                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                                                        fontSize: "12px"
+                                                                                        fontSize: "14px"
                                                                                     }}>
                                                                                         {tx.block_height}
                                                                                     </Text>
                                                                                 </Clickable>
                                                                             </Td>
                                                                             <Td>
-                                                                                <Clickable href={`/address/`}>
+                                                                                {tx.decode_tx.creator?
+                                                                                <Clickable href={`/address/${tx.decode_tx.creator}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
                                                                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                                                        fontSize: "12px"
+                                                                                        fontSize: "14px"
                                                                                     }}>
-                                                                                        {/* {formatHex(tx.decode_tx.creator)} */}
+                                                                                        {formatHex(tx.decode_tx.creator)}
                                                                                     </Text>
-                                                                                </Clickable>
+                                                                                </Clickable> : "Will be available"}
                                                                             </Td>
                                                                             <Td>
                                                                                 <Text>{tx.decode_tx.fee_amount ?`${formatNumber(
@@ -302,6 +309,19 @@ export default function Address({
                                                                                         parseInt(tx.decode_tx.fee_amount)
                                                                                     )
                                                                                 )} SIX` : ""}</Text>
+                                                                            </Td>
+                                                                            <Td>
+                                                                                {tx.decode_tx.nftSchemaCode? (
+                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode}`}>
+                                                                                    <Text style={{
+                                                                                        color: "#5C34A2",
+                                                                                        textDecoration: "none",
+                                                                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                                                        fontSize: "14px"
+                                                                                    }}>
+                                                                                        {formatHex(tx.decode_tx.nftSchemaCode)}
+                                                                                    </Text>
+                                                                                </Clickable>) : "Will be available"}
                                                                             </Td>
                                                                         </Tr>
                                                                     ))}

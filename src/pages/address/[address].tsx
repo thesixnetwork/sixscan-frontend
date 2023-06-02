@@ -82,7 +82,7 @@ import {
 import CustomCard from "@/components/CustomCard";
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
+import { formatHex,formatMethod } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
 import { getAllTransactionByAddress } from "@/service/nftmngr";
@@ -659,13 +659,9 @@ export default function Address({
                                       </Flex>
                                     </Td>
                                     <Td>
-                                      <Badge textAlign={"center"} width="100%">
-                                        {tx.type
-                                          .split(".")
-                                        [tx.type.split(".").length - 1].slice(
-                                          3
-                                        )}
-                                      </Badge>
+                                    <Badge textAlign={"center"} width="100%">
+                                      {formatMethod(tx.type)}
+                                    </Badge>
                                     </Td>
                                     <Td>
                                       <Text>
@@ -800,7 +796,7 @@ export default function Address({
                                   <Text>Token ID</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Method</Text>
+                                  <Text>Action</Text>
                                 </Td>
                                 <Td>
                                   <Text>Age</Text>
@@ -813,6 +809,9 @@ export default function Address({
                                 </Td>
                                 <Td>
                                   <Text>Gas Fee</Text>
+                                </Td>
+                                <Td>
+                                  <Text>Schema</Text>
                                 </Td>
                               </Tr>
 
@@ -893,9 +892,20 @@ export default function Address({
                                       )
                                     )} SIX`}</Text>
                                   </Td>
+                                  <Td>
+                                    <Clickable href={`/schema/${x.decode_tx.nftSchemaCode}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(x.decode_tx.nftSchemaCode)}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
                                 </Tr>
                               )}
-
                             </Tbody>
                           </Table>
                           <CardFooter>
