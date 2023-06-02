@@ -218,8 +218,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                               <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{txs.tx_response.txhash}</Text>
+                                <Flex direction="row">
+                                  <Text marginRight="6px">{txs.tx_response.txhash}</Text>
+                                  <CopyIcon onClick={() => navigator.clipboard.writeText(txs.tx_response.txhash)} />
                                 </Flex>
                               </Td>
                             </Tr>
@@ -253,7 +254,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="column">
                                   <Text>
-                                    <Clickable underline href={`/block/${tx.height}`}>
+                                    <Clickable href={`/block/${tx.height}`}>
                                       {txs.tx_response.height}
                                     </Clickable>
                                   </Text>
@@ -289,10 +290,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         <Flex direction="row">
                                           <Clickable
                                             href={`/address/${message[key]}`}
-                                            underline
                                           >
                                             {message[key]}
                                           </Clickable>
+                                          <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
                                         </Flex>
                                       </Td>
                                     </Tr>
@@ -311,10 +312,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         <Text style={{ marginRight: '5px' }}>
                                           <Clickable
                                             href={`/address/${message[key]}`}
-                                            underline
                                           >
                                             {message[key]}
                                           </Clickable>
+                                          <CopyIcon marginLeft="5px"onClick={() => navigator.clipboard.writeText(message[key])} />
                                         </Text>
                                       </Flex>
                                     </Td>
@@ -348,7 +349,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <Link href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <Link marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -357,6 +358,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             {message[key]}
                                           </Text>
                                         </Link>
+                                        <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -431,7 +433,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <Link href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <Link marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -440,6 +442,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             {message[key]}
                                           </Text>
                                         </Link>
+                                        <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
                                       </Flex>
                                     </Td>
                                   </Tr>

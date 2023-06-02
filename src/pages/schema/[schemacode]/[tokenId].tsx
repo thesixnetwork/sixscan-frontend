@@ -28,6 +28,8 @@ import {
 import Head from "next/head";
 // ------------------------- Styles -------------------------
 import {
+  FaArrowLeft,
+  FaArrowRight,
   FaChevronDown,
   FaCopy,
   FaExpand,
@@ -39,7 +41,7 @@ import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
+import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
 import { getMetadata, getSchema, getAllTransactionByTokenID } from "@/service/nftmngr";
@@ -47,14 +49,20 @@ import { Metadata } from "@/types/Opensea";
 import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import moment from "moment";
+
+
 
 interface Props {
   metadata: Metadata;
   schema: NFTSchema;
   latestAction: LatestAction;
+  schemacode: string;
+  pageNumber: string;
+  tokenId: string;
 }
 
-export default function Schema({ metadata, schema, latestAction }: Props) {
+export default function Schema({ metadata, schema, latestAction, schemacode, pageNumber, tokenId }: Props) {
   const STATS = [
     {
       title: "Chain",
@@ -167,12 +175,10 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
-                    {CONFIG.map((config, index) => (
-                      <Flex direction="column" key={index}>
-                        <Text fontWeight={"bold"}>{config.value}</Text>
-                        <Text color="medium">{config.title}</Text>
-                      </Flex>
-                    ))}
+                    <Flex direction="column">
+                      <Text fontWeight={"bold"}>{latestAction.txs.length}</Text>
+                      <Text color="medium">actions performed</Text>
+                    </Flex>
                   </Flex>
                 </Flex>
               </GridItem>
@@ -212,46 +218,46 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                 {metadata.attributes?.find(
                   (attr) => attr.display_type == "number"
                 ) && (
-                  <Box>
-                    <CustomCard title="Stats">
-                      <Grid
-                        templateColumns="repeat(12, 1fr)"
-                        gap={4}
-                        p={4}
-                        maxH={"230px"}
-                        overflow={"auto"}
-                      >
-                        {metadata.attributes?.map(
-                          (attr, index) =>
-                            !attr.is_origin &&
-                            attr.display_type && (
-                              <GridItem colSpan={12} key={index}>
-                                {/* add space between */}
-                                <Flex p={2} gap={3} align="center">
-                                  <Text color={"darkest"}>
-                                    {attr.trait_type}
-                                  </Text>
-                                  <Spacer />
-                                  <Flex>
-                                    <Text color={"dark"}>
-                                      {formatTraitValue(attr.value)}
+                    <Box>
+                      <CustomCard title="Stats">
+                        <Grid
+                          templateColumns="repeat(12, 1fr)"
+                          gap={4}
+                          p={4}
+                          maxH={"230px"}
+                          overflow={"auto"}
+                        >
+                          {metadata.attributes?.map(
+                            (attr, index) =>
+                              !attr.is_origin &&
+                              attr.display_type && (
+                                <GridItem colSpan={12} key={index}>
+                                  {/* add space between */}
+                                  <Flex p={2} gap={3} align="center">
+                                    <Text color={"darkest"}>
+                                      {attr.trait_type}
                                     </Text>
-                                    {attr.max_value && (
-                                      <Text
-                                        color={"dark"}
-                                      >{`/${formatTraitValue(
-                                        attr.max_value
-                                      )}`}</Text>
-                                    )}
+                                    <Spacer />
+                                    <Flex>
+                                      <Text color={"dark"}>
+                                        {formatTraitValue(attr.value)}
+                                      </Text>
+                                      {attr.max_value && (
+                                        <Text
+                                          color={"dark"}
+                                        >{`/${formatTraitValue(
+                                          attr.max_value
+                                        )}`}</Text>
+                                      )}
+                                    </Flex>
                                   </Flex>
-                                </Flex>
-                              </GridItem>
-                            )
-                        )}
-                      </Grid>
-                    </CustomCard>
-                  </Box>
-                )}
+                                </GridItem>
+                              )
+                          )}
+                        </Grid>
+                      </CustomCard>
+                    </Box>
+                  )}
               </GridItem>
               <GridItem colSpan={{ base: 12, lg: 8 }}>
                 <CustomCard>
@@ -267,15 +273,66 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                           gap={2}
                           align="center"
                           color={"dark"}
+                          justify="space-between"
                         >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
-                            </Clickable>{" "}
-                            transactions
-                          </Text>
+                          <Flex direction="row" gap={2} align="center">
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              Latest {latestAction.txs.length} from a total of{" "}
+                              {/* <Clickable href="/"> */}
+                                {latestAction.totalCount}
+                              {/* </Clickable> */}
+                              {" "}
+                              transactions
+                            </Text>
+                          </Flex>
+
+                          {latestAction && (
+                            <Flex direction="row" gap={2} align="center" px="2">
+                              <Button
+                                variant={"solid"}
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=1`}
+                                as="a"
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                First
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=1`}
+                                as="a"
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                <FaArrowLeft fontSize={12} />
+                              </Button>
+                              <Text fontSize="xs">
+                                {`Page ${pageNumber} of ${latestAction.totalPage}`}
+                              </Text>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=${parseInt(pageNumber) + 1
+                                  }`}
+                                as="a"
+                                isDisabled={
+                                  parseInt(pageNumber) === latestAction.totalPage
+                                }
+                              >
+                                <FaArrowRight fontSize={12} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=${latestAction.totalPage}`}
+                                as="a"
+                                isDisabled={
+                                  parseInt(pageNumber) === latestAction.totalPage
+                                }
+                              >
+                                Last
+                              </Button>
+                            </Flex>
+                          )}
+
                         </Flex>
                         <TableContainer>
                           <Table>
@@ -302,19 +359,57 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
                               </Tr>
                             </Thead>
                             <Tbody>
-                            {latestAction.txs && latestAction.txs.map((x: any, index: number) => 
+                              {latestAction.txs.map((action: any, index: number) => (
                                 <Tr key={index}>
                                   <Td>
+                                    <Clickable href={`/tx/${action.txhash}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(action.txhash)}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
                                     <Text>
-                                      <Clickable href="/">
-                                        <Text>
-                                          {formatHex(x.txhash)}
-                                        </Text>
-                                      </Clickable>
+                                      <Badge>{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
                                     </Text>
                                   </Td>
+                                  <Td>
+                                    <Text>{moment(action.time_stamp).fromNow()}</Text>
+                                  </Td>
+                                  <Td>
+                                    <Clickable href={`/block/${action.block_height}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {action.block_height}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
+                                    <Clickable href={`/address/${action.decode_tx.creator}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(action.decode_tx.creator)}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
+                                    <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
+                                  </Td>
                                 </Tr>
-                              )}
+                              ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -368,19 +463,22 @@ export default function Schema({ metadata, schema, latestAction }: Props) {
 
 export const getServerSideProps = async ({
   params: { schemacode, tokenId },
+  query: { page = "1" },
 }: {
-  params: { schemacode: any; tokenId: any };
+  params: { schemacode: any; tokenId: any; };
+  query: { page: string; },
 }) => {
   const [metadata, schema, latestAction] = await Promise.all([
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
-    getAllTransactionByTokenID(schemacode, tokenId, "1", "20")
+    getAllTransactionByTokenID(schemacode, tokenId, page, "3")
   ]);
+  const pageNumber = page
   if (!schema) {
     return { props: { metadata: null, schema: null } };
   }
   return {
-    props: { metadata, schema, latestAction },
+    props: { metadata, schema, latestAction, schemacode, pageNumber, tokenId },
   };
 };
 
