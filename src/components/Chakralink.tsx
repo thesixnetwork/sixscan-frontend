@@ -20,7 +20,7 @@ export function ChakraNextLink({ href, children, ...props }: ChakraNextLinkProps
 
 function _NextLink({ href, children, ...props }: ChakraNextLinkProps) {
   return (
-    <NextLink href={href} passHref prefetch={true} {...props}>
+    <NextLink href={href} passHref {...props}>
     {children}
     </NextLink>
   );
