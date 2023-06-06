@@ -11,7 +11,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FaTwitter } from "react-icons/fa";
-import { LinkComponent } from "./Chakralink";
+import { LinkComponent } from "@/components/Chakralink";
 
 const Footer = () => {
   return (
