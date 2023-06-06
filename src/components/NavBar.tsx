@@ -29,7 +29,7 @@ import { useState, useRef, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ENV from "@/utils/ENV";
 import { Block } from "@/types/Block";
-import { LinkComponent } from "./Chakralink";
+import { LinkComponent } from "@/components/Chakralink";
 
 export default function WithSubnavigation({
   variant,

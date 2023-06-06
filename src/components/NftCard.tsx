@@ -9,7 +9,7 @@ import {
 import { motion, isValidMotionProp } from "framer-motion";
 import CustomCard from "@/components/CustomCard";
 import { NftData } from "@/types/Nftmngr";
-import { LinkComponent } from "./Chakralink";
+import { LinkComponent } from "@/components/Chakralink";
 
 const ChakraBox = chakra(motion.div, {
   /**

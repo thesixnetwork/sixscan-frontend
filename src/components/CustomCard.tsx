@@ -12,7 +12,7 @@ import {
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { LinkComponent } from "./Chakralink";
+import { LinkComponent } from "@/components/Chakralink";
 
 const CustomCard = ({
   title,
