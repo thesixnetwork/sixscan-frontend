@@ -302,8 +302,7 @@ const DesktopNav = () => {
             <PopoverTrigger>
               {navItem.children ? (
                 <Flex alignItems="center" direction={"row"} gap={1}>
-                  <LinkComponent
-                    href=""
+                  <ChakraLink
                     p={2}
                     fontSize={"sm"}
                     fontWeight={500}
@@ -314,7 +313,7 @@ const DesktopNav = () => {
                     }}
                   >
                     {navItem.label}
-                  </LinkComponent>
+                  </ChakraLink>
                   <FaChevronDown fontSize={8} />
                 </Flex>
               ) : (
