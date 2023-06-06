@@ -9,6 +9,7 @@ import {
 import { motion, isValidMotionProp } from "framer-motion";
 import CustomCard from "@/components/CustomCard";
 import { NftData } from "@/types/Nftmngr";
+import { LinkComponent } from "./Chakralink";
 
 const ChakraBox = chakra(motion.div, {
   /**
@@ -21,7 +22,7 @@ const ChakraBox = chakra(motion.div, {
 const NftCard = ({ metadata }: { metadata: NftData }) => {
   return (
     <CustomCard>
-      <Link href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}>
+      <LinkComponent href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}>
         <Image
           src={
             metadata.onchain_image
@@ -41,7 +42,7 @@ const NftCard = ({ metadata }: { metadata: NftData }) => {
             </Text>
           </Flex>
         </Flex>
-      </Link>
+      </LinkComponent>
     </CustomCard>
   );
 };

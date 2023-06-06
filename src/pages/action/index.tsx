@@ -36,6 +36,7 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
+import { LinkComponent } from "@/components/Chakralink";
 
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
@@ -127,7 +128,7 @@ export default function Address({
                                                             variant={"solid"}
                                                             size="xs"
                                                             href={`/action?page=1`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
                                                             }
@@ -137,7 +138,7 @@ export default function Address({
                                                         <Button
                                                             size="xs"
                                                             href={`/action?page=1`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
                                                             }
@@ -151,7 +152,7 @@ export default function Address({
                                                             size="xs"
                                                             href={`/action?page=${parseInt(pageNumber) + 1
                                                                 }`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) ===
                                                                 actions.totalPage
@@ -162,7 +163,7 @@ export default function Address({
                                                         <Button
                                                             size="xs"
                                                             href={`/action?page=${actions.totalPage}`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(actions.pageNumber) ===
                                                                 actions.totalPage

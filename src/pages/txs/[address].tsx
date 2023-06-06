@@ -36,8 +36,9 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-
 import { Clickable } from "@/components/Clickable";
+import { LinkComponent } from "@/components/Chakralink";
+
 import { formatHex } from "@/utils/format";
 import { validateAddress } from "@/utils/validate";
 import { useEffect, useState } from "react";
@@ -159,7 +160,7 @@ export default function Address({
                               variant={"solid"}
                               size="xs"
                               href={`/txs/${address}?page=1`}
-                              as="a"
+                              as={LinkComponent}
                               isDisabled={
                                 parseInt(accountTxs.page_number) === 1
                               }
@@ -169,7 +170,7 @@ export default function Address({
                             <Button
                               size="xs"
                               href={`/txs/${address}?page=1`}
-                              as="a"
+                              as={LinkComponent}
                               isDisabled={
                                 parseInt(accountTxs.page_number) === 1
                               }
@@ -183,7 +184,7 @@ export default function Address({
                               size="xs"
                               href={`/txs/${address}?page=${parseInt(accountTxs.page_number) + 1
                                 }`}
-                              as="a"
+                              as={LinkComponent}
                               isDisabled={
                                 parseInt(accountTxs.page_number) ===
                                 accountTxs.page_total
@@ -194,7 +195,7 @@ export default function Address({
                             <Button
                               size="xs"
                               href={`/txs/${address}?page=${accountTxs.page_total}`}
-                              as="a"
+                              as={LinkComponent}
                               isDisabled={
                                 parseInt(accountTxs.page_number) ===
                                 accountTxs.page_total
