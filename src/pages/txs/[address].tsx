@@ -50,20 +50,18 @@ import moment from "moment";
 import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
-import { formatNumber, convertUsixToSix } from "@/utils/format";
+import { formatNumber, convertUsixToSix, convertAmountToSix } from "@/utils/format";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
-import { getAllTransactionByAddress } from "@/service/nftmngr";
 
 interface Props {
   address: string;
   validator: Validator | null;
   account: Account | null;
   accountTxs: AccountTxs;
-  latestAction:any;
 }
 
 export default function Address({
@@ -71,7 +69,6 @@ export default function Address({
   validator,
   account,
   accountTxs,
-  latestAction,
 }: Props) {
   const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
@@ -152,7 +149,6 @@ export default function Address({
                     <Tabs isLazy>
                       <TabList>
                         <Tab>Txns</Tab>
-                        <Tab>Txns (Data Layer)</Tab>
                         <Spacer />
                         {accountTxs && accountTxs.page_total > 1 && (
                           <Flex direction="row" gap={2} align="center" px="2">
@@ -349,11 +345,7 @@ export default function Address({
                                         {tx.decode_tx.amount &&
                                           tx.decode_tx.amount[0]?.amount && (
                                             <Text>{`${formatNumber(
-                                              convertUsixToSix(
-                                                parseInt(
-                                                  tx.decode_tx.amount[0].amount
-                                                )
-                                              )
+                                              convertAmountToSix(tx.decode_tx.amount[0])
                                             )} SIX`}</Text>
                                           )}
                                       </Td>
@@ -371,137 +363,6 @@ export default function Address({
                           </TableContainer>
                         </TabPanel>
                       </TabPanels>
-                      <TabPanel>
-                        <Flex
-                          direction="row"
-                          gap={2}
-                          align="center"
-                          color={"dark"}
-                        >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            Latest {latestAction.txs.length} from a total of{" "}
-                            {/* <Clickable underline href="/"> */}
-                            {latestAction.totalCount}
-                            {/* </Clickable> */}
-                            {" "}
-                            transactions
-                          </Text>
-                        </Flex>
-                        <TableContainer>
-                          <Table>
-                            <Thead>
-                              <Tr>
-                                <Td>
-                                  <Text>Txhash</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Token ID</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Method</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Age</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Block</Text>
-                                </Td>
-                                <Td>
-                                  <Text>By</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Gas Fee</Text>
-                                </Td>
-                                <Td>
-                                  <Text>Schema</Text>
-                                </Td>
-                              </Tr>
-
-                            </Thead>
-                            <Tbody>
-                              {latestAction.txs.map((x: any, index: number) =>
-                                <Tr key={index}>
-                                  <Td>
-                                    <Clickable href={`/tx/${x.txhash}`}>
-                                      <Text style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
-                                      }}>
-                                        {formatHex(x.txhash)}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                    <Clickable
-                                      href={`/schema/${x.decode_tx.nftSchemaCode}/${x.decode_tx.tokenId}`}
-                                    >
-                                      <Text style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
-                                      }}>
-                                        {x.decode_tx.tokenId}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                    {/* <Text> */}
-                                      <Badge>
-                                        {x.type
-                                          .split(".")
-                                        [x.type.split(".").length - 1].slice(
-                                          3
-                                        )}
-                                      </Badge>
-                                    {/* </Text> */}
-                                  </Td>
-                                  <Td>
-                                    <Text>{moment(x.time_stamp).fromNow()}</Text>
-                                  </Td>
-                                  <Td>
-                                    <Clickable href={`/block/${x.block_height}`}>
-                                      <Text style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
-                                      }}>
-                                        {x.block_height}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                    <Clickable href={`/address/${x.decode_tx.relate_addr[0]}`}>
-                                      <Text style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
-                                      }}>
-                                        {formatHex(x.decode_tx.relate_addr[0])}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                    <Text>{`${formatNumber(
-                                      convertUsixToSix(
-                                        parseInt(
-                                          x.decode_tx.fee_amount
-                                        )
-                                      )
-                                    )} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              )}
-
-                            </Tbody>
-                          </Table>
-                        </TableContainer>
-                      </TabPanel>
                     </Tabs>
                   </CustomCard>
                 </GridItem>
@@ -532,11 +393,10 @@ export const getServerSideProps = async (context: {
       },
     };
   }
-  const [validator, account, accountTxs, latestAction] = await Promise.all([
+  const [validator, account, accountTxs] = await Promise.all([
     getValidator(address),
     getAccount(address),
     getTxsFromAddress(address, page ? page : "1", "20"),
-    getAllTransactionByAddress(address, "1", "20")
   ]);
   return {
     props: {
@@ -544,7 +404,6 @@ export const getServerSideProps = async (context: {
       validator,
       account,
       accountTxs,
-      latestAction
     },
   };
 };
