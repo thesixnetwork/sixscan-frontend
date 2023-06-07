@@ -45,8 +45,9 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-
 import { Clickable } from "@/components/Clickable";
+import { LinkComponent } from "@/components/Chakralink";
+
 import { useEffect, useState } from "react";
 import { getNftCollection, getSchema } from "@/service/nftmngr";
 import { NftData, NFTSchema } from "@/types/Nftmngr";
@@ -55,7 +56,7 @@ import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
 import { useRouter } from "next/router";
 import { getTxsFromSchema } from "@/service/txs";
-import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
+import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
 import moment from "moment";
 
 type Txns = {
@@ -87,6 +88,7 @@ export default function Schema({
   const [items, setItems] = useState<NftData[]>([]);
   const [sortedTxs, setSortedTxs] = useState<any[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const router = useRouter();
   const chainConfig: {
     [key: string]: {
@@ -105,8 +107,13 @@ export default function Schema({
       blockscan: `https://www.klaytnfinder.io/account/`,
       icon: `/klaytn-logo.png`,
     },
+    GOERLI: {
+      opensea: `https://opensea.io/assets/goerli/`,
+      blockscan: `https://goerli.etherscan.io/address/`,
+      icon: `/eth-logo.png`,
+    },
   };
-  const [organisation, code] = schema
+  const [organization, code] = schema
     ? schema.code.includes(".")
       ? schema.code.split(".")
       : ["", schema.code]
@@ -117,19 +124,18 @@ export default function Schema({
     //   value: "0",
     // },
     {
-      title: "organisation",
-      value: organisation,
+      title: "organization",
+      value: organization,
     },
     {
-      title: "whalegate",
+      title: "collection",
       value: code,
     },
   ];
   const [page, setPage] = useState(1);
   const perPage = 12;
-  const totalPages = schema
-    ? Math.ceil(nftCollection.pagination.total / perPage)
-    : 0;
+  const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
+  // console.log("totalPages", nftCollection);
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -154,6 +160,10 @@ export default function Schema({
     return chainConfig[schema.origin_data?.origin_chain].icon;
   };
 
+  const checkImage = () => {
+    setImageError(true);
+  };  
+
   const handleCopyClick = () => {
     navigator.clipboard.writeText(JSON.stringify(schema, null, 2));
     setIsCopied(true);
@@ -167,10 +177,8 @@ export default function Schema({
     if (!schema) {
       return;
     }
-    nftCollection.metadata.sort(
-      (a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id)
-    );
-    const newItems = nftCollection.metadata.slice(
+    nftCollection?.metadata.sort((a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id));
+    const newItems = nftCollection?.metadata.slice(
       (page - 1) * perPage,
       page * perPage
     );
@@ -249,7 +257,7 @@ export default function Schema({
                 {openseaCollection && openseaCollection.image_url ? (
                   <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={openseaCollection.image_url}
+                    src={openseaCollection.image_url? openseaCollection.image_url : "/logo-nftgen2-01.png"}
                     alt={schema.name}
                     width="100%"
                   />
@@ -286,13 +294,7 @@ export default function Schema({
                             schema.origin_data.origin_contract_address
                           )}
                           underline={
-                            getExplorerLink(
-                              schema.origin_data.origin_chain,
-                              schema.origin_data.origin_contract_address
-                            ) === ""
-                              ? false
-                              : true
-                          }
+                            getExplorerLink(schema.origin_data.origin_chain,schema.origin_data.origin_contract_address) === ""? false: true }
                         >
                           {getExplorerLink(
                             schema.origin_data.origin_chain,
@@ -439,7 +441,7 @@ export default function Schema({
                                 variant={"solid"}
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 First
@@ -447,7 +449,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 <FaArrowLeft fontSize={12} />
@@ -460,7 +462,7 @@ export default function Schema({
                                 href={`/schema/${schemacode}?page=${
                                   parseInt(pageNumber) + 1
                                 }`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -470,7 +472,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=${txns.totalPage}`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -485,25 +487,25 @@ export default function Schema({
                             <Thead>
                               <Tr>
                                 <Td>
-                                  <Text>Txhash</Text>
+                                  <Text textAlign={'center'}>Txhash</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Token ID</Text>
+                                  <Text textAlign={'center'}>Token ID</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Method</Text>
+                                  <Text textAlign={'center'}>Method</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Age</Text>
+                                  <Text textAlign={'center'}>Age</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Block</Text>
+                                  <Text textAlign={'center'}>Block</Text>
                                 </Td>
                                 <Td>
-                                  <Text>By</Text>
+                                  <Text textAlign={'center'}>By</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Gas Fee</Text>
+                                  <Text textAlign={'center'}>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
@@ -522,64 +524,80 @@ export default function Schema({
                                           fontSize={12}
                                         />
                                       )}
-                                      <Text>
                                         <Clickable
                                           href={`/tx/${tx.txhash}`}
-                                          underline
                                         >
-                                          {formatHex(tx.txhash)}
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "14px",
+                                            textAlign: "center",
+                                          }}>
+                                            {formatHex(tx.txhash)}
+                                          </Text>
                                         </Clickable>
-                                      </Text>
                                     </Flex>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       <Clickable
                                         href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
-                                        underline
                                       >
-                                        {tx.decode_tx.tokenId}
+                                        <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "14px",
+                                            textAlign: "center",
+                                          }}>
+                                            {tx.decode_tx.tokenId}
+                                          </Text>
                                       </Clickable>
-                                    </Text>
                                   </Td>
                                   <Td>
                                     <Badge textAlign={"center"} width="100%">
-                                      {tx.type
-                                        .split(".")
-                                        [tx.type.split(".").length - 1].slice(
-                                          3
-                                        )}
+                                      {formatMethod(tx.type)}
                                     </Badge>
                                   </Td>
                                   <Td>
-                                    <Text>
+                                    <Text textAlign={'center'}>
                                       {moment(tx.time_stamp).fromNow()}
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       <Clickable
                                         href={`/block/${tx.block_height}`}
-                                        underline
                                       >
-                                        {tx.block_height}
+                                        <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "14px",
+                                            textAlign: "center"
+                                          }}>
+                                            {tx.block_height}
+                                          </Text>
                                       </Clickable>
-                                    </Text>
                                   </Td>
                                   <Td>
-                                    <Text>
                                       {tx.decode_tx.creator && (
                                         <Clickable
                                           href={`/address/${tx.decode_tx.creator}`}
-                                          underline
                                         >
-                                          {formatHex(tx.decode_tx.creator)}
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "14px",
+                                            textAlign: "center"
+                                          }}>
+                                            {formatHex(tx.decode_tx.creator)}
+                                          </Text>
                                         </Clickable>
                                       )}
-                                    </Text>
                                   </Td>
                                   <Td>
-                                    <Text>{`${formatNumber(
+                                    <Text textAlign={'center'}>{`${formatNumber(
                                       convertUsixToSix(
                                         parseInt(tx.decode_tx.fee_amount)
                                       )
@@ -685,7 +703,7 @@ export default function Schema({
                             variant={"solid"}
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             First
@@ -693,7 +711,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             <FaArrowLeft fontSize={12} />
@@ -706,7 +724,7 @@ export default function Schema({
                             href={`/schema/${schemacode}?metadata_page=${
                               parseInt(metadataPageNumber) + 1
                             }`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }
@@ -716,7 +734,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=${totalPages}`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }
@@ -725,7 +743,7 @@ export default function Schema({
                           </Button>
                         </Flex>
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                          {items.map((metadata, index) => (
+                          {items?.map((metadata, index) => (
                             <GridItem
                               colSpan={{ base: 6, md: 4, lg: 2 }}
                               key={index}
@@ -738,15 +756,26 @@ export default function Schema({
                                   }}
                                 >
                                   <motion.div whileHover={{ scale: 1.05 }}>
-                                    <Image
-                                      src={
-                                        metadata.onchain_image
-                                          ? metadata.onchain_image
-                                          : metadata.origin_image
-                                      }
-                                      alt="mfer"
-                                      width="100%"
-                                    />
+                                    {
+                                      imageError? (
+                                        <Image
+                                        src={
+                                          "/logo-nftgen2-01.png"
+                                        }
+                                        alt="mfer"
+                                        width="100%"
+                                      />
+                                      ): (
+                                        <Image
+                                        src={
+                                          metadata.onchain_image ? metadata.onchain_image : metadata.origin_image
+                                        }
+                                        onError={checkImage}
+                                        alt="mfer"
+                                        width="100%"
+                                      />
+                                      )
+                                    }
                                   </motion.div>
                                   <Flex direction="column" p={2}>
                                     <Flex
@@ -795,7 +824,6 @@ export const getServerSideProps = async ({
   const schema = await getSchema(schemacode);
   // console.log("schema: ", schema);
   if (!schema) {
-    console.log("schema is not")
     return {
       props: {
         schemacode: null,
@@ -808,8 +836,8 @@ export const getServerSideProps = async ({
       },
     };
   }
-  const [organisation = "", code = schema?.code ?? ""] =
-    schema?.code?.split(".") ?? [];
+  const [organization = "", code = schema?.code ?? ""] =
+    schema.code?.split(".") ?? [];
   const [openseaCollection, nftCollection, txns] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollection(schemacode, metadata_page),

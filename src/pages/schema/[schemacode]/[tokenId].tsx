@@ -28,6 +28,8 @@ import {
 import Head from "next/head";
 // ------------------------- Styles -------------------------
 import {
+  FaArrowLeft,
+  FaArrowRight,
   FaChevronDown,
   FaCopy,
   FaExpand,
@@ -37,23 +39,30 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-
+import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
+import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
-import { getMetadata, getSchema } from "@/service/nftmngr";
+import { getMetadata, getSchema, getAllTransactionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
-import { NFTSchema } from "@/types/Nftmngr";
+import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import moment from "moment";
+
+
 
 interface Props {
   metadata: Metadata;
   schema: NFTSchema;
+  latestAction: LatestAction;
+  schemacode: string;
+  pageNumber: string;
+  tokenId: string;
 }
 
-export default function Schema({ metadata, schema }: Props) {
+export default function Schema({ metadata, schema, latestAction, schemacode, pageNumber, tokenId }: Props) {
   const STATS = [
     {
       title: "Chain",
@@ -166,12 +175,10 @@ export default function Schema({ metadata, schema }: Props) {
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
-                    {CONFIG.map((config, index) => (
-                      <Flex direction="column" key={index}>
-                        <Text fontWeight={"bold"}>{config.value}</Text>
-                        <Text color="medium">{config.title}</Text>
-                      </Flex>
-                    ))}
+                    <Flex direction="column">
+                      <Text fontWeight={"bold"}>{latestAction.txs.length}</Text>
+                      <Text color="medium">actions performed</Text>
+                    </Flex>
                   </Flex>
                 </Flex>
               </GridItem>
@@ -179,7 +186,7 @@ export default function Schema({ metadata, schema }: Props) {
                 <Box mb={6}>
                   <CustomCard title="Static Attributes">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
-                      {metadata.attributes.map(
+                      {metadata.attributes?.map(
                         (attr, index) =>
                           attr.is_origin &&
                           !attr.display_type &&
@@ -195,7 +202,7 @@ export default function Schema({ metadata, schema }: Props) {
                 <Box mb={6}>
                   <CustomCard title="Dynamic Attributes (Gen2)">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
-                      {metadata.attributes.map(
+                      {metadata.attributes?.map(
                         (attr, index) =>
                           !attr.is_origin &&
                           !attr.display_type &&
@@ -208,73 +215,124 @@ export default function Schema({ metadata, schema }: Props) {
                     </Grid>
                   </CustomCard>
                 </Box>
-                {metadata.attributes.find(
+                {metadata.attributes?.find(
                   (attr) => attr.display_type == "number"
                 ) && (
-                  <Box>
-                    <CustomCard title="Stats">
-                      <Grid
-                        templateColumns="repeat(12, 1fr)"
-                        gap={4}
-                        p={4}
-                        maxH={"230px"}
-                        overflow={"auto"}
-                      >
-                        {metadata.attributes.map(
-                          (attr, index) =>
-                            !attr.is_origin &&
-                            attr.display_type && (
-                              <GridItem colSpan={12} key={index}>
-                                {/* add space between */}
-                                <Flex p={2} gap={3} align="center">
-                                  <Text color={"darkest"}>
-                                    {attr.trait_type}
-                                  </Text>
-                                  <Spacer />
-                                  <Flex>
-                                    <Text color={"dark"}>
-                                      {formatTraitValue(attr.value)}
+                    <Box>
+                      <CustomCard title="Stats">
+                        <Grid
+                          templateColumns="repeat(12, 1fr)"
+                          gap={4}
+                          p={4}
+                          maxH={"230px"}
+                          overflow={"auto"}
+                        >
+                          {metadata.attributes?.map(
+                            (attr, index) =>
+                              !attr.is_origin &&
+                              attr.display_type && (
+                                <GridItem colSpan={12} key={index}>
+                                  {/* add space between */}
+                                  <Flex p={2} gap={3} align="center">
+                                    <Text color={"darkest"}>
+                                      {attr.trait_type}
                                     </Text>
-                                    {attr.max_value && (
-                                      <Text
-                                        color={"dark"}
-                                      >{`/${formatTraitValue(
-                                        attr.max_value
-                                      )}`}</Text>
-                                    )}
+                                    <Spacer />
+                                    <Flex>
+                                      <Text color={"dark"}>
+                                        {formatTraitValue(attr.value)}
+                                      </Text>
+                                      {attr.max_value && (
+                                        <Text
+                                          color={"dark"}
+                                        >{`/${formatTraitValue(
+                                          attr.max_value
+                                        )}`}</Text>
+                                      )}
+                                    </Flex>
                                   </Flex>
-                                </Flex>
-                              </GridItem>
-                            )
-                        )}
-                      </Grid>
-                    </CustomCard>
-                  </Box>
-                )}
+                                </GridItem>
+                              )
+                          )}
+                        </Grid>
+                      </CustomCard>
+                    </Box>
+                  )}
               </GridItem>
               <GridItem colSpan={{ base: 12, lg: 8 }}>
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
-                      {/* <Tab>Latest Actions</Tab> */}
+                      <Tab>Latest Actions</Tab>
                       <Tab>Metadata</Tab>
                     </TabList>
                     <TabPanels>
-                      {/* <TabPanel>
+                      <TabPanel>
                         <Flex
                           direction="row"
                           gap={2}
                           align="center"
                           color={"dark"}
+                          justify="space-between"
                         >
-                          <FaSortAmountDown fontSize={12} />
-                          <Text>
-                            Latest 25 from a total of{" "}
-                            <Clickable underline href="/">
-                              92
-                            </Clickable>{" "}
-                            transactions
-                          </Text>
+                          <Flex direction="row" gap={2} align="center">
+                            <FaSortAmountDown fontSize={12} />
+                            <Text>
+                              Latest {latestAction.txs.length} from a total of{" "}
+                              {/* <Clickable href="/"> */}
+                                {latestAction.totalCount}
+                              {/* </Clickable> */}
+                              {" "}
+                              transactions
+                            </Text>
+                          </Flex>
+
+                          {latestAction && (
+                            <Flex direction="row" gap={2} align="center" px="2">
+                              <Button
+                                variant={"solid"}
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=1`}
+                                as={LinkComponent}
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                First
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=1`}
+                                as={LinkComponent}
+                                isDisabled={parseInt(pageNumber) === 1}
+                              >
+                                <FaArrowLeft fontSize={12} />
+                              </Button>
+                              <Text fontSize="xs">
+                                {`Page ${pageNumber} of ${latestAction.totalPage}`}
+                              </Text>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=${parseInt(pageNumber) + 1
+                                  }`}
+                                as={LinkComponent}
+                                isDisabled={
+                                  parseInt(pageNumber) === latestAction.totalPage
+                                }
+                              >
+                                <FaArrowRight fontSize={12} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                href={`/schema/${schemacode}/${tokenId}?page=${latestAction.totalPage}`}
+                                as={LinkComponent}
+                                isDisabled={
+                                  parseInt(pageNumber) === latestAction.totalPage
+                                }
+                              >
+                                Last
+                              </Button>
+                            </Flex>
+                          )}
+
                         </Flex>
                         <TableContainer>
                           <Table>
@@ -284,7 +342,7 @@ export default function Schema({ metadata, schema }: Props) {
                                   <Text>Txhash</Text>
                                 </Td>
                                 <Td>
-                                  <Text>Method</Text>
+                                  <Text>Action</Text>
                                 </Td>
                                 <Td>
                                   <Text>Age</Text>
@@ -301,46 +359,61 @@ export default function Schema({ metadata, schema }: Props) {
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {ACTIONS.map((action, index) => (
+                              {latestAction.txs.map((action: any, index: number) => (
                                 <Tr key={index}>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
+                                    <Clickable href={`/tx/${action.txhash}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
                                         {formatHex(action.txhash)}
-                                      </Clickable>
-                                    </Text>
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Badge>{action.method}</Badge>
+                                      <Badge>{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
                                     </Text>
                                   </Td>
                                   <Td>
-                                    <Text>{action.age}</Text>
+                                    <Text>{moment(action.time_stamp).fromNow()}</Text>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {action.block}
-                                      </Clickable>
-                                    </Text>
+                                    <Clickable href={`/block/${action.block_height}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {action.block_height}
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Clickable href="/" underline>
-                                        {formatHex(action.by)}
-                                      </Clickable>
-                                    </Text>
+                                    <Clickable href={`/address/${action.decode_tx.creator}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(action.decode_tx.creator)}
+                                      </Text>
+                                    </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>{`${action.gasfee} SIX`}</Text>
+                                    <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
                                   </Td>
                                 </Tr>
                               ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
-                      </TabPanel> */}
+                      </TabPanel>
                       <TabPanel>
                         <Flex
                           direction="row"
@@ -390,18 +463,22 @@ export default function Schema({ metadata, schema }: Props) {
 
 export const getServerSideProps = async ({
   params: { schemacode, tokenId },
+  query: { page = "1" },
 }: {
-  params: { schemacode: any; tokenId: any };
+  params: { schemacode: any; tokenId: any; };
+  query: { page: string; },
 }) => {
-  const [metadata, schema] = await Promise.all([
+  const [metadata, schema, latestAction] = await Promise.all([
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
+    getAllTransactionByTokenID(schemacode, tokenId, page, "3")
   ]);
+  const pageNumber = page
   if (!schema) {
     return { props: { metadata: null, schema: null } };
   }
   return {
-    props: { metadata, schema },
+    props: { metadata, schema, latestAction, schemacode, pageNumber, tokenId },
   };
 };
 
