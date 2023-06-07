@@ -45,8 +45,9 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-
 import { Clickable } from "@/components/Clickable";
+import { LinkComponent } from "@/components/Chakralink";
+
 import { useEffect, useState } from "react";
 import { getNftCollection, getSchema } from "@/service/nftmngr";
 import { NftData, NFTSchema } from "@/types/Nftmngr";
@@ -440,7 +441,7 @@ export default function Schema({
                                 variant={"solid"}
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 First
@@ -448,7 +449,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 <FaArrowLeft fontSize={12} />
@@ -461,7 +462,7 @@ export default function Schema({
                                 href={`/schema/${schemacode}?page=${
                                   parseInt(pageNumber) + 1
                                 }`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -471,7 +472,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=${txns.totalPage}`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -702,7 +703,7 @@ export default function Schema({
                             variant={"solid"}
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             First
@@ -710,7 +711,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             <FaArrowLeft fontSize={12} />
@@ -723,7 +724,7 @@ export default function Schema({
                             href={`/schema/${schemacode}?metadata_page=${
                               parseInt(metadataPageNumber) + 1
                             }`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }
@@ -733,7 +734,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=${totalPages}`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }

@@ -39,7 +39,7 @@ import {
 // ------------- Components ----------------
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
-
+import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
 import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
@@ -293,7 +293,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                                 variant={"solid"}
                                 size="xs"
                                 href={`/schema/${schemacode}/${tokenId}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 First
@@ -301,7 +301,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}/${tokenId}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 <FaArrowLeft fontSize={12} />
@@ -313,7 +313,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                                 size="xs"
                                 href={`/schema/${schemacode}/${tokenId}?page=${parseInt(pageNumber) + 1
                                   }`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === latestAction.totalPage
                                 }
@@ -323,7 +323,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}/${tokenId}?page=${latestAction.totalPage}`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === latestAction.totalPage
                                 }

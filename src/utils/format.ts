@@ -1,3 +1,5 @@
+import { SendAmount } from "@/types/Bank";
+
 export const formatNumber = (num: number, decimalPoints: number = 2) => {
   const [integerPart, decimalPart] = num.toFixed(decimalPoints).split(".");
   const formattedIntegerPart = integerPart.replace(
@@ -68,6 +70,15 @@ export const convertUsixToSix = (usix: number) => {
 
 export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
+};
+
+export const convertAmountToSix = (amount: any) => {
+  if (amount.denom === "usix") {
+    return convertUsixToSix(parseInt(amount.amount));
+  } else if (amount.denom === "asix") {
+    return convertAsixToSix(parseInt(amount.amount));
+  }
+  return amount.amount;
 };
 
 

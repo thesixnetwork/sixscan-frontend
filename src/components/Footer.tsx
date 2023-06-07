@@ -11,6 +11,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 import { FaTwitter } from "react-icons/fa";
+import { LinkComponent } from "@/components/Chakralink";
 
 const Footer = () => {
   return (
@@ -29,7 +30,7 @@ const Footer = () => {
               borderColor={"light"}
               px={1}
             >
-              <Link
+              <LinkComponent
                 href={item.href}
                 color={"dark"}
                 _hover={{ textDecoration: "none", color: "medium" }}
@@ -46,7 +47,7 @@ const Footer = () => {
                     {item.label}
                   </Text>
                 )}
-              </Link>
+              </LinkComponent>
             </Flex>
           ))}
         </Flex>

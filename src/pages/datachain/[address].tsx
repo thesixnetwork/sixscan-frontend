@@ -37,6 +37,8 @@ import {
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 
+import { LinkComponent } from "@/components/Chakralink";
+
 import { Clickable } from "@/components/Clickable";
 import { formatHex } from "@/utils/format";
 import { validateAddress } from "@/utils/validate";
@@ -159,7 +161,7 @@ export default function Address({
                                                             variant={"solid"}
                                                             size="xs"
                                                             href={`/datachain/${address}?page=1`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
                                                             }
@@ -169,7 +171,7 @@ export default function Address({
                                                         <Button
                                                             size="xs"
                                                             href={`/datachain/${address}?page=1`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
                                                             }
@@ -183,7 +185,7 @@ export default function Address({
                                                             size="xs"
                                                             href={`/datachain/${address}?page=${parseInt(pageNumber) + 1
                                                                 }`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) ===
                                                                 accountTxs.totalPage
@@ -194,7 +196,7 @@ export default function Address({
                                                         <Button
                                                             size="xs"
                                                             href={`/datachain/${address}?page=${accountTxs.totalPage}`}
-                                                            as="a"
+                                                            as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(accountTxs.pageNumber) ===
                                                                 accountTxs.totalPage
