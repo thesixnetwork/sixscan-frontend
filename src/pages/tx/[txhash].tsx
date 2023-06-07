@@ -55,6 +55,7 @@ import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import CustomTable from "@/components/CustomTable";
 import { useEffect, useState } from "react";
+import { LinkComponent } from "@/components/Chakralink";
 
 import moment from "moment";
 
@@ -368,7 +369,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <Link marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -376,7 +377,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           >
                                             {message[key]}
                                           </Text>
-                                        </Link>
+                                        </LinkComponent>
                                         <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
                                       </Flex>
                                     </Td>
@@ -452,7 +453,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <Link marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -460,7 +461,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           >
                                             {message[key]}
                                           </Text>
-                                        </Link>
+                                        </LinkComponent>
                                         <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
                                       </Flex>
                                     </Td>

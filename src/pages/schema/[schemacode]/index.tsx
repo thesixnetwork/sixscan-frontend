@@ -6,7 +6,7 @@ import {
   Container,
   Grid,
   GridItem,
-  Link,
+  Link  as ChakraLink,
   Table,
   TableContainer,
   Tbody,
@@ -316,7 +316,7 @@ export default function Schema({
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                         >
-                          <Link
+                          <LinkComponent
                             href={getOpenseaLink(
                               schema.origin_data.origin_chain,
                               schema.origin_data.origin_contract_address
@@ -327,7 +327,7 @@ export default function Schema({
                               alt="opensea"
                               width={6}
                             />
-                          </Link>
+                          </LinkComponent>
                         </motion.div>
                       </Flex>
                     )}
@@ -336,7 +336,7 @@ export default function Schema({
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <Link
+                        <LinkComponent
                           href={getExplorerLink(
                             schema.origin_data.origin_chain,
                             schema.origin_data.origin_contract_address
@@ -359,7 +359,7 @@ export default function Schema({
                               )}
                             </Box>
                           )}
-                        </Link>
+                        </LinkComponent>
                       </motion.div>
                     </Flex>
                   </Flex>
@@ -749,7 +749,7 @@ export default function Schema({
                               key={index}
                             >
                               <CustomCard>
-                                <Link
+                                <LinkComponent
                                   href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
                                   _hover={{
                                     textDecoration: "none",
@@ -795,7 +795,7 @@ export default function Schema({
                                       </Text>
                                     </Flex>
                                   </Flex>
-                                </Link>
+                                </LinkComponent>
                               </CustomCard>
                             </GridItem>
                           ))}
