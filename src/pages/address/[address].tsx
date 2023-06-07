@@ -80,7 +80,7 @@ import {
 } from "react-icons/fa";
 // ------------- Components ----------------
 import CustomCard from "@/components/CustomCard";
-
+import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
 import { formatHex,formatMethod } from "@/utils/format";
 import { useEffect, useState } from "react";
@@ -759,9 +759,9 @@ export default function Address({
                             </Tbody>
                           </Table>
                           <CardFooter>
-                            <Link href={`/txs/${address}`}>
+                            <LinkComponent href={`/txs/${address}`}>
                               <Text decoration={"underline"}>VIEW TXNS</Text>
-                            </Link>
+                            </LinkComponent>
                           </CardFooter>
                         </TableContainer>
                       </TabPanel>
@@ -908,9 +908,9 @@ export default function Address({
                             </Tbody>
                           </Table>
                           <CardFooter>
-                            <Link href={`/datachain/${address}`}>
+                            <LinkComponent href={`/datachain/${address}`}>
                               <Text decoration={"underline"}>VIEW TXNS</Text>
-                            </Link>
+                            </LinkComponent>
                           </CardFooter>
                         </TableContainer>
                       </TabPanel>
