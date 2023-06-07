@@ -66,7 +66,7 @@ import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
 
-import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank } from "@/utils/format";
+import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank, convertAmountToSix } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -332,7 +332,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : message[key][0]?.amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0]?.amount)) : convertUsixToSix(parseInt(message[key].amount))} SIX </Text>
+                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertAmountToSix(message[key][0]) : message[key][0]?.amount[0] !== undefined ? convertAmountToSix(message[key][0]) : convertAmountToSix(message[key][0])} SIX </Text>
                                         <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
                                       </Flex>
                                     </Td>
