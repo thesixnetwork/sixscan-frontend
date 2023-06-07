@@ -8,12 +8,12 @@ interface ChakraNextLinkProps {
 }
 
 
-export const LinkComponent = typeof window !== 'undefined' ? _NextLink : ChakraNextLink;
+export const LinkComponent = typeof window !== 'undefined' ? ChakraNextLink : ChakraNextLink;
 
 export function ChakraNextLink({ href, children, ...props }: ChakraNextLinkProps) {
   return (
-    <ChakraLink href={href} {...props}>
-    {children}
+    <ChakraLink {...props} href={href} as={NextLink} >
+        {children}
     </ChakraLink>
   );
 }
@@ -21,7 +21,7 @@ export function ChakraNextLink({ href, children, ...props }: ChakraNextLinkProps
 function _NextLink({ href, children, ...props }: ChakraNextLinkProps) {
   return (
     <NextLink href={href} passHref {...props}>
-    {children}
+      {children}
     </NextLink>
   );
 }
