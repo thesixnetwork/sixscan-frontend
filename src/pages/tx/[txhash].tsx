@@ -385,24 +385,24 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
-                              if (key === "nftSchemaBase64") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <Textarea readOnly>
-                                          {message[key]}
-                                        </Textarea>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
+                              // if (key === "nftSchemaBase64") {
+                              //   return (
+                              //     <Tr key={index}>
+                              //       <Td borderBottom="none">
+                              //         <Flex direction="column">
+                              //           <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                              //         </Flex>
+                              //       </Td>
+                              //       <Td borderBottom="none">
+                              //         <Flex direction="row">
+                              //           <Textarea readOnly>
+                              //             {message[key]}
+                              //           </Textarea>
+                              //         </Flex>
+                              //       </Td>
+                              //     </Tr>
+                              //   );
+                              // }
 
                               if (key === "data") {
                                 return (
@@ -469,7 +469,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
-                              if (key === "base64NFTData") {
+                              if (key === "base64NFTData" || key === "nftSchemaBase64" || 
+                                  key === "base64NewAttriuteDefenition" || key === "base64NewAction" || 
+                                  key === "base64_nft_attribute_value" || key === "base64ActionSignature" || 
+                                  key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
+                                ) {
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none" display={"flex"}>
