@@ -22,9 +22,12 @@ export const getValidators = async (): Promise<Validator[]> => {
 export const getValidator = async (
   address: string
 ): Promise<Validator | null> => {
+  if (!address.startsWith("6xvaloper")) {
+    return null
+  }
   try {
     const res = await axios.get(
-      `${ENV.API_URL}//cosmos/staking/v1beta1/validators/${address}`
+      `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}`
     );
     const validator = res.data.validator;
     if (!validator) {
@@ -57,6 +60,9 @@ export const getPool = async (): Promise<Pool | null> => {
 export const getDelegationsFromValidator = async (
   address: string
 ): Promise<Delegation[] | null> => {
+  if (!address.startsWith("6xvaloper")) {
+    return null
+  }
   try {
     const res = await axios.get(
       `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}/delegations`

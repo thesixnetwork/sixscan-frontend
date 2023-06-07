@@ -28,6 +28,7 @@ import {
   validateBlock,
   validateTxHash,
 } from "@/utils/validate";
+import { LinkComponent } from "@/components/Chakralink";
 
 type SearchResult = {
   type: "address" | "tx" | "block" | "schema";
@@ -138,7 +139,7 @@ const SearchModal = ({
                     bgColor={"lightest"}
                     borderRadius={6}
                     p={4}
-                    as="a"
+                    as={LinkComponent}
                     href={`/${result.type}/${result.value}`}
                     _hover={{ bgColor: "light" }}
                     gap={2}

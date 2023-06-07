@@ -1,3 +1,5 @@
+import { SendAmount } from "@/types/Bank";
+
 export const formatNumber = (num: number, decimalPoints: number = 2) => {
   const [integerPart, decimalPart] = num.toFixed(decimalPoints).split(".");
   const formattedIntegerPart = integerPart.replace(
@@ -28,8 +30,27 @@ export const formatNumberAndRoundUp = (
 };
 
 export const formatHex = (hash: string) => {
+  // check input in not null
+  if (!hash) {
+    return "";
+  }
   return hash.slice(0, 6) + "..." + hash.slice(hash.length - 6, hash.length);
 };
+
+export const formatMethod = (method: string) => {
+  // check input in not null
+  if (!method) {
+    return "";
+  }
+  if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMACTIONBYADMIN"){
+    return "ACTION"
+  }else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMMULTITOKENACTION"){
+    return "MULTIACION"
+  }else {
+    return method.split(".")[method.split(".").length - 1].slice(3).toUpperCase()
+  }
+};
+
 
 export const formatTraitValue = (value: string | number) => {
   if (typeof value === "string" && value.length > 10) {
@@ -49,4 +70,51 @@ export const convertUsixToSix = (usix: number) => {
 
 export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
+};
+
+export const convertAmountToSix = (amount: any) => {
+  if (amount.denom === "usix") {
+    return convertUsixToSix(parseInt(amount.amount));
+  } else if (amount.denom === "asix") {
+    return convertAsixToSix(parseInt(amount.amount));
+  }
+  return amount.amount;
+};
+
+
+export const formatEng = (key:string) => {
+  if (key == "@type"){
+    return "@Type"
+  }
+  const splitParts = key.split('_');
+  const formattedKey = splitParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  return `${formattedKey}`;
+};
+
+export const formatBank = (key:string) => {
+  if (key == "from_address"){
+    return "From"
+  }
+  if (key == "to_address"){
+    return "To"
+  }
+  key = formatEng(key)
+  return `${key}`;
+}
+
+export const formatSchema = (schema: string) => {
+  const schema_code = schema.split('.')[1];
+  if (schema_code.length <= 10) {
+    return schema_code.slice(0, 10);
+  }else {
+    return schema_code.slice(0, 10) + '...';;
+  }
+};
+
+export const formatSchemaAction = (action: string) => {
+  if (action.length <= 8) {
+    return action;
+  }else {
+    return action.slice(0, 8) + '...';
+  }
 };

@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { LinkComponent } from "@/components/Chakralink";
 
 const CustomCard = ({
   title,
@@ -61,9 +62,9 @@ const CustomCard = ({
       </AnimatePresence>
       {footer && href && (
         <CardFooter>
-          <Link href={href}>
+          <LinkComponent href={href}>
             <Text decoration={"underline"}>{footer}</Text>
-          </Link>
+          </LinkComponent>
         </CardFooter>
       )}
     </Card>

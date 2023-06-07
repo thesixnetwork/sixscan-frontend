@@ -7,7 +7,7 @@ import {
   Stack,
   Collapse,
   Icon,
-  Link,
+  Link as ChakraLink,
   Popover,
   PopoverTrigger,
   PopoverContent,
@@ -29,6 +29,7 @@ import { useState, useRef, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import ENV from "@/utils/ENV";
 import { Block } from "@/types/Block";
+import { LinkComponent } from "@/components/Chakralink";
 
 export default function WithSubnavigation({
   variant,
@@ -43,7 +44,6 @@ export default function WithSubnavigation({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   // const isBlockRunning = status ? new Date(status.block.header.time).getTime() > Date.now() - 60000 : false;
-
   const [isBlockRunning, setIsBlockRunning] = useState(false);
   const [isBlinking, setIsBlinking] = useState(false);
 
@@ -94,14 +94,44 @@ export default function WithSubnavigation({
         </Flex>
         <Flex
           flex={{ base: 1 }}
-          justify={{ base: "center", md: "start" }}
+          justify={{ base: "center", md: "space-between" }}
           alignItems="center"
         >
-          <Link href="/" _hover={{ textDecoration: "none" }}>
-            <Flex alignItems="center" direction={"row"} gap={2}>
-              <Image src="/sixscan-logo.png" alt="logo" height={6} />
+          <Box style={{ display: "flex" }}>
+            <LinkComponent href="/" >
+              <Flex alignItems="center" direction={"row"} gap={2}>
+                <Image style={{ marginTop: "6px", marginBottom: "6px" }} src="/sixscan-logo.png" alt="logo" height={6} />
+              </Flex>
+            </LinkComponent>
+            <Flex direction="column">
+              <Box style={{ display: "flex", marginLeft: "10px", background: "#FFFFFF", border: "1px solid #DADEF2", borderRadius: "32px" }}>
+                <Box>
+                  <LinkComponent href={ENV.Block_Scount_API_URL} _hover={{ textDecoration: "none" }}>
+                  <Text style={{
+                    marginLeft: "10px", marginRight: "10px", color: "#878CA8",
+                    fontStyle: "normal",fontWeight: "550",
+                    fontFamily: "Inter, sans-serif",
+                    marginTop: "6px", marginBottom: "6px"
+                  }}>
+                    EVM
+                  </Text>
+                  </LinkComponent>
+                </Box>
+                <Box style={{ background: "#464B92", borderRadius: "32px" }}>
+                  <LinkComponent href="/" _hover={{ textDecoration: "none" }}>
+                  <Text style={{
+                    marginLeft: "10px", marginRight: "10px", color: "#FFFFFF",
+                    fontStyle: "normal",fontWeight: "550",
+                    fontFamily: "Inter, sans-serif",
+                    marginTop: "6px", marginBottom: "6px"
+                  }}>
+                    Cosmos
+                  </Text>
+                  </LinkComponent>
+                </Box>
+              </Box>
             </Flex>
-          </Link>
+          </Box>
 
           <Flex
             display={{ base: "none", md: "flex" }}
@@ -268,10 +298,11 @@ const DesktopNav = () => {
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
+
             <PopoverTrigger>
               {navItem.children ? (
                 <Flex alignItems="center" direction={"row"} gap={1}>
-                  <Link
+                  <ChakraLink
                     p={2}
                     fontSize={"sm"}
                     fontWeight={500}
@@ -282,14 +313,14 @@ const DesktopNav = () => {
                     }}
                   >
                     {navItem.label}
-                  </Link>
+                  </ChakraLink>
                   <FaChevronDown fontSize={8} />
                 </Flex>
               ) : (
                 <Flex alignItems="center" direction={"row"} gap={1}>
-                  <Link
+                  <LinkComponent
                     p={2}
-                    href={navItem.href}
+                    href={navItem.href? navItem.href : "#"}
                     fontSize={"sm"}
                     fontWeight={500}
                     color={linkColor}
@@ -299,7 +330,7 @@ const DesktopNav = () => {
                     }}
                   >
                     {navItem.label}
-                  </Link>
+                  </LinkComponent>
                 </Flex>
               )}
             </PopoverTrigger>
@@ -329,8 +360,8 @@ const DesktopNav = () => {
 
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
-    <Link
-      href={href}
+    <LinkComponent
+      href={href? href : "#"}
       role={"group"}
       display={"block"}
       p={2}
@@ -360,7 +391,7 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
           <Icon color={"primary.500"} w={5} h={5} as={ChevronRightIcon} />
         </Flex>
       </Stack>
-    </Link>
+    </LinkComponent>
   );
 };
 
@@ -399,7 +430,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
     <Stack spacing={4} onClick={children && onToggle}>
       <Flex
         py={2}
-        as={Link}
+        as={LinkComponent}
         href={href ?? "#"}
         justify={"space-between"}
         align={"center"}
@@ -435,9 +466,9 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         >
           {children &&
             children.map((child) => (
-              <Link key={child.label} py={2} href={child.href}>
+              <LinkComponent key={child.label} py={2} href={child.href? child.href:"#"}>
                 {child.label}
-              </Link>
+              </LinkComponent>
             ))}
         </Stack>
       </Collapse>
@@ -457,10 +488,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Home",
     href: "/",
   },
-  // {
-  //   label: "Data Layer",
-  //   href: "/data",
-  // },
+  {
+    label: "Data Layer",
+    href: "/data",
+  },
   {
     label: "Blockchain",
     children: [
