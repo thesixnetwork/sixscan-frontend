@@ -8,3 +8,8 @@ export interface BalanceETH {
   id: string;
   result: string;
 }
+
+export interface SendAmount {
+  denom: string;
+  amount: string;
+}

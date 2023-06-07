@@ -576,7 +576,6 @@ export default function Address({
                     <TabList>
                       <Tab>Txns</Tab>
                       <Tab>Txns (Data Layer)</Tab>
-                      {validator && <Tab>Proposed Blocks</Tab>}
                       {validator && <Tab>Delegators</Tab>}
                     </TabList>
                     <TabPanels>
@@ -915,76 +914,6 @@ export default function Address({
                           </CardFooter>
                         </TableContainer>
                       </TabPanel>
-
-
-
-                      {validator && (
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            color={"dark"}
-                          >
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              Latest 25 from a total of{" "}
-                              <Clickable underline href="/">
-                                92
-                              </Clickable>{" "}
-                              transactions
-                            </Text>
-                          </Flex>
-                          <TableContainer>
-                            <Table variant="simple">
-                              <Thead>
-                                <Tr>
-                                  <Td>
-                                    <Text>Block Height</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Age</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>Txns</Text>
-                                  </Td>
-                                  <Td isNumeric>
-                                    <Text>Reward</Text>
-                                  </Td>
-                                </Tr>
-                              </Thead>
-                              {/* <Tbody>
-                                {blocks.map((block, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Text>
-                                        <Clickable underline href="/">
-                                          {block.blockHeight}
-                                        </Clickable>
-                                      </Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>{block.time}</Text>
-                                    </Td>
-                                    <Td>
-                                      <Text>{block.txns}</Text>
-                                    </Td>
-                                    <Td isNumeric>
-                                      <Badge>
-                                        Reward{" "}
-                                        <Clickable href="/">
-                                          {block.fee}
-                                        </Clickable>{" "}
-                                        SIX
-                                      </Badge>
-                                    </Td>
-                                  </Tr>
-                                ))}
-                              </Tbody> */}
-                            </Table>
-                          </TableContainer>
-                        </TabPanel>
-                      )}
                       {validator && delegations && (
                         <TabPanel>
                           <Flex

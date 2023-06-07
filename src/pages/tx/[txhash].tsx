@@ -15,6 +15,7 @@ import {
   Grid,
   GridItem,
   Icon,
+  Input,
   Stack,
   Link,
   Divider,
@@ -32,6 +33,7 @@ import {
   Tr,
   Td,
   Badge,
+  Select,
   Spacer,
   Skeleton,
   Button,
@@ -66,7 +68,7 @@ import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
 
-import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank } from "@/utils/format";
+import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank, convertAmountToSix } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -75,6 +77,13 @@ import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
 import { parseJsonText } from "typescript";
+// import ReactJson from 'react-json-view'
+import dynamic from 'next/dynamic';
+
+const DynamicReactJson = dynamic(
+  () => import('react-json-view'),
+  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+);
 
 
 interface Props {
@@ -88,7 +97,12 @@ interface Props {
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
-
+  const [isDecode, setIsDecode] = useState('Default View');
+  const CType = ['Default View', 'UTF-8'];
+  const handleChange_verify = async (e: any) => {
+    setIsDecode(e.target.value)
+  }
+  // console.log(isDecode)
   // get object keys from txs.tx.body.messages[0]
   const KeyMsg = Object.keys(txs.tx.body.messages[0]);
   const message = txs.tx.body.messages[0];
@@ -105,9 +119,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
 
   let totalValueTmp = 0;
 
-  // console.log("tx22 =>", JSON.parse(tx.tx_result.log)[0])
-  // console.log("Txs =>", txs)
-  // console.log("Txs2 =>", txs.tx.body.messages[0].amount[0].amount)
+  const my_json_object = {
+    "name": "John",
+    "age": 30,
+    "city": "New York"
+  };
+
+  // const parsedJson = JSON.parse(jsonText);
+  // const formattedJson = JSON.stringify(parsedJson, null, 2);
   ////// Get Price SIX ///////
   useEffect(() => {
     setTotalValue(totalValueTmp);
@@ -315,7 +334,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           >
                                             {message[key]}
                                           </Clickable>
-                                          <CopyIcon marginLeft="5px"onClick={() => navigator.clipboard.writeText(message[key])} />
+                                          <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
                                         </Text>
                                       </Flex>
                                     </Td>
@@ -332,7 +351,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0].amount)) : message[key][0]?.amount[0] !== undefined ? convertUsixToSix(parseInt(message[key][0]?.amount)) : convertUsixToSix(parseInt(message[key].amount))} SIX </Text>
+                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertAmountToSix(message[key][0]) : message[key][0]?.amount[0] !== undefined ? convertAmountToSix(message[key][0]) : convertAmountToSix(message[key][0])} SIX </Text>
                                         <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
                                       </Flex>
                                     </Td>
@@ -452,16 +471,30 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               if (key === "base64NFTData") {
                                 return (
                                   <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
+                                    <Td borderBottom="none" display={"flex"}>
+                                      <Flex>
                                         <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
                                       </Flex>
                                     </Td>
                                     <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <Textarea readOnly>
-                                          {message[key]}
-                                        </Textarea>
+                                      <Flex direction="column">
+                                        {isDecode === 'Default View' &&
+                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
+                                            {message[key]}
+                                          </Textarea>)
+                                        }
+                                        {isDecode === 'UTF-8' &&
+                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        }
+                                        <Box width={"20%"} marginTop={"10px"}>
+                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                            {CType.map((option, index) => (
+                                              <option key={index} value={option}>
+                                                {option}
+                                              </option>
+                                            ))}
+                                          </Select>
+                                        </Box>
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -477,10 +510,29 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       </Flex>
                                     </Td>
                                     <Td borderBottom="none">
-                                      <Flex direction="row">
+                                      {/* <Flex direction="row">
                                         <Textarea readOnly>
                                           {message[key]}
                                         </Textarea>
+                                      </Flex> */}
+                                      <Flex direction="column">
+                                        {isDecode === 'Default View' &&
+                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
+                                            {message[key]}
+                                          </Textarea>)
+                                        }
+                                        {isDecode === 'UTF-8' &&
+                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        }
+                                        <Box width={"20%"} marginTop={"10px"}>
+                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                            {CType.map((option, index) => (
+                                              <option key={index} value={option}>
+                                                {option}
+                                              </option>
+                                            ))}
+                                          </Select>
+                                        </Box>
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -490,16 +542,30 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               if (key === "parameters") {
                                 return (
                                   <Tr key={index}>
-                                    <Td >
+                                    <Td display={"flex"} borderBottom="none">
                                       <Flex direction="column">
                                         <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
                                       </Flex>
                                     </Td>
-                                    <Td >
-                                      <Flex direction="row">
-                                        <Text style={{ marginRight: '5px' }}>
-                                          {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
-                                        </Text>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        {isDecode === "Default View" &&
+                                          <Text style={{ marginRight: '5px' }}>
+                                            {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
+                                          </Text>
+                                        }
+                                        {isDecode === "UTF-8" &&
+                                          <DynamicReactJson src={message[key]} />
+                                        }
+                                        <Box width={"20%"} marginTop={"10px"}>
+                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                            {CType.map((option, index) => (
+                                              <option key={index} value={option}>
+                                                {option}
+                                              </option>
+                                            ))}
+                                          </Select>
+                                        </Box>
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -682,7 +748,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
           </Container>
         </Box>
         <Spacer />
-      </Flex>
+      </Flex >
     );
   } else {
 
