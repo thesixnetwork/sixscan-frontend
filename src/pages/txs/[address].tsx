@@ -91,6 +91,8 @@ export default function Address({
     setTotalValue(totalValueTmp);
   }, [totalValue, totalValueTmp]);
 
+  console.log(accountTxs)
+
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -280,11 +282,20 @@ export default function Address({
                                       <Td>
                                         <Text>
                                           <Badge>
-                                            {tx.type
-                                              .split(".")
-                                            [
-                                              tx.type.split(".").length - 1
-                                            ].slice(3)}
+                                            {
+                                              tx.type
+                                                .split(".")
+                                              [
+                                                tx.type.split(".").length - 1
+                                              ].slice(3) === "Send" ?
+                                                tx.decode_tx.toAddress === address ? "Receiver" : "Send"
+                                                :
+                                                tx.type
+                                                  .split(".")
+                                                [
+                                                  tx.type.split(".").length - 1
+                                                ].slice(3)
+                                            }
                                           </Badge>
                                         </Text>
                                       </Td>
@@ -294,23 +305,23 @@ export default function Address({
                                         </Text>
                                       </Td>
                                       <Td>
-                                          <Clickable href="/">
-                                            <Text style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px"
-                                            }}>
-                                              {tx.block_height}
-                                            </Text>
-                                          </Clickable>
+                                        <Clickable href="/">
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {tx.block_height}
+                                          </Text>
+                                        </Clickable>
                                       </Td>
                                       <Td>
-                                          {tx.decode_tx.toAddress && (
-                                            <Clickable
-                                              href={`/address/${tx.decode_tx.fromAddress}`}
-                                            >
-                                              <Text style={{
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.fromAddress}`}
+                                          >
+                                            <Text style={{
                                               color: "#5C34A2",
                                               textDecoration: "none",
                                               fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
@@ -320,15 +331,15 @@ export default function Address({
                                                 tx.decode_tx.fromAddress
                                               )}
                                             </Text>
-                                            </Clickable>
-                                          )}
+                                          </Clickable>
+                                        )}
                                       </Td>
                                       <Td>
-                                          {tx.decode_tx.toAddress && (
-                                            <Clickable
-                                              href={`/address/${tx.decode_tx.toAddress}`}
-                                            >
-                                              <Text style={{
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.toAddress}`}
+                                          >
+                                            <Text style={{
                                               color: "#5C34A2",
                                               textDecoration: "none",
                                               fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
@@ -338,8 +349,8 @@ export default function Address({
                                                 tx.decode_tx.toAddress
                                               )}
                                             </Text>
-                                            </Clickable>
-                                          )}
+                                          </Clickable>
+                                        )}
                                       </Td>
                                       <Td>
                                         {tx.decode_tx.amount &&

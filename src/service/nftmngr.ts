@@ -1,6 +1,7 @@
 import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
 import ENV from "../utils/ENV";
+import filter from 'lodash';
 
 export const getSchema = async (
   schemaCode: string
@@ -28,7 +29,7 @@ export const getNftCollection = async (
   metadataPage: string
 ): Promise<any | null> => {
   try {
-    const {data: { nftCollection , pagination: { total }}} = await axios.get(
+    const { data: { nftCollection, pagination: { total } } } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     // console.log(total);
@@ -50,7 +51,7 @@ export const getNftCollection = async (
       );
     }
     const metadata = await Promise.all(promises);
-    
+
     if (!metadata) {
       return null;
     }
@@ -82,14 +83,12 @@ export const getMetadata = async (
 
 export const getNFTActionCountStat = async (
   schemaCode: string,
-  startDate: string,
-  endDate: string,
   page: string,
   pageSize: string,
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountStat?schemaCode=${schemaCode}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       // console.log("Error: Non-200 status code returned:", res.status);
@@ -271,3 +270,96 @@ export const getAllTransactionByTokenID = async (
     return null;
   }
 };
+
+export const getSchemaByCodeAddr = async (
+  schemaOrContract: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+    );
+    const schema = res.data.nFTSchemaByContract;
+    const mergedSchema = schema.flatMap((item: any) => item.schemaCodes);
+    const mergedSchemas = mergedSchema.map((item: any) => ({
+      name: item,
+    }));
+    const filteredNames = filter.filter(mergedSchema, (x) => x.toLowerCase().startsWith(schemaOrContract));
+    // const filteredContract = filter.filter(schema, (x) => x.toLowerCase().startsWith(schemaOrContract));
+    // console.log(schema);
+    if (!filteredNames) {
+      return null;
+    }
+    return filteredNames;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getAllSchema = async (): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+    );
+    const schema = res.data.nFTSchemaByContract;
+    const mergedSchema = schema.flatMap((item: any) => item.schemaCodes);
+    const mergedSchemas = mergedSchema.map((item: any) => ({
+      name: item,
+    }));
+    // const filteredContract = filter.filter(schema, (x) => x.toLowerCase().startsWith(schemaOrContract));
+    // console.log(schema);
+    if (!mergedSchemas) {
+      return null;
+    }
+    return mergedSchemas;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getSchemaByAddr = async (
+  schemaOrContract: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+    );
+    const schema = res.data.nFTSchemaByContract;
+    const filteredCode = schema.filter((item:any) =>
+      item.originContractAddress.includes(schemaOrContract)
+    );
+    const mergedSchema = filteredCode.flatMap((item: any) => item.schemaCodes);
+    if (!mergedSchema) {
+      return null;
+    }
+    return mergedSchema;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getSchemaByAddress = async (
+  schemaOrContract: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+    );
+    const schema = res.data.nFTSchemaByContract;
+    const filteredCode = schema.filter((item:any) =>
+      item.originContractAddress.includes(schemaOrContract)
+    );
+
+    if (!filteredCode) {
+      return null;
+    }
+    return filteredCode;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+

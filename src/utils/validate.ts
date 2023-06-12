@@ -12,3 +12,8 @@ export const validateTxHash = (txHash: string) => {
   const pattern = /^[a-fA-F0-9]{64}$/;
   return pattern.test(txHash);
 };
+
+export const validateContract = (address: string) => {
+  const pattern = /^0x[0-9a-fA-F]{40}$/;
+  return pattern.test(address);
+};
