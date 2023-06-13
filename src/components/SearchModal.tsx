@@ -33,7 +33,7 @@ import {
 } from "@/utils/validate";
 import { LinkComponent } from "@/components/Chakralink";
 
-import { getSchemaByAddress, getSchemaByCodeAddr } from "@/service/nftmngr";
+import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
 import { Clickable } from "./Clickable";
 
 
@@ -46,6 +46,11 @@ type SearchResult = {
 type ResultContract = {
   originContractAddress: string;
   schemaCodes: any;
+};
+
+type ResultSchema= {
+  originContractAddress: string;
+  schemaCodes: string;
 };
 
 
@@ -64,7 +69,7 @@ const SearchModal = ({
   const [isSchema, setIsSchema] = useState(false);
   const [isContract, setIsContract] = useState(false);
   const [resultContract, setResultContract] = useState<ResultContract>();
-  const [resultSchema, setResultSchema] = useState([]);
+  const [resultSchema, setResultSchema] = useState<ResultSchema[]>([]);
 
 
   const initialRef = useRef(null);
@@ -80,14 +85,17 @@ const SearchModal = ({
       schemaCodes: null
     };
     
+    
     const isAddress = validateAddress(searchInput);
     const isTx = validateTxHash(searchInput);
     const isContractByAddress = await validateContract(searchInput);
     const isBlock = await validateBlock(searchInput);
     const isSchemaaa = await getSchemaByCodeAddr(searchInput)
+    const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
+    // console.log(isSchemaaa);
     const schemaByContract = await getSchemaByAddress(searchInput)
 
-    console.log(JSON.stringify(schemaByContract))
+    // console.log(JSON.stringify(schemaByContract,null, 2));
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);
@@ -121,23 +129,20 @@ const SearchModal = ({
     if (isContractByAddress) {
       setIsContract(true);
       setIsSchema(false);
-      _resultsContract.originContractAddress = schemaByContract[0].originContractAddress;
-      _resultsContract.schemaCodes = schemaByContract[0].schemaCodes;
-      setResultContract(_resultsContract)
+      setResultContract(schemaByContract)
     }
 
     if (!isAddress && !isTx && !isBlock && !isContractByAddress) {
       setIsSchema(true);
       setIsContract(false);
-      setResultSchema(isSchemaaa[0])
+      setResultSchema(isSchemaaa2)
       _searchResults.push({
         type: "schema",
-        value: isSchemaaa,
+        value: isSchemaaa2,
         icon: <FaScroll />,
       });
     }
     setSearchResults(_searchResults);
-    console.log(searchResults)
   };
 
   useEffect(() => {
@@ -224,66 +229,7 @@ const SearchModal = ({
             ))}
           </ModalBody>
         )}
-        {/* {searchInput && !isContract && isSchema && (
-          <ModalBody style={{ height: '20%', overflowY: 'scroll' }}>
-            <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize="xs" fontWeight="bold" color="dark">{searchResults[0].type.toUpperCase()}</Text>
-              <Button fontSize="sl" colorScheme='gray'>
-                <Clickable href="/schemas">
-                  <Text fontSize="xs" fontWeight="bold" color="dark">
-                    View More
-                  </Text>
-                </Clickable>
-              </Button>
-            </Flex>
-            {searchResults.map((x) => Array.isArray(x.value) && (
-              x.value.slice(0, 5).map((e, index) => (
-                <Flex direction="column" key={index} gap={1} pt={1}>
-                  <motion.div>
-                    <Flex
-                      bgColor={"lightest"}
-                      borderRadius={6}
-                      p={4}
-                      as={LinkComponent}
-                      href={`/schema/${e}`}
-                      _hover={{ bgColor: "light" }}
-                      gap={2}
-                      alignItems="center"
-                    >
-                      <Box color="dark"><FaScroll /></Box>
-                      <Text
-                        fontSize="md"
-                        color="dark"
-                        _hover={{ color: "darkest" }}
-                      >
-                        {e}
-                      </Text>
-                      <Spacer />
-                      <Box color="dark">
-                        <motion.div
-                          initial={{
-                            x: -10,
-                            opacity: 0,
-                          }}
-                          animate={{
-                            x: 0,
-                            opacity: 1,
-                          }}
-                          transition={{
-                            duration: 0.5,
-                          }}
-                        >
-                          <FaArrowRight />
-                        </motion.div>
-                      </Box>
-                    </Flex>
-                  </motion.div>
-                </Flex>
-              ))
-            ))}
-          </ModalBody>
-        )} */}
-        {searchInput && !isContract && isSchema &&resultSchema && (
+        {searchInput && !isContract && isSchema && resultSchema && (
           <ModalBody style={{ height: '20%', overflowY: 'scroll' }}>
             <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
               <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
@@ -295,8 +241,7 @@ const SearchModal = ({
                 </Clickable>
               </Button>
             </Flex>
-            {searchResults.map((x) => Array.isArray(x.value) && (
-              x.value.slice(0, 5).map((e, index) => (
+            {resultSchema.map((x: any, index: number) => (
                 <Flex direction="column" key={index} gap={1} pt={1}>
                   <motion.div>
                     <Flex
@@ -304,7 +249,7 @@ const SearchModal = ({
                       borderRadius={6}
                       p={4}
                       as={LinkComponent}
-                      href={`/schema/${e}`}
+                      href={`/schema/${x.schema_code}`}
                       _hover={{ bgColor: "light" }}
                       gap={2}
                       alignItems="center"
@@ -315,7 +260,7 @@ const SearchModal = ({
                         color="dark"
                         _hover={{ color: "darkest" }}
                       >
-                        {e}
+                        {x.schema_code}
                       </Text>
                       <Spacer />
                       <Box color="dark">
@@ -338,7 +283,6 @@ const SearchModal = ({
                     </Flex>
                   </motion.div>
                 </Flex>
-              ))
             ))}
           </ModalBody>
         )}
@@ -347,14 +291,14 @@ const SearchModal = ({
             <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
               <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
               <Button fontSize="sl" colorScheme='gray'>
-                <Clickable href={`/contract/${resultContract.originContractAddress}`}>
+                <Clickable href={`/contract/${Array.isArray(resultContract) && resultContract[0].origin_contract_address}`}>
                   <Text fontSize="xs" fontWeight="bold" color="dark">
                     View More
                   </Text>
                 </Clickable>
               </Button>
             </Flex>
-            {Array.isArray(resultContract.schemaCodes) && resultContract.schemaCodes.slice(0,5).map((x: any, index: number) =>  (
+            {Array.isArray(resultContract) && resultContract.map((x: any, index: number) =>  (
                 <Flex direction="column" key={index} gap={1} pt={1}>
                   <motion.div>
                     <Flex
@@ -362,7 +306,7 @@ const SearchModal = ({
                       borderRadius={6}
                       p={4}
                       as={LinkComponent}
-                      href={`/schema/${x}`}
+                      href={`/schema/${x.schema_code}`}
                       _hover={{ bgColor: "light" }}
                       gap={2}
                       alignItems="center"
@@ -373,7 +317,7 @@ const SearchModal = ({
                         color="dark"
                         _hover={{ color: "darkest" }}
                       >
-                        {x}
+                        {x.schema_code}
                       </Text>
                       <Spacer />
                       <Box color="dark">
