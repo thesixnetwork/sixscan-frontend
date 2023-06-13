@@ -91,7 +91,7 @@ export default function Address({
     setTotalValue(totalValueTmp);
   }, [totalValue, totalValueTmp]);
 
-  console.log(accountTxs)
+  // console.log(accountTxs)
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">

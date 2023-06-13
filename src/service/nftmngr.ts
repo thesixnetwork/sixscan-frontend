@@ -296,7 +296,44 @@ export const getSchemaByCodeAddr = async (
   }
 };
 
-export const getAllSchema = async (): Promise<any | null> => {
+export const getSchemaByCodeAddr2 = async (
+  schemaOrContract: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllSchemaCode?schemaCode=${schemaOrContract}&page=1&limit=5`
+    );
+    const schema = res.data.data.data;
+    if (!schema) {
+      return null;
+    }
+    return schema;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getAllSchema = async (
+  page: string,
+  limit: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllSchemaCode?schemaCode=&page=${page}&limit=${limit}`
+    );
+    const schema = res.data.data;
+    if (!schema) {
+      return null;
+    }
+    return schema;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getAllSchemas = async (): Promise<any | null> => {
   try {
     const res = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
@@ -345,17 +382,35 @@ export const getSchemaByAddress = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getSchemaCodeByContractAddress?contractAddress=${schemaOrContract}&page=1&limit=5`
     );
-    const schema = res.data.nFTSchemaByContract;
-    const filteredCode = schema.filter((item:any) =>
-      item.originContractAddress.includes(schemaOrContract)
-    );
+    const schema = res.data.data.data;
 
-    if (!filteredCode) {
+    if (!schema) {
       return null;
     }
-    return filteredCode;
+    return schema;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+export const getSchemaByContractAddress = async (
+  contract: string,
+  page: string,
+  limit: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getSchemaCodeByContractAddress?contractAddress=${contract}&page=${page}&limit=${limit}`
+    );
+    const schema = res.data.data;
+
+    if (!schema) {
+      return null;
+    }
+    return schema;
   } catch (error) {
     console.error(error);
     return null;

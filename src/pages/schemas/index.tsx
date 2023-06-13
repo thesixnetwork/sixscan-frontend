@@ -59,90 +59,32 @@ import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
 import { formatMethod } from "@/utils/format";
-import { getSchemaByCodeAddr, getAllSchema } from "@/service/nftmngr";
+import { getSchemaByCodeAddr2, getAllSchema } from "@/service/nftmngr";
 
 
 interface Props {
-    address: string;
-    validator: Validator | null;
-    account: Account | null;
-    accountTxs: any;
-    pageNumber: string;
     schema: any;
+    pageNumber: string;
 }
 
-interface PaginationProps {
-    currentPage: number;
-    totalPages: number;
-    onPageChange: (pageNumber: number) => void;
-}
-
-const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
-    const handlePageChange = (pageNumber: number) => {
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            onPageChange(pageNumber);
-        }
-    };
-
-    const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
-
-    return (
-        <Flex direction="row" gap={2} align="center" px="2">
-            <Button
-                variant={"solid"}
-                size="xs"
-                onClick={() => handlePageChange(1)}
-                disabled={currentPage === 1}
-            >
-                First
-            </Button>
-            <Button
-                size="xs"
-                onClick={() => handlePageChange(currentPage - 1)}
-            >
-                <FaArrowLeft fontSize={12} />
-            </Button>
-            <Text fontSize="xs">
-                {`Page ${currentPage} of ${totalPages}`}
-            </Text>
-            <Button
-                size="xs"
-                onClick={() => handlePageChange(currentPage + 1)}
-            >
-                <FaArrowRight fontSize={12} />
-            </Button>
-            <Button
-                size="xs"
-                onClick={() => handlePageChange(totalPages)}
-                disabled={currentPage === totalPages}
-            >
-                Last
-            </Button>
-        </Flex>
-    );
-};
 
 
-export default function Address({
-    address,
-    validator,
-    account,
-    accountTxs,
+export default function Schema({
     pageNumber,
     schema,
 }: Props) {
     const [isCopied, setIsCopied] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
     let totalValueTmp = 0;
-    const handleCopyClick = () => {
-        if (Array.isArray(address) && address.length > 0) {
-            navigator.clipboard.writeText(address[0]?.originContractAddress);
-        }
-        setIsCopied(true);
-        setTimeout(() => {
-            setIsCopied(false);
-        }, 1000);
-    };
+    // const handleCopyClick = () => {
+    //     if (Array.isArray(address) && address.length > 0) {
+    //         navigator.clipboard.writeText(address[0]?.originContractAddress);
+    //     }
+    //     setIsCopied(true);
+    //     setTimeout(() => {
+    //         setIsCopied(false);
+    //     }, 1000);
+    // };
 
     const addValueToTotalValue = (value: number) => {
         totalValueTmp += value;
@@ -153,17 +95,7 @@ export default function Address({
         setTotalValue(totalValueTmp);
     }, [totalValue, totalValueTmp]);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const paginatedSchema = Array.isArray(schema) ? schema.slice(indexOfFirstItem, indexOfLastItem) : [];
-    const totalPages = Math.ceil(schema.length / itemsPerPage);
-    const handlePageChange = (pageNumber: number) => {
-        setCurrentPage(pageNumber);
-    };
-
+    const totalPages = Math.ceil(schema.totalRecords / 15);
     return (
         <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
             {/* testing eslint */}
@@ -201,12 +133,12 @@ export default function Address({
                                             <TabList>
                                                 <Tab>Schema</Tab>
                                                 <Spacer />
-                                                {/* {Array.isArray(address) && !address[0].schemaCodes && (
+                                                {Array.isArray(schema.data) && (
                                                     <Flex direction="row" gap={2} align="center" px="2">
                                                         <Button
                                                             variant={"solid"}
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=1`}
+                                                            href={`/schemas?page=1`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -216,7 +148,7 @@ export default function Address({
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=1`}
+                                                            href={`/schemas?page=${parseInt(pageNumber) - 1}`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -225,38 +157,38 @@ export default function Address({
                                                             <FaArrowLeft fontSize={12} />
                                                         </Button>
                                                         <Text fontSize="xs">
-                                                            {`Page ${pageNumber} of ${accountTxs.totalPage}`}
+                                                            {`Page ${pageNumber} of ${totalPages}`}
                                                         </Text>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=${parseInt(pageNumber) + 1
+                                                            href={`/schemas?page=${parseInt(pageNumber) + 1
                                                                 }`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) ===
-                                                                accountTxs.totalPage
+                                                                totalPages
                                                             }
                                                         >
                                                             <FaArrowRight fontSize={12} />
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=${accountTxs.totalPage}`}
+                                                            href={`/schemas?page=${totalPages}`}
                                                             as={LinkComponent}
                                                             isDisabled={
-                                                                parseInt(accountTxs.pageNumber) ===
-                                                                accountTxs.totalPage
+                                                                totalPages ===
+                                                                schema.totalRecords
                                                             }
                                                         >
                                                             Last
                                                         </Button>
                                                     </Flex>
-                                                )} */}
-                                                <Pagination
+                                                )}
+                                                {/* <Pagination
                                                     currentPage={currentPage}
                                                     totalPages={totalPages}
                                                     onPageChange={handlePageChange}
-                                                />
+                                                /> */}
                                             </TabList>
                                             <TabPanels>
                                                 <TabPanel>
@@ -268,7 +200,7 @@ export default function Address({
                                                     >
                                                         <FaSortAmountDown fontSize={12} />
                                                         <Text>
-                                                            {`A total of ${Array.isArray(schema) && schema ? schema.length : "0"
+                                                            {`A total of ${schema.totalRecords ? schema.totalRecords : "0"
                                                                 } schema found.`}
                                                         </Text>
                                                     </Flex>
@@ -285,20 +217,20 @@ export default function Address({
                                                                 </Tr>
                                                             </Thead>
                                                             <Tbody>
-                                                                {paginatedSchema.map((schema: any, index: number) => (
+                                                                {schema.data.map((schema: any, index: number) => (
                                                                     <Tr key={index}>
                                                                         <Td>
                                                                             <Text>{index + 1}</Text>
                                                                         </Td>
                                                                         <Td>
-                                                                            <Clickable href={`/schema/${schema.name}`}>
+                                                                            <Clickable href={`/schema/${schema.schema_code}`}>
                                                                                 <Text style={{
                                                                                     color: "#5C34A2",
                                                                                     textDecoration: "none",
                                                                                     fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                                                                     fontSize: "12px"
                                                                                 }}>
-                                                                                    {schema.name}
+                                                                                    {schema.schema_code}
                                                                                 </Text>
                                                                             </Clickable>
                                                                         </Td>
@@ -322,10 +254,18 @@ export default function Address({
     );
 }
 
-export const getServerSideProps = async () => {
+export const getServerSideProps = async (
+    {
+        query: { page = "1" },
+    }: {
+        query: { page: string; },
+    }
+) => {
     const [schema] = await Promise.all([
-        getAllSchema()
+        getAllSchema(page ? page : "1", "15"),
     ]);
+    const pageNumber = page
+
     if (!schema) {
         return {
             props: {
@@ -336,7 +276,8 @@ export const getServerSideProps = async () => {
 
     return {
         props: {
-            schema
+            schema,
+            pageNumber
         },
     };
 };

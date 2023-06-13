@@ -40,41 +40,29 @@ import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
 import { validateContract } from "@/utils/validate";
 import { useEffect, useState } from "react";
-import { getValidator } from "@/service/staking";
-import { Validator } from "@/types/Staking";
-import { Balance } from "@/types/Bank";
-// ------------------------- Helper Libs -------------------------
-import moment from "moment";
-import { getAccount } from "@/service/auth";
-import { Account } from "@/types/Auth";
-import { getBalance, getBalances } from "@/service/bank";
-import { formatNumber, convertUsixToSix } from "@/utils/format";
-import { getAllTransactionByAddress } from "@/service/nftmngr";
 
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
-import { getTxsFromAddress } from "@/service/txs";
-import { AccountTxs } from "@/types/Txs";
-import { formatMethod } from "@/utils/format";
-import { getSchemaByCodeAddr, getSchemaByAddress } from "@/service/nftmngr";
+// ------------------------- Helper Libs -------------------------
+
+import { getSchemaByContractAddress, getSchemaByAddress } from "@/service/nftmngr";
 
 
 interface Props {
-    address: string;
-    validator: Validator | null;
-    account: Account | null;
-    accountTxs: any;
+    address: address;
     pageNumber: string;
+}
+interface address {
+    data: {
+        _id: string;
+    schema_code: string;
+    origin_contract_address: string;
+    }[];
+    totalRecords: number;
 }
 
 export default function Address({
     address,
-    validator,
-    account,
-    accountTxs,
     pageNumber
 }: Props) {
     const [isCopied, setIsCopied] = useState(false);
@@ -82,9 +70,7 @@ export default function Address({
     let totalValueTmp = 0;
 
     const handleCopyClick = () => {
-        if (Array.isArray(address) && address.length > 0) {
-            navigator.clipboard.writeText(address[0]?.originContractAddress);
-        }
+        navigator.clipboard.writeText(address.data[0]?.origin_contract_address);
         setIsCopied(true);
         setTimeout(() => {
             setIsCopied(false);
@@ -99,6 +85,7 @@ export default function Address({
     useEffect(() => {
         setTotalValue(totalValueTmp);
     }, [totalValue, totalValueTmp]);
+    const totalPages = Math.ceil(address.totalRecords / 15);
 
     return (
         <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
@@ -119,9 +106,9 @@ export default function Address({
                                     Contract Address:
                                 </Text>
                                 <Text fontWeight="bold" color={address ? "medium" : "error"}>
-                                    {Array.isArray(address) && address ? address[0]?.originContractAddress : "Invalid Address"}
+                                    {address.data ? address.data[0]?.origin_contract_address : "Invalid Address"}
                                 </Text>
-                                {address && (
+                                {address && address.data[0].origin_contract_address && (
                                     <Tooltip label={isCopied ? "Copied" : "Copy"} placement="top">
                                         <Box
                                             bgColor="light"
@@ -133,13 +120,6 @@ export default function Address({
                                             <FaCopy fontSize={12} />
                                         </Box>
                                     </Tooltip>
-                                )}
-                            </Flex>
-                            <Flex direction="row" align="center" gap={4}>
-                                {validator && <Badge>Validators</Badge>}
-                                {account && <Badge>{account["@type"].split(".")[3]}</Badge>}
-                                {validator && validator.jailed && (
-                                    <Badge colorScheme={"red"}>Jailed</Badge>
                                 )}
                             </Flex>
                             <Divider />
@@ -159,12 +139,12 @@ export default function Address({
                                             <TabList>
                                                 <Tab>Schema</Tab>
                                                 <Spacer />
-                                                {Array.isArray(address) && !address[0].schemaCodes && (
+                                                {Array.isArray(address.data) && (
                                                     <Flex direction="row" gap={2} align="center" px="2">
                                                         <Button
                                                             variant={"solid"}
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=1`}
+                                                            href={`/schemas?page=1`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -174,7 +154,7 @@ export default function Address({
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=1`}
+                                                            href={`/schemas?page=${parseInt(pageNumber) - 1}`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -183,27 +163,27 @@ export default function Address({
                                                             <FaArrowLeft fontSize={12} />
                                                         </Button>
                                                         <Text fontSize="xs">
-                                                            {`Page ${pageNumber} of ${accountTxs.totalPage}`}
+                                                            {`Page ${pageNumber} of ${totalPages}`}
                                                         </Text>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=${parseInt(pageNumber) + 1
+                                                            href={`/schemas?page=${pageNumber + 1
                                                                 }`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) ===
-                                                                accountTxs.totalPage
+                                                                totalPages
                                                             }
                                                         >
                                                             <FaArrowRight fontSize={12} />
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/datachain/${address}?page=${accountTxs.totalPage}`}
+                                                            href={`/schemas?page=${totalPages}`}
                                                             as={LinkComponent}
                                                             isDisabled={
-                                                                parseInt(accountTxs.pageNumber) ===
-                                                                accountTxs.totalPage
+                                                                totalPages ===
+                                                                parseInt(pageNumber)
                                                             }
                                                         >
                                                             Last
@@ -221,7 +201,7 @@ export default function Address({
                                                     >
                                                         <FaSortAmountDown fontSize={12} />
                                                         <Text>
-                                                            {`A total of ${Array.isArray(address) && address[0].schemaCodes ? address[0].schemaCodes.length : "0"
+                                                            {`A total of ${address.totalRecords ? address.totalRecords : "0"
                                                                 } schema found.`}
                                                         </Text>
                                                     </Flex>
@@ -238,21 +218,21 @@ export default function Address({
                                                                 </Tr>
                                                             </Thead>
                                                             <Tbody>
-                                                                {Array.isArray(address) && address[0].schemaCodes &&
-                                                                    address[0].schemaCodes.map((schema: any, index: number) => (
+                                                                {Array.isArray(address.data) &&
+                                                                    address.data.map((schema: any, index: number) => (
                                                                         <Tr key={index}>
                                                                             <Td>
                                                                                 <Text>{index + 1}</Text>
                                                                             </Td>
                                                                             <Td>
-                                                                                <Clickable href={`/schema/${schema}`}>
+                                                                                <Clickable href={`/schema/${schema.schema_code}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
                                                                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                                                                         fontSize: "12px"
                                                                                     }}>
-                                                                                        {schema}
+                                                                                        {schema.schema_code}
                                                                                     </Text>
                                                                                 </Clickable>
                                                                             </Td>
@@ -292,12 +272,13 @@ export const getServerSideProps = async ({
         };
     }
     const [address] = await Promise.all([
-        getSchemaByAddress(contract)
+        getSchemaByContractAddress(contract, page? page: "1", "15"),
     ]);
     const pageNumber = page
     return {
         props: {
-            address
+            address,
+            pageNumber
         },
     };
 };
