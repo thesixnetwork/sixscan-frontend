@@ -52,9 +52,10 @@ import { useRouter } from "next/router";
 import moment from "moment";
 
 import dynamic from 'next/dynamic';
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+import React from 'react';
+const ReactJsonViewer = dynamic(
+  () => import('react-json-viewer-cool'),
+  { ssr: false } // สำคัญ! บอกให้ Next.js ไม่โหลดโมดูลนี้ในระหว่างการสร้างเว็บไซต์
 );
 
 
@@ -454,7 +455,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                         /> */}
                         <Box height={"400px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                           <Flex p={3}>
-                            <DynamicReactJson src={metadata} collapsed={1} displayDataTypes={false} />
+                            <ReactJsonViewer data={metadata} />
                           </Flex>
                         </Box>
                       </TabPanel>
