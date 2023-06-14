@@ -51,6 +51,11 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
+import dynamic from 'next/dynamic';
+const DynamicReactJson = dynamic(
+  () => import('react-json-view'),
+  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+);
 
 
 interface Props {
@@ -442,11 +447,16 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                             </Box>
                           </Tooltip>
                         </Flex>
-                        <Textarea
+                        {/* <Textarea
                           value={JSON.stringify(metadata, null, 2)}
                           readOnly
                           minH={500}
-                        />
+                        /> */}
+                        <Box height={"400px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                          <Flex p={3}>
+                            <DynamicReactJson src={metadata} collapsed={1} displayDataTypes={false} />
+                          </Flex>
+                        </Box>
                       </TabPanel>
                     </TabPanels>
                   </Tabs>

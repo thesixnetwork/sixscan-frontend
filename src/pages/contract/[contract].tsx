@@ -68,6 +68,7 @@ export default function Address({
     const [isCopied, setIsCopied] = useState(false);
     const [totalValue, setTotalValue] = useState(0);
     let totalValueTmp = 0;
+    const isAddress = address.data[0]?.origin_contract_address;
 
     const handleCopyClick = () => {
         navigator.clipboard.writeText(address.data[0]?.origin_contract_address);
@@ -108,7 +109,7 @@ export default function Address({
                                 <Text fontWeight="bold" color={address ? "medium" : "error"}>
                                     {address.data ? address.data[0]?.origin_contract_address : "Invalid Address"}
                                 </Text>
-                                {address && address.data[0].origin_contract_address && (
+                                {address && address.data && (
                                     <Tooltip label={isCopied ? "Copied" : "Copy"} placement="top">
                                         <Box
                                             bgColor="light"
@@ -144,7 +145,7 @@ export default function Address({
                                                         <Button
                                                             variant={"solid"}
                                                             size="xs"
-                                                            href={`/schemas?page=1`}
+                                                            href={`/contract/${isAddress}?page=1`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -154,7 +155,7 @@ export default function Address({
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/schemas?page=${parseInt(pageNumber) - 1}`}
+                                                            href={`/contract/${isAddress}?page=${parseInt(pageNumber) - 1}`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 parseInt(pageNumber) === 1
@@ -167,7 +168,7 @@ export default function Address({
                                                         </Text>
                                                         <Button
                                                             size="xs"
-                                                            href={`/schemas?page=${pageNumber + 1
+                                                            href={`/contract/${isAddress}?page=${parseInt(pageNumber) + 1
                                                                 }`}
                                                             as={LinkComponent}
                                                             isDisabled={
@@ -179,7 +180,7 @@ export default function Address({
                                                         </Button>
                                                         <Button
                                                             size="xs"
-                                                            href={`/schemas?page=${totalPages}`}
+                                                            href={`/contract/${isAddress}?page=${totalPages}`}
                                                             as={LinkComponent}
                                                             isDisabled={
                                                                 totalPages ===

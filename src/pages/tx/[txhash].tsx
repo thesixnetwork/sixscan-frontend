@@ -428,7 +428,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                               {Object.values(message[key]).map((data: any, i) => {
                                                 return (
                                                   <TabPanel key={i}>
-                                                    <Textarea readOnly value={data}/>
+                                                    <Textarea readOnly value={data} />
                                                   </TabPanel>
                                                 );
                                               })}
@@ -467,11 +467,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
-                              if (key === "base64NFTData" || key === "nftSchemaBase64" || 
-                                  key === "base64NewAttriuteDefenition" || key === "base64NewAction" || 
-                                  key === "base64_nft_attribute_value" || key === "base64ActionSignature" || 
-                                  key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
-                                ) {
+                              if (key === "base64NFTData" || key === "nftSchemaBase64" ||
+                                key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
+                                key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
+                                key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
+                              ) {
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none" display={"flex"}>
@@ -482,14 +482,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="column">
                                         {isDecode === 'Default View' &&
-                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"}/>)
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
                                         {isDecode === 'UTF-8' &&
-                                        <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
-                                          <Flex p={3}>
-                                            <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
-                                          </Flex>
-                                        </Box>
+                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -522,10 +522,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       </Flex> */}
                                       <Flex direction="column">
                                         {isDecode === 'Default View' &&
-                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"}/>)
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
                                         {isDecode === 'UTF-8' &&
-                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -558,7 +562,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           </Text>
                                         }
                                         {isDecode === "UTF-8" &&
-                                          <DynamicReactJson src={message[key]} />
+                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={message[key]} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
