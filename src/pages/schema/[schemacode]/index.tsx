@@ -63,6 +63,12 @@ const DynamicReactJson = dynamic(
   () => import('react-json-view'),
   { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
 );
+import React from 'react';
+// import ReactJsonViewer from 'react-json-viewer-cool';
+const ReactJsonViewer = dynamic(
+  () => import('react-json-viewer-cool'),
+  { ssr: false } // สำคัญ! บอกให้ Next.js ไม่โหลดโมดูลนี้ในระหว่างการสร้างเว็บไซต์
+);
 
 type Txns = {
   txs: any[];
@@ -645,9 +651,9 @@ export default function Schema({
                           readOnly
                           minH={500}
                         /> */}
-                        <Box height={"auto"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                        <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                           <Flex p={3}>
-                            <DynamicReactJson src={schema} collapsed={1} displayDataTypes={false} />
+                            <ReactJsonViewer data={schema} />
                           </Flex>
                         </Box>
                       </TabPanel>
