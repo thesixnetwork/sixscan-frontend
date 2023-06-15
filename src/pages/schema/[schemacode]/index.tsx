@@ -61,13 +61,13 @@ import moment from "moment";
 import dynamic from 'next/dynamic';
 const DynamicReactJson = dynamic(
   () => import('react-json-view'),
-  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+  { ssr: false } 
 );
 import React from 'react';
 // import ReactJsonViewer from 'react-json-viewer-cool';
 const ReactJsonViewer = dynamic(
   () => import('react-json-viewer-cool'),
-  { ssr: false } // สำคัญ! บอกให้ Next.js ไม่โหลดโมดูลนี้ในระหว่างการสร้างเว็บไซต์
+  { ssr: false } 
 );
 
 type Txns = {
