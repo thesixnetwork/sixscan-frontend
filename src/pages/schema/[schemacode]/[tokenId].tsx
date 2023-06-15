@@ -55,7 +55,7 @@ import dynamic from 'next/dynamic';
 import React from 'react';
 const ReactJsonViewer = dynamic(
   () => import('react-json-viewer-cool'),
-  { ssr: false } // สำคัญ! บอกให้ Next.js ไม่โหลดโมดูลนี้ในระหว่างการสร้างเว็บไซต์
+  { ssr: false } 
 );
 
 

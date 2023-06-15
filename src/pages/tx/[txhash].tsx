@@ -81,9 +81,10 @@ import { parseJsonText } from "typescript";
 // import ReactJson from 'react-json-view'
 import dynamic from 'next/dynamic';
 
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+
+const ReactJsonViewer = dynamic(
+  () => import('react-json-viewer-cool'),
+  { ssr: false } 
 );
 
 
@@ -485,9 +486,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
                                         {isDecode === 'UTF-8' &&
-                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
                                             </Flex>
                                           </Box>
                                         }
@@ -525,9 +526,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
                                         {isDecode === 'UTF-8' &&
-                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
                                             </Flex>
                                           </Box>
                                         }
@@ -562,9 +563,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           </Text>
                                         }
                                         {isDecode === "UTF-8" &&
-                                          <Box height={"200px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <DynamicReactJson src={message[key]} />
+                                              <ReactJsonViewer data={message[key]} />
                                             </Flex>
                                           </Box>
                                         }
