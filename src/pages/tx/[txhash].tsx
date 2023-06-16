@@ -99,7 +99,7 @@ interface Props {
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
-  const [isDecode, setIsDecode] = useState('Default View');
+  const [isDecode, setIsDecode] = useState('Default');
   const CType = ['Default', 'Decode'];
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value)
@@ -522,10 +522,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         </Textarea>
                                       </Flex> */}
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
+                                        {isDecode === "Default" &&
                                           (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
+                                        {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
                                               <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
@@ -557,12 +557,12 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === "Default View" &&
+                                        {isDecode === "Default" &&
                                           <Text style={{ marginRight: '5px' }}>
                                             {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
                                           </Text>
                                         }
-                                        {isDecode === "UTF-8" &&
+                                        {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
                                               <ReactJsonViewer data={message[key]} />
