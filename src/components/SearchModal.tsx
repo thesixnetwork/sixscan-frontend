@@ -35,7 +35,7 @@ import { LinkComponent } from "@/components/Chakralink";
 
 import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
 import { Clickable } from "./Clickable";
-
+import { _LOG } from "@/utils/log_helper";
 
 type SearchResult = {
   type: "address" | "tx" | "block" | "schema" | "contract" ;
@@ -92,10 +92,10 @@ const SearchModal = ({
     const isBlock = await validateBlock(searchInput);
     const isSchemaaa = await getSchemaByCodeAddr(searchInput)
     const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
-    // console.log(isSchemaaa);
+    _LOG(isSchemaaa);
     const schemaByContract = await getSchemaByAddress(searchInput)
 
-    // console.log(JSON.stringify(schemaByContract,null, 2));
+    _LOG(JSON.stringify(schemaByContract,null, 2));
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);

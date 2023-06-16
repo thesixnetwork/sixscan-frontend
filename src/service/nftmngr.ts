@@ -2,6 +2,7 @@ import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
 import ENV from "../utils/ENV";
 import filter from 'lodash';
+import { _LOG } from "@/utils/log_helper";
 
 export const getSchema = async (
   schemaCode: string
@@ -32,7 +33,7 @@ export const getNftCollection = async (
     const { data: { nftCollection, pagination: { total } } } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
-    // console.log(total);
+    _LOG(total);
     let tokenPerPage = 12
     const lastToken = parseInt(total)
     if (lastToken < 12) {
@@ -55,7 +56,7 @@ export const getNftCollection = async (
     if (!metadata) {
       return null;
     }
-    // console.log("metadata: ", metadata);
+    _LOG("metadata: ", metadata);
     return { metadata, pagination: { total } };
   } catch (error) {
     // console.error(error);
@@ -91,11 +92,11 @@ export const getNFTActionCountStat = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      // console.log("Error: Non-200 status code returned:", res.status);
+      _LOG("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      // console.log("Error: API returned status code", res.data.statusCode);
+      _LOG("Error: API returned status code", res.data.statusCode);
       return null;
     }
     const actionCount = res.data.data;
@@ -118,11 +119,11 @@ export const getNFTActionCountStatDaily = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountDaily?schemaCode=${schemaCode}&endTime=${endTime}`
     );
     if (res.status !== 200) {
-      // console.log("Error: Non-200 status code returned:", res.status);
+      _LOG("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      // console.log("Error: API returned status code", res.data.statusCode);
+      _LOG("Error: API returned status code", res.data.statusCode);
       return null;
     }
     const CountDaily = res.data.data[0];
@@ -193,11 +194,11 @@ export const getLatestAction = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionTxs?page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      // console.log("Error: Non-200 status code returned:", res.status);
+      _LOG("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      // console.log("Error: API returned status code", res.data);
+      _LOG("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;
@@ -221,11 +222,11 @@ export const getAllTransactionByAddress = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransactionByAddress?address=${address}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      // console.log("Error: Non-200 status code returned:", res.status);
+      _LOG("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      // console.log("Error: API returned status code", res.data);
+      _LOG("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;
@@ -250,11 +251,11 @@ export const getAllTransactionByTokenID = async (
       `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransactionByTokenID?schemaCode=${schemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
-      // console.log("Error: Non-200 status code returned:", res.status);
+      _LOG("Error: Non-200 status code returned:", res.status);
       return null;
     }
     if (res.data.statusCode !== "V:0001") {
-      // console.log("Error: API returned status code", res.data);
+      _LOG("Error: API returned status code", res.data);
       return null;
     }
     const Txs = res.data.data;
@@ -282,7 +283,7 @@ export const getSchemaByCodeAddr = async (
     }));
     const filteredNames = filter.filter(mergedSchema, (x) => x.toLowerCase().startsWith(schemaOrContract));
     // const filteredContract = filter.filter(schema, (x) => x.toLowerCase().startsWith(schemaOrContract));
-    // console.log(schema);
+    _LOG(schema);
     if (!filteredNames) {
       return null;
     }
@@ -341,7 +342,7 @@ export const getAllSchemas = async (): Promise<any | null> => {
       name: item,
     }));
     // const filteredContract = filter.filter(schema, (x) => x.toLowerCase().startsWith(schemaOrContract));
-    // console.log(schema);
+    _LOG(schema);
     if (!mergedSchemas) {
       return null;
     }

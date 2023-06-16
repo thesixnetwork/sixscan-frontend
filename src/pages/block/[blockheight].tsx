@@ -42,6 +42,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import ENV from "../../utils/ENV";
 import { formatHex } from "@/utils/format";
+import { _LOG } from "@/utils/log_helper";
 
 interface Props {
   block: Block;
@@ -61,9 +62,6 @@ export default function BlockPage({
   TxsCosmos,
 }: Props) {
   const router = useRouter();
-  // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) => ({hash:JSON.parse(x.tx_result.log)[0].events.find((x:any) => x.type === "ethereum_tx").attributes.find((x:any) => x.key === "ethereumTxHash").value})))
-  // console.log("TxsEVM =>",blockTxs.txs.filter((x:any) => !x.tx_result.events.find((x:any) => x.type === "ethereum_tx")).map((x:any) =>  x.hash))
-
   const mockdata = {
     count: "2",
     txs: [
@@ -78,9 +76,7 @@ export default function BlockPage({
     ],
   };
 
-  // console.log(
-  //   mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth"))
-  // );
+  _LOG(mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth")));
 
   if (!block) {
     return (
@@ -413,7 +409,6 @@ export const getServerSideProps = async (context: {
     getBlock(blockheight),
     getTxsFromBlock(blockheight),
   ]);
-  // console.log(block);
   if (blockTxs) {
     TxsAll = blockTxs.txs.map((x: any) => ({
       hash: x.hash,

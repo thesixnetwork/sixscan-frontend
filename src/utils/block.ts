@@ -1,5 +1,6 @@
 import { getValidator } from "@/service/staking";
 import { BlockMeta, BlockResult } from "@/types/Block";
+import { _LOG } from "@/utils/log_helper";
 
 export const getBlockRewardAmount = (
   block: BlockMeta,
@@ -31,7 +32,7 @@ export const getBlockRewardAmount = (
     const _asixRewardValue = _asixReward? parseFloat(_asixReward[0]) : 0
     const _usixFromAsix = _asixRewardValue * Math.pow(10, -12)
 
-    // console.log("_asixRewardValue", _usixFromAsix);
+    _LOG("_asixRewardValue", _usixFromAsix);
     
 
 
@@ -39,7 +40,7 @@ export const getBlockRewardAmount = (
     const _usixRewardValue = _usixReward? parseFloat(_usixReward[0]) : 0
 
     const usixRewardValue = _usixFromAsix + _usixRewardValue
-    // console.log("usixRewardValue", usixRewardValue);
+    _LOG("usixRewardValue", usixRewardValue);
   
 
     const formattedRewardsValue = usixRewardValue? (usixRewardValue * Math.pow(10, -6)).toFixed(6)

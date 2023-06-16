@@ -106,6 +106,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
+import { _LOG } from "@/utils/log_helper";
 
 // create a tokens map
 
@@ -191,7 +192,7 @@ export default function Address({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => setIsOpen(!isOpen);
-  // console.log("accountTxs",accountTxs)
+  _LOG("accountTxs",accountTxs)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}

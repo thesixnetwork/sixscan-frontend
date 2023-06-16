@@ -63,7 +63,7 @@ import {
 } from "@/service/nftmngr";
 import { DataNFTStat, BlockNFTStat } from "@/types/Nftmngr";
 import { text } from "stream/consumers";
-
+import { _LOG } from "@/utils/log_helper";
 const data = [
   {
     title: "PRICE",
@@ -106,7 +106,7 @@ export default function Data({
   blockNFTStat,
   latestAction,
 }: Props) {
-  // console.log(nftActionCount)
+  _LOG(nftActionCount)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}

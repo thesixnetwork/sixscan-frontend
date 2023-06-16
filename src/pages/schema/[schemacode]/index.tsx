@@ -57,6 +57,7 @@ import { useRouter } from "next/router";
 import { getTxsFromSchema } from "@/service/txs";
 import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
 import moment from "moment";
+import { _LOG } from "@/utils/log_helper";
 
 import dynamic from 'next/dynamic';
 const DynamicReactJson = dynamic(
@@ -146,7 +147,7 @@ export default function Schema({
   const [page, setPage] = useState(1);
   const perPage = 12;
   const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
-  // console.log("totalPages", nftCollection);
+  _LOG("totalPages", nftCollection);
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
@@ -194,7 +195,7 @@ export default function Schema({
       (page - 1) * perPage,
       page * perPage
     );
-    // console.log("newItems", newItems);
+    _LOG("newItems", newItems);
     
     setItems(newItems);
     // sort txs
@@ -835,7 +836,7 @@ export const getServerSideProps = async ({
   query: { page: string; metadata_page: string };
 }) => {
   const schema = await getSchema(schemacode);
-  // console.log("schema: ", schema);
+  _LOG("schema: ", schema);
   if (!schema) {
     return {
       props: {
