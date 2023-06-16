@@ -56,6 +56,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
+import { _LOG } from "@/utils/log_helper";
 
 interface Props {
   address: string;
@@ -91,7 +92,7 @@ export default function Address({
     setTotalValue(totalValueTmp);
   }, [totalValue, totalValueTmp]);
 
-  // console.log(accountTxs)
+  _LOG(accountTxs)
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">

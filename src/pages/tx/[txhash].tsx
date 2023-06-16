@@ -74,6 +74,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/utils/ENV";
+import { _LOG } from "@/utils/log_helper";
 import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
@@ -104,7 +105,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value)
   }
-  // console.log(isDecode)
+  _LOG(isDecode)
   // get object keys from txs.tx.body.messages[0]
   const KeyMsg = Object.keys(txs.tx.body.messages[0]);
   const message = txs.tx.body.messages[0];
