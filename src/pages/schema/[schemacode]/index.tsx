@@ -194,7 +194,7 @@ export default function Schema({
       (page - 1) * perPage,
       page * perPage
     );
-    console.log("newItems", newItems);
+    // console.log("newItems", newItems);
     
     setItems(newItems);
     // sort txs
