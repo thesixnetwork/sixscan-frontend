@@ -692,6 +692,15 @@ export const getServerSideProps = async () => {
   end24h.setSeconds(0);
   end24h.setMilliseconds(0);
   let count24h = 0;
+  let end_time
+  const day = start24h.getDate();
+  const month = start24h.getMonth() + 1;
+  const year = start24h.getFullYear();
+  if (month > 9) {
+    end_time = `${day}/${month}/${year}`;
+  } else {
+    end_time = `${day}/0${month}/${year}`;
+  }
 
   const [
     nftActionCount,
@@ -711,20 +720,14 @@ export const getServerSideProps = async () => {
     getNFTFee(),
     getNFTActionCountStatDaily(
       schemaCode,
-      start24h.toISOString(),
-      end24h.toISOString(),
-      page,
-      pageSize
+      end_time
     ),
     getLatestAction("1", "20"),
   ]);
 
   if (action24h) {
-    for (let i = 0; i < action24h.length; i++) {
-      count24h += action24h[i].count;
-    }
+      count24h += action24h.count;
   }
-  // console.log("nftActionCount",nftActionCount);
 
   const blockNFTStat = {
     totalNFTCollection: totalNFTCollection,

@@ -111,14 +111,11 @@ export const getNFTActionCountStat = async (
 
 export const getNFTActionCountStatDaily = async (
   schemaCode: string,
-  startDate: string,
-  endDate: string,
-  page: string,
-  pageSize: string,
+  endTime: string,
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountStat?schemaCode=${schemaCode}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getActionCountDaily?schemaCode=${schemaCode}&endTime=${endTime}`
     );
     if (res.status !== 200) {
       // console.log("Error: Non-200 status code returned:", res.status);
@@ -128,11 +125,11 @@ export const getNFTActionCountStatDaily = async (
       // console.log("Error: API returned status code", res.data.statusCode);
       return null;
     }
-    const actionCountDaily = res.data.data;
-    if (!actionCountDaily) {
+    const CountDaily = res.data.data[0];
+    if (!CountDaily) {
       return null;
     }
-    return actionCountDaily;
+    return CountDaily;
   } catch (error) {
     console.error(error);
     return null;
