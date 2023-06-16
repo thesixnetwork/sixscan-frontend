@@ -100,7 +100,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
   const [isDecode, setIsDecode] = useState('Default View');
-  const CType = ['Default View', 'UTF-8'];
+  const CType = ['Default', 'Decode'];
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value)
   }
@@ -482,10 +482,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
+                                        {isDecode === 'Default' &&
                                           (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
+                                        {isDecode === 'Decode' &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
                                               <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
