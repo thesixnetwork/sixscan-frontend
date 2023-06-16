@@ -42,13 +42,13 @@ export const getNftCollection = async (
     const promises = [];
 
     for (let i = startingTokenId; i < startingTokenId + tokenPerPage; i++) {
-      promises.push(
-        await (
-          await axios.get(
-            `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_data/${schemaCode}/${i}`
-          )
-        ).data.nftData
+      const { data } = await axios.get(
+        `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/metadata/${schemaCode}/${i}`
       );
+      data.token_id = i;
+      if (data.image) {
+        promises.push(data);
+      }
     }
     const metadata = await Promise.all(promises);
 
@@ -69,7 +69,7 @@ export const getMetadata = async (
 ): Promise<any | null> => {
   try {
     const { data } = await axios.get(
-      `https://six-data-chain-backend-api-gateway-7kl45r91.ts.gateway.dev/api/nft/metadata/${schemaCode}/${tokenid}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/metadata/${schemaCode}/${tokenid}`
     );
     if (!data) {
       return null;
