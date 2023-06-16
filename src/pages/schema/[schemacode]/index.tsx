@@ -49,7 +49,7 @@ import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState } from "react";
 import { getNftCollection, getSchema } from "@/service/nftmngr";
-import { NftData, NFTSchema } from "@/types/Nftmngr";
+import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
@@ -96,7 +96,7 @@ export default function Schema({
   metadataPageNumber,
 }: Props) {
   const [isLoading, setIsLoading] = useState(true);
-  const [items, setItems] = useState<NftData[]>([]);
+  const [items, setItems] = useState<NFTMetadata[]>([]);
   const [sortedTxs, setSortedTxs] = useState<any[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -188,11 +188,14 @@ export default function Schema({
     if (!schema) {
       return;
     }
-    nftCollection?.metadata.sort((a: NftData, b: NftData) => parseInt(a.token_id) - parseInt(b.token_id));
+    nftCollection?.metadata.sort((a: NFTMetadata, b: NFTMetadata) => parseInt(a.token_id) - parseInt(b.token_id));
+
     const newItems = nftCollection?.metadata.slice(
       (page - 1) * perPage,
       page * perPage
     );
+    console.log("newItems", newItems);
+    
     setItems(newItems);
     // sort txs
     if (txns) {
@@ -273,16 +276,13 @@ export default function Schema({
                     width="100%"
                   />
                 ) : (
-                  <Flex
-                    width="100%"
-                    height="100%"
-                    alignItems="center"
-                    justifyContent="center"
-                    bgColor="light"
+                  <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                  >
-                    <Text color="dark">No Collection Image Found</Text>
-                  </Flex>
+                    src={items[0]?.image? items[0]?.image : "/logo-nftgen2-01.png"}
+                    alt={"collection image not found"}
+                    placeholder={"empty"}
+                    width="100%"
+                  />
                 )}
               </GridItem>
               <GridItem colSpan={{ base: 12, md: 9 }}>
@@ -763,7 +763,7 @@ export default function Schema({
                             >
                               <CustomCard>
                                 <Link
-                                  href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
+                                  href={`/schema/${schema.code}/${metadata.token_id}`}
                                   _hover={{
                                     textDecoration: "none",
                                   }}
@@ -781,7 +781,7 @@ export default function Schema({
                                       ) : (
                                         <Image
                                           src={
-                                            metadata.onchain_image ? metadata.onchain_image : metadata.origin_image
+                                            metadata.image ? metadata.image : "/logo-nftgen2-01.png"
                                           }
                                           onError={checkImage}
                                           alt="mfer"
