@@ -51,6 +51,12 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
+import dynamic from 'next/dynamic';
+import React from 'react';
+const ReactJsonViewer = dynamic(
+  () => import('react-json-viewer-cool'),
+  { ssr: false } 
+);
 
 
 interface Props {
@@ -442,11 +448,16 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                             </Box>
                           </Tooltip>
                         </Flex>
-                        <Textarea
+                        {/* <Textarea
                           value={JSON.stringify(metadata, null, 2)}
                           readOnly
                           minH={500}
-                        />
+                        /> */}
+                        <Box height={"400px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                          <Flex p={3}>
+                            <ReactJsonViewer data={metadata} />
+                          </Flex>
+                        </Box>
                       </TabPanel>
                     </TabPanels>
                   </Tabs>

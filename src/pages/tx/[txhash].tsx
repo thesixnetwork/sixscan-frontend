@@ -81,9 +81,10 @@ import { parseJsonText } from "typescript";
 // import ReactJson from 'react-json-view'
 import dynamic from 'next/dynamic';
 
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+
+const ReactJsonViewer = dynamic(
+  () => import('react-json-viewer-cool'),
+  { ssr: false } 
 );
 
 
@@ -98,8 +99,8 @@ interface Props {
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
-  const [isDecode, setIsDecode] = useState('Default View');
-  const CType = ['Default View', 'UTF-8'];
+  const [isDecode, setIsDecode] = useState('Default');
+  const CType = ['Default', 'Decode'];
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value)
   }
@@ -428,9 +429,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                               {Object.values(message[key]).map((data: any, i) => {
                                                 return (
                                                   <TabPanel key={i}>
-                                                    <Textarea readOnly>
-                                                      {data}
-                                                    </Textarea>
+                                                    <Textarea readOnly value={data} />
                                                   </TabPanel>
                                                 );
                                               })}
@@ -469,11 +468,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
-                              if (key === "base64NFTData" || key === "nftSchemaBase64" || 
-                                  key === "base64NewAttriuteDefenition" || key === "base64NewAction" || 
-                                  key === "base64_nft_attribute_value" || key === "base64ActionSignature" || 
-                                  key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
-                                ) {
+                              if (key === "base64NFTData" || key === "nftSchemaBase64" ||
+                                key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
+                                key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
+                                key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
+                              ) {
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none" display={"flex"}>
@@ -483,13 +482,15 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
-                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
-                                            {message[key]}
-                                          </Textarea>)
+                                        {isDecode === 'Default' &&
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
-                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        {isDecode === 'Decode' &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -521,13 +522,15 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         </Textarea>
                                       </Flex> */}
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
-                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
-                                            {message[key]}
-                                          </Textarea>)
+                                        {isDecode === "Default" &&
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
-                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        {isDecode === "Decode" &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -554,13 +557,17 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === "Default View" &&
+                                        {isDecode === "Default" &&
                                           <Text style={{ marginRight: '5px' }}>
                                             {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
                                           </Text>
                                         }
-                                        {isDecode === "UTF-8" &&
-                                          <DynamicReactJson src={message[key]} />
+                                        {isDecode === "Decode" &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <ReactJsonViewer data={message[key]} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>

@@ -168,10 +168,10 @@ export interface DataNFTStat {
 }
 
 export interface DataActionCount {
-  _id: {
-    schema_code: string,
-    action: string
-  },
+  _id: string,
+  period: string,
+  schema_code: string,
+  action: string,
   count: number
 }
 
