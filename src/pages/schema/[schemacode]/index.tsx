@@ -196,7 +196,7 @@ export default function Schema({
       page * perPage
     );
     _LOG("newItems", newItems);
-    
+    console.log(newItems);
     setItems(newItems);
     // sort txs
     if (txns) {
@@ -279,7 +279,7 @@ export default function Schema({
                 ) : (
                   <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={items[0]?.image? items[0]?.image : "/logo-nftgen2-01.png"}
+                    src={items && items[0]?.image? items[0]?.image : "/logo-nftgen2-01.png"}
                     alt={"collection image not found"}
                     placeholder={"empty"}
                     width="100%"

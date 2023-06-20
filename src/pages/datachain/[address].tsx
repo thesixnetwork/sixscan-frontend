@@ -225,25 +225,25 @@ export default function Address({
                                                         <Table>
                                                             <Thead>
                                                                 <Tr>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Txhash</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Token ID</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Method</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Age</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Block</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    {/* <Td>
                                                                         <Text>By</Text>
-                                                                    </Td>
-                                                                    <Td>
+                                                                    </Td> */}
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Gas Fee</Text>
                                                                     </Td>
                                                                 </Tr>
@@ -305,7 +305,7 @@ export default function Address({
                                                                                 </Text>
                                                                             </Td>
                                                                             <Td>
-                                                                                <Clickable href="/">
+                                                                                <Clickable href={`/block/${tx.block_height}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
@@ -316,7 +316,7 @@ export default function Address({
                                                                                     </Text>
                                                                                 </Clickable>
                                                                             </Td>
-                                                                            <Td>
+                                                                            {/* <Td>
                                                                                 <Clickable href={`/address/${tx.decode_tx.relate_addr[0]}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
@@ -327,7 +327,7 @@ export default function Address({
                                                                                         {formatHex(tx.decode_tx.relate_addr[0])}
                                                                                     </Text>
                                                                                 </Clickable>
-                                                                            </Td>
+                                                                            </Td> */}
                                                                             <Td>
                                                                                 <Text>{`${formatNumber(
                                                                                     convertUsixToSix(
@@ -376,7 +376,7 @@ export const getServerSideProps = async ({
     const [validator, account, accountTxs] = await Promise.all([
         getValidator(address),
         getAccount(address),
-        getAllTransactionByAddress(address, page ? page : "1", "20"),
+        getAllTransactionByAddress(address, page ? page : "1", "10"),
     ]);
     const pageNumber = page
     return {

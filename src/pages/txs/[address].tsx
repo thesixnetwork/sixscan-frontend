@@ -223,28 +223,28 @@ export default function Address({
                             <Table>
                               <Thead>
                                 <Tr>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Txhash</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Method</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Age</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Block</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>From</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>To</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Value</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Gas Fee</Text>
                                   </Td>
                                 </Tr>
@@ -281,7 +281,7 @@ export default function Address({
                                         </Flex>
                                       </Td>
                                       <Td>
-                                        <Text>
+                                        <Text justifyContent={"center"}>
                                           <Badge>
                                             {
                                               tx.type
@@ -291,6 +291,11 @@ export default function Address({
                                               ].slice(3) === "Send" ?
                                                 tx.decode_tx.toAddress === address ? "Receiver" : "Send"
                                                 :
+                                                tx.type
+                                                  .split(".")
+                                                [
+                                                  tx.type.split(".").length - 1
+                                                ].slice(3) === "PerformActionByAdmin" ? "Action" : 
                                                 tx.type
                                                   .split(".")
                                                 [

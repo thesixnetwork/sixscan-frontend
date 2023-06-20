@@ -107,6 +107,9 @@ export default function Data({
   latestAction,
 }: Props) {
   _LOG(nftActionCount)
+  // const ssf = nftActionCount.data.map((x:any) => { x.schema_code })
+  // const ssf = nftActionCount.data[0].schema_code
+  // console.log(ssf)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -173,8 +176,8 @@ export default function Data({
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {nftActionCount &&
-                            nftActionCount.data.map((item, index) => (
+                          {Array.isArray(nftActionCount) &&
+                            nftActionCount.map((item, index) => (
                               <Tr key={index}>
                                 <Td>
                                   <Flex
@@ -184,16 +187,20 @@ export default function Data({
                                   >
                                     <Text fontWeight={"bold"}>{index + 1}</Text>
                                     <Image
-                                      src="/logo-nftgen2-01.png"
+                                      src={item.image}
                                       alt="gen2"
                                       width={"40px"}
                                       height={"40px"}
                                     />
-                                    <Tooltip label={item.schema_code} aria-label='A tooltip'>
-                                      <Text fontWeight={"bold"}>
-                                        {formatSchema(item.schema_code)}
-                                      </Text>
-                                    </Tooltip>
+                                    <Clickable
+                                      href={`/schema/${item.schema_code}`}
+                                    >
+                                      <Tooltip label={item.schema_code} aria-label='A tooltip'>
+                                        <Text fontWeight={"bold"} style={{ textDecoration: "none" }}>
+                                          {formatSchema(item.schema_code)}
+                                        </Text>
+                                      </Tooltip>
+                                    </Clickable>
                                   </Flex>
                                 </Td>
                                 <Td>
@@ -726,7 +733,7 @@ export const getServerSideProps = async () => {
   ]);
 
   if (action24h) {
-      count24h += action24h.count;
+    count24h += action24h.count;
   }
 
   const blockNFTStat = {
