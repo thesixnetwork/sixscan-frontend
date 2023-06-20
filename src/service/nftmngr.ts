@@ -100,10 +100,37 @@ export const getNFTActionCountStat = async (
       return null;
     }
     const actionCount = res.data.data;
-    if (!actionCount) {
+    const promises = [];
+    for (const item of actionCount.data) {
+      try {
+        const { data } = await axios.get(
+          `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/metadata/${item.schema_code}/1`
+        );
+        if (data.image) {
+          const fmtData = {
+            schema_code: item.schema_code,
+            action: item.action,
+            count: item.count,
+            image: data.image
+          }
+          promises.push(fmtData);
+        }
+      } catch (e) {
+        const fmtData = {
+          schema_code: item.schema_code,
+          action: item.action,
+          count: item.count,
+          image: "/logo-nftgen2-01.png"
+        }
+        promises.push(fmtData);
+      }
+    }
+    const metadata = await Promise.all(promises);
+    // console.log("metadata", metadata)
+    if (!metadata) {
       return null;
     }
-    return actionCount;
+    return metadata;
   } catch (error) {
     console.error(error);
     return null;
@@ -361,7 +388,7 @@ export const getSchemaByAddr = async (
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
     );
     const schema = res.data.nFTSchemaByContract;
-    const filteredCode = schema.filter((item:any) =>
+    const filteredCode = schema.filter((item: any) =>
       item.originContractAddress.includes(schemaOrContract)
     );
     const mergedSchema = filteredCode.flatMap((item: any) => item.schemaCodes);

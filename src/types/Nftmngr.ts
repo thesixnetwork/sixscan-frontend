@@ -178,8 +178,10 @@ export enum URIRetrievalMethod {
 }
 
 export interface DataNFTStat {
-  totalRecords: number,
-  data: DataActionCount[],
+  schema_code: string,
+  action: string,
+  count: number,
+  image: string,
 }
 
 export interface DataActionCount {

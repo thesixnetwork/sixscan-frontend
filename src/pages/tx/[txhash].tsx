@@ -610,10 +610,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                               <Td borderBottom="none">
-                                <Flex direction="row">
+                                <Flex direction="row" alignItems={"center"}>
                                   <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_used}</Text>
                                   <Center height='23px' style={{ marginRight: '5px' }}>
-                                    <Divider orientation='vertical' />
+                                    |
                                   </Center>
                                   <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_wanted}</Text>
                                   <Text>({((parseInt(tx.tx_result.gas_used) / parseInt(tx.tx_result.gas_wanted)) * 100).toFixed(2)}%)</Text>

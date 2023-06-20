@@ -82,7 +82,7 @@ import {
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
-import { formatHex,formatMethod } from "@/utils/format";
+import { formatHex, formatMethod } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
 import { getAllTransactionByAddress } from "@/service/nftmngr";
@@ -192,7 +192,7 @@ export default function Address({
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => setIsOpen(!isOpen);
-  _LOG("accountTxs",accountTxs)
+  _LOG("accountTxs", accountTxs)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -659,9 +659,9 @@ export default function Address({
                                       </Flex>
                                     </Td>
                                     <Td>
-                                    <Badge textAlign={"center"} width="100%">
-                                      {formatMethod(tx.type)}
-                                    </Badge>
+                                      <Badge textAlign={"center"} width="100%">
+                                        {formatMethod(tx.type)}
+                                      </Badge>
                                     </Td>
                                     <Td>
                                       <Text>
@@ -777,11 +777,11 @@ export default function Address({
                         >
                           <FaSortAmountDown fontSize={12} />
                           <Text>
-                            Latest {latestAction.txs.length} from a total of{" "}
-                            {/* <Clickable underline href="/"> */}
-                            {latestAction.totalCount}
-                            {/* </Clickable> */}
-                            {" "}
+                            {`Latest ${(latestAction.txs.length) || 0
+                              } from a total of `}
+                            <Clickable underline href={`/datachain/${address}`}>
+                              {latestAction.totalCount ? latestAction.totalCount : "0"}
+                            </Clickable>{" "}
                             transactions
                           </Text>
                         </Flex>
@@ -789,28 +789,28 @@ export default function Address({
                           <Table>
                             <Thead>
                               <Tr>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Txhash</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Token ID</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Action</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Age</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Block</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>By</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Gas Fee</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Schema</Text>
                                 </Td>
                               </Tr>
@@ -847,13 +847,13 @@ export default function Address({
                                   </Td>
                                   <Td>
                                     {/* <Text> */}
-                                      <Badge>
-                                        {x.type
-                                          .split(".")
-                                        [x.type.split(".").length - 1].slice(
-                                          3
-                                        )}
-                                      </Badge>
+                                    <Badge>
+                                      {x.type
+                                        .split(".")
+                                      [x.type.split(".").length - 1].slice(
+                                        3
+                                      )}
+                                    </Badge>
                                     {/* </Text> */}
                                   </Td>
                                   <Td>
@@ -951,14 +951,19 @@ export default function Address({
                                 {delegations.map((delegation, index) => (
                                   <Tr key={index}>
                                     <Td>
-                                      <Text>
-                                        <Clickable underline href="/">
-                                          {formatHex(
+                                        <Clickable href={`/address/${delegation.delegation.delegator_address}`}>
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {formatHex(
                                             delegation.delegation
                                               .delegator_address
                                           )}
+                                          </Text>
                                         </Clickable>
-                                      </Text>
                                     </Td>
                                     <Td>
                                       <Text>
