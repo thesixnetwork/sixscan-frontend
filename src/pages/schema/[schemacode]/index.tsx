@@ -43,8 +43,8 @@ import {
   FaSortAmountDown,
 } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
+import { LinkComponent } from "@/components/Chakralink";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState } from "react";
@@ -60,10 +60,6 @@ import moment from "moment";
 import { _LOG } from "@/utils/log_helper";
 
 import dynamic from 'next/dynamic';
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false } 
-);
 import React from 'react';
 // import ReactJsonViewer from 'react-json-viewer-cool';
 const ReactJsonViewer = dynamic(
@@ -455,7 +451,7 @@ export default function Schema({
                                 variant={"solid"}
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 First
@@ -463,7 +459,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=1`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={parseInt(pageNumber) === 1}
                               >
                                 <FaArrowLeft fontSize={12} />
@@ -475,7 +471,7 @@ export default function Schema({
                                 size="xs"
                                 href={`/schema/${schemacode}?page=${parseInt(pageNumber) + 1
                                   }`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -485,7 +481,7 @@ export default function Schema({
                               <Button
                                 size="xs"
                                 href={`/schema/${schemacode}?page=${txns.totalPage}`}
-                                as="a"
+                                as={LinkComponent}
                                 isDisabled={
                                   parseInt(pageNumber) === txns.totalPage
                                 }
@@ -721,7 +717,7 @@ export default function Schema({
                             variant={"solid"}
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             First
@@ -729,7 +725,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=1`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={parseInt(metadataPageNumber) === 1}
                           >
                             <FaArrowLeft fontSize={12} />
@@ -741,7 +737,7 @@ export default function Schema({
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=${parseInt(metadataPageNumber) + 1
                               }`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }
@@ -751,7 +747,7 @@ export default function Schema({
                           <Button
                             size="xs"
                             href={`/schema/${schemacode}?metadata_page=${totalPages}`}
-                            as="a"
+                            as={LinkComponent}
                             isDisabled={
                               parseInt(metadataPageNumber) === totalPages
                             }
