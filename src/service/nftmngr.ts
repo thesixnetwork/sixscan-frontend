@@ -63,6 +63,31 @@ export const getNftCollection = async (
     return null;
   }
 };
+export const getNftCollectionV2 = async (
+  schemaCode: string,
+  metadataPage: string
+): Promise<any | null> => {
+  try {
+    const { data: { nftCollection, pagination: { total } } } = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
+    );
+    const res = await axios.get(
+      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=${total}&pagination.count_total=true`
+    );
+    console.log(res.data.nftCollection[0]);
+    // const metadata = await Promise.all(promises);
+    const metadata = "dde";
+
+    if (!metadata) {
+      return null;
+    }
+    _LOG("metadata: ", metadata);
+    return { metadata, pagination: { total } };
+  } catch (error) {
+    // console.error(error);
+    return null;
+  }
+};
 
 export const getMetadata = async (
   schemaCode: string,
