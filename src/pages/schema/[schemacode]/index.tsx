@@ -48,7 +48,7 @@ import CustomCard from "@/components/CustomCard";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState } from "react";
-import { getNftCollection, getSchema } from "@/service/nftmngr";
+import { getNftCollection, getNftCollectionV2, getSchema } from "@/service/nftmngr";
 import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
@@ -82,6 +82,7 @@ interface Props {
   schema: NFTSchema;
   openseaCollection: Collection;
   nftCollection: any;
+  // nftCollectionV2: any;
   txns: Txns;
   pageNumber: string;
   metadataPageNumber: string;
@@ -92,6 +93,7 @@ export default function Schema({
   schema,
   openseaCollection,
   nftCollection,
+  // nftCollectionV2,
   txns,
   pageNumber,
   metadataPageNumber,
@@ -151,6 +153,7 @@ export default function Schema({
 
   const [isCopied, setIsCopied] = useState(false);
   // sort by token_id
+  // console.log("nftCollectionV2", nftCollectionV2);
 
   const getExplorerLink = (chain: string, address: string) => {
     if (!chain || !chainConfig[chain]) {
@@ -196,7 +199,7 @@ export default function Schema({
       page * perPage
     );
     _LOG("newItems", newItems);
-    console.log(newItems);
+    console.log(nftCollection);
     setItems(newItems);
     // sort txs
     if (txns) {
@@ -852,7 +855,7 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection, nftCollection, txns] = await Promise.all([
+  const [openseaCollection, nftCollection, txns ] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollection(schemacode, metadata_page),
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
