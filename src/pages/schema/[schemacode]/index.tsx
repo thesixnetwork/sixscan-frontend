@@ -526,6 +526,7 @@ export default function Schema({
                                       direction="row"
                                       gap={1}
                                       align="center"
+                                      justifyContent={"center"}
                                     >
                                       {tx.code !== 0 && (
                                         <FaRegWindowClose
