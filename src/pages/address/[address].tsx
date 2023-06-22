@@ -819,7 +819,7 @@ export default function Address({
                             <Tbody>
                               {latestAction.txs.map((x: any, index: number) =>
                                 <Tr key={index}>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/tx/${x.txhash}`}>
                                       <Text style={{
                                         color: "#5C34A2",
@@ -831,7 +831,7 @@ export default function Address({
                                       </Text>
                                     </Clickable>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable
                                       href={`/schema/${x.decode_tx.nftSchemaCode}/${x.decode_tx.tokenId}`}
                                     >
@@ -847,19 +847,25 @@ export default function Address({
                                   </Td>
                                   <Td>
                                     {/* <Text> */}
-                                    <Badge>
+                                    <Badge textAlign={"center"} width="100%">
                                       {x.type
                                         .split(".")
                                       [x.type.split(".").length - 1].slice(
                                         3
-                                      )}
+                                      ) === "PerformActionByAdmin" ? "Action" : 
+                                      x.type
+                                        .split(".")
+                                      [
+                                        x.type.split(".").length - 1
+                                      ].slice(3)
+                                      }
                                     </Badge>
                                     {/* </Text> */}
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>{moment(x.time_stamp).fromNow()}</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/block/${x.block_height}`}>
                                       <Text style={{
                                         color: "#5C34A2",
@@ -871,7 +877,7 @@ export default function Address({
                                       </Text>
                                     </Clickable>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/address/${x.decode_tx.relate_addr[0]}`}>
                                       <Text style={{
                                         color: "#5C34A2",
@@ -883,7 +889,7 @@ export default function Address({
                                       </Text>
                                     </Clickable>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>{`${formatNumber(
                                       convertUsixToSix(
                                         parseInt(
@@ -892,7 +898,7 @@ export default function Address({
                                       )
                                     )} SIX`}</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/schema/${x.decode_tx.nftSchemaCode}`}>
                                       <Text style={{
                                         color: "#5C34A2",
