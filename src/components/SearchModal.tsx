@@ -92,9 +92,7 @@ const SearchModal = ({
     const isTx = validateTxHash(searchInput);
     const isContractByAddress = await validateContract(searchInput);
     const isBlock = await validateBlock(searchInput);
-    // const isSchemaaa = await getSchemaByCodeAddr(searchInput)
     const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
-    // _LOG(isSchemaaa);
     const schemaByContract = await getSchemaByAddress(searchInput)
 
     _LOG(JSON.stringify(schemaByContract, null, 2));
@@ -221,13 +219,15 @@ const SearchModal = ({
                     alignItems="center"
                   >
                     <Box color="dark">{result.icon}</Box>
-                    <Text
-                      fontSize="md"
-                      color="dark"
-                      _hover={{ color: "darkest" }}
-                    >
-                      {result.value}
-                    </Text>
+                    <Box overflow="hidden">
+                      <Text
+                        fontSize="md"
+                        color="dark"
+                        _hover={{ color: "darkest" }}
+                      >
+                        {result.value}
+                      </Text>
+                    </Box>
                     <Spacer />
                     <Box color="dark">
                       <motion.div
