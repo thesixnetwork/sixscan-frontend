@@ -195,7 +195,6 @@ export default function Schema({
       page * perPage
     );
     _LOG("newItems", newItems);
-    console.log(nftCollection);
     setItems(newItems);
     // sort txs
     if (txns) {
@@ -855,6 +854,7 @@ export const getServerSideProps = async ({
   const [openseaCollection, nftCollection, txns ] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollection(schemacode, metadata_page),
+    // getNftCollectionV2(schemacode, metadata_page),
     getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
   return {
@@ -863,6 +863,7 @@ export const getServerSideProps = async ({
       schema,
       openseaCollection,
       nftCollection,
+      // nftCollectionV2,
       txns,
       pageNumber: page,
       metadataPageNumber: metadata_page,
