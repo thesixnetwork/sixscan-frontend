@@ -12,7 +12,7 @@ export const LinkComponent = typeof window !== 'undefined' ? ChakraNextLink : Ch
 
 export function ChakraNextLink({ href, children, ...props }: ChakraNextLinkProps) {
   return (
-    <ChakraLink {...props} href={href} as={NextLink} >
+    <ChakraLink {...props}  href={href} as={NextLink} >
         {children}
     </ChakraLink>
   );

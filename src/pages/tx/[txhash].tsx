@@ -37,6 +37,7 @@ import {
   Spacer,
   Skeleton,
   Button,
+  textDecoration,
 } from "@chakra-ui/react";
 
 import {
@@ -47,13 +48,13 @@ import {
 import Head from "next/head";
 import Image from "next/image";
 // ------------------------- Styles -------------------------
-import styles from "@/styles/Home.module.css";
-import { FaArrowRight, FaDollarSign } from "react-icons/fa";
+// import styles from "@/styles/Home.module.css";
+// import { FaArrowRight, FaDollarSign } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
+// import NavBar from "@/components/NavBar";
+// import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
+// import CustomTable from "@/components/CustomTable";
 import { useEffect, useState } from "react";
 import { LinkComponent } from "@/components/Chakralink";
 
@@ -79,12 +80,17 @@ import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
 import { parseJsonText } from "typescript";
-// import ReactJson from 'react-json-view'
 import dynamic from 'next/dynamic';
+import { FaKeybase } from "react-icons/fa";
 
 
-const ReactJsonViewer = dynamic(
-  () => import('react-json-viewer-cool'),
+// const ReactJsonViewer = dynamic(
+//   () => import('react-json-viewer-cool'),
+//   { ssr: false }
+// );
+
+const DynamicReactJson = dynamic(
+  () => import('react-json-view'),
   { ssr: false } 
 );
 
@@ -299,6 +305,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                             </Tr>
 
                             {KeyMsg.map((key: any, index) => {
+                              // {console.log(key)}
                               if (typeof message[key] === "string" && message[key].startsWith("6x")) {
                                 if (key === "from_address") {
                                   return (
@@ -331,14 +338,21 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td>
                                       <Flex direction="row">
-                                        <Text style={{ marginRight: '5px' }}>
-                                          <Clickable
-                                            href={`/address/${message[key]}`}
-                                          >
+                                        {key != "ref_id" &&
+                                          <Text style={{ marginRight: '5px' }}>
+                                            <Clickable
+                                              href={`/address/${message[key]}`}
+                                            >
+                                              {message[key]}
+                                            </Clickable>
+                                            <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
+                                          </Text>
+                                        }
+                                        {key === "ref_id" &&
+                                          <Text style={{ marginRight: '5px' }}>
                                             {message[key]}
-                                          </Clickable>
-                                          <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
-                                        </Text>
+                                          </Text>
+                                        }
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -489,7 +503,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === 'Decode' &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
                                             </Flex>
                                           </Box>
                                         }
@@ -529,7 +543,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
                                             </Flex>
                                           </Box>
                                         }
@@ -545,6 +559,50 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       </Flex>
                                     </Td>
                                   </Tr>
+                                );
+                              }
+
+                              if (key === "tokenId") {
+                                return (
+                                  <Tr key={index}>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <Text style={{ marginRight: '5px' }}>
+                                        {typeof message[key] === "string" ? message[key] : message[key].filter((item:any) => item !== "" && item !== "[]").toString()}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                );
+                              }
+
+                              if (key === "nftSchemaCode" || key === "nft_schema_code") {
+                                return (
+                                  <Tr key={index}>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <LinkComponent marginRight="5px" _hover={{textDecoration: "none"}} href={`/schema/${message[key]}`}>
+                                          <Text
+                                            as={"span"}
+                                            decoration={"none"}
+                                            color="primary.500"
+                                          >
+                                            {message[key]}
+                                          </Text>
+                                        </LinkComponent>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
                                 );
                               }
 
@@ -566,7 +624,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={message[key]} />
+                                              <DynamicReactJson src={message[key]}  collapsed={1} displayDataTypes={false}/>
                                             </Flex>
                                           </Box>
                                         }

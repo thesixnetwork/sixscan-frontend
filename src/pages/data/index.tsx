@@ -21,6 +21,7 @@ import {
   Thead,
   Image,
   Spacer,
+  Skeleton,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -61,9 +62,14 @@ import {
   getNFTFee,
   getLatestAction,
 } from "@/service/nftmngr";
-import { DataNFTStat, BlockNFTStat } from "@/types/Nftmngr";
+// import { NFTSchema, LatestAction } from "@/types/Nftmngr";
+
+import { DataNFTStat, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
 import { text } from "stream/consumers";
 import { _LOG } from "@/utils/log_helper";
+import { useState, useEffect, Suspense } from "react";
+
+
 const data = [
   {
     title: "PRICE",
@@ -95,18 +101,62 @@ const maintain = false;
 
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
-  nftActionCount: DataNFTStat;
+  // nftActionCount: DataNFTStat;
   blockNFTStat: BlockNFTStat;
-  latestAction: any;
+  // latestAction: any;
 }
 
 export default function Data({
   modalstate,
-  nftActionCount,
+  // nftActionCount,
   blockNFTStat,
-  latestAction,
+  // latestAction,
 }: Props) {
-  _LOG(nftActionCount)
+  // _LOG(nftActionCount)
+
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadedStat, setIsLoadedStat] = useState(false);
+  const [isStop, setIsStop] = useState(false);
+  const [isPage, setIsPage] = useState("1");
+  const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
+  const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(null);
+
+  ///////  get nft metadata /////////
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoaded(false)
+        setLatestAction(null);
+        const resLatestAction = await getLatestAction("1", "20");
+        setLatestAction(resLatestAction);
+        setIsLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [isPage, isStop])
+
+  ////////// get stat /////////
+  useEffect(() => {
+    const fetchDataStat = async () => {
+      try {
+        setIsLoadedStat(false)
+        setNftActionCount(null);
+        const resActionStat = await getNFTActionCountStat(
+          "",
+          "1",
+          "5"
+        );
+        setNftActionCount(resActionStat);
+        setIsLoadedStat(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchDataStat();
+  }, [isStop])
+
   // const ssf = nftActionCount.data.map((x:any) => { x.schema_code })
   // const ssf = nftActionCount.data[0].schema_code
   // console.log(ssf)
@@ -176,7 +226,7 @@ export default function Data({
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {Array.isArray(nftActionCount) &&
+                          {isLoadedStat ? Array.isArray(nftActionCount) &&
                             nftActionCount.map((item, index) => (
                               <Tr key={index}>
                                 <Td>
@@ -226,7 +276,17 @@ export default function Data({
                                   </Flex>
                                 </Td>
                               </Tr>
-                            ))}
+                            )):
+                            Array.from({ length: 5 }).map((_, index) => (
+                              <Tr key={index}>
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                  <Td key={index}>
+                                    <Skeleton width={"auto"} height={"15px"} />
+                                  </Td>
+                                ))}
+                              </Tr>
+                            ))
+                            }
                         </Tbody>
                       </Table>
                     )}
@@ -492,7 +552,7 @@ export default function Data({
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {latestAction &&
+                        {isLoaded ? latestAction &&
                           latestAction.txs.map((tx: any, index: number) => (
                             <Tr key={index}>
                               <Td>
@@ -519,9 +579,9 @@ export default function Data({
                                 </Badge>
                               </Td>
                               <Td>
-                                {tx.tokenId ? (
+                                {tx.decode_tx.tokenId ? (
                                   <Clickable
-                                    href={`/schema/${tx.nftSchemaCode}/${tx.tokenId}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
                                   >
                                     <Text
                                       style={{
@@ -533,7 +593,7 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {tx.tokenId}
+                                      {tx.decode_tx.tokenId}
                                     </Text>
                                   </Clickable>
                                 ) : (
@@ -637,7 +697,17 @@ export default function Data({
                                 )}
                               </Td>
                             </Tr>
-                          ))}
+                          )) :
+                          Array.from({ length: 10 }).map((_, index) => (
+                            <Tr key={index}>
+                              {Array.from({ length: 7 }).map((_, index) => (
+                                <Td key={index}>
+                                  <Skeleton width={"auto"} height={"15px"} />
+                                </Td>
+                              ))}
+                            </Tr>
+                          ))
+                        }
                       </Tbody>
                     </Table>
                   </TableContainer>
@@ -646,6 +716,7 @@ export default function Data({
             </Grid>
           </Flex>
         </Container>
+
       </Box>
       <Spacer />
     </Flex>
@@ -684,9 +755,9 @@ export const getServerSideProps = async () => {
   const schemaCode = "";
   const page = "1";
   const pageSize = "5";
-  const endDate = new Date();
-  const preYear = endDate.getFullYear() - 3;
-  const startDate = new Date(preYear, endDate.getMonth(), endDate.getDate());
+  // const endDate = new Date();
+  // const preYear = endDate.getFullYear() - 3;
+  // const startDate = new Date(preYear, endDate.getMonth(), endDate.getDate());
 
   const start24h = new Date();
   start24h.setHours(0);
@@ -710,18 +781,18 @@ export const getServerSideProps = async () => {
   }
 
   const [
-    nftActionCount,
+    // nftActionCount,
     totalNFTCollection,
     totalNFTS,
     nftFee,
     action24h,
-    latestAction,
+    // latestAction,
   ] = await Promise.all([
-    getNFTActionCountStat(
-      schemaCode,
-      page,
-      pageSize
-    ),
+    // getNFTActionCountStat(
+    //   schemaCode,
+    //   page,
+    //   pageSize
+    // ),
     getTotalNFTCollection(),
     getTotalNFTS(),
     getNFTFee(),
@@ -729,7 +800,6 @@ export const getServerSideProps = async () => {
       schemaCode,
       end_time
     ),
-    getLatestAction("1", "20"),
   ]);
 
   if (action24h) {
@@ -743,21 +813,20 @@ export const getServerSideProps = async () => {
     action24h: count24h,
   };
 
-  if (!latestAction) {
-    return {
-      props: {
-        nftActionCount: null,
-        blockNFTStat: null,
-        latestAction: null,
-      },
-    };
-  }
+  // if (!latestAction) {
+  //   return {
+  //     props: {
+  //       nftActionCount: null,
+  //       blockNFTStat: null,
+  //       // latestAction: null,
+  //     },
+  //   };
+  // }
 
   return {
     props: {
-      nftActionCount,
+      // nftActionCount,
       blockNFTStat,
-      latestAction,
     },
   };
 };

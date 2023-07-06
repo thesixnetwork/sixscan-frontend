@@ -258,6 +258,7 @@ export default function Address({
                                           direction="row"
                                           gap={1}
                                           align="center"
+                                          justifyContent={"center"}
                                         >
                                           {tx.code !== 0 && (
                                             <FaRegWindowClose
@@ -282,7 +283,7 @@ export default function Address({
                                       </Td>
                                       <Td>
                                         <Text justifyContent={"center"}>
-                                          <Badge>
+                                          <Badge textAlign={"center"} width="100%">
                                             {
                                               tx.type
                                                 .split(".")
@@ -305,13 +306,13 @@ export default function Address({
                                           </Badge>
                                         </Text>
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         <Text>
                                           {moment(tx.time_stamp).fromNow()}
                                         </Text>
                                       </Td>
-                                      <Td>
-                                        <Clickable href="/">
+                                      <Td textAlign={"center"}>
+                                        <Clickable href={`/block/${tx.block_height}`}>
                                           <Text style={{
                                             color: "#5C34A2",
                                             textDecoration: "none",
@@ -322,7 +323,7 @@ export default function Address({
                                           </Text>
                                         </Clickable>
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         {tx.decode_tx.toAddress && (
                                           <Clickable
                                             href={`/address/${tx.decode_tx.fromAddress}`}
@@ -340,7 +341,7 @@ export default function Address({
                                           </Clickable>
                                         )}
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         {tx.decode_tx.toAddress && (
                                           <Clickable
                                             href={`/address/${tx.decode_tx.toAddress}`}
@@ -358,7 +359,7 @@ export default function Address({
                                           </Clickable>
                                         )}
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         {tx.decode_tx.amount &&
                                           tx.decode_tx.amount[0]?.amount && (
                                             <Text>{`${formatNumber(
@@ -366,7 +367,7 @@ export default function Address({
                                             )} SIX`}</Text>
                                           )}
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         <Text>{`${formatNumber(
                                           convertUsixToSix(
                                             parseInt(tx.decode_tx.fee_amount)

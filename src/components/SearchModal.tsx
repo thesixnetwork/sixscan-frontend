@@ -6,6 +6,7 @@ import {
   ModalBody,
   useDisclosure,
   Spacer,
+  Spinner,
   InputGroup,
   InputLeftElement,
   Box,
@@ -38,7 +39,7 @@ import { Clickable } from "./Clickable";
 import { _LOG } from "@/utils/log_helper";
 
 type SearchResult = {
-  type: "address" | "tx" | "block" | "schema" | "contract" ;
+  type: "address" | "tx" | "block" | "schema" | "contract";
   value: any;
   icon: React.ReactNode;
 };
@@ -48,7 +49,7 @@ type ResultContract = {
   schemaCodes: any;
 };
 
-type ResultSchema= {
+type ResultSchema = {
   originContractAddress: string;
   schemaCodes: string;
 };
@@ -67,6 +68,7 @@ const SearchModal = ({
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   // const { isOpen, onOpen, onClose } = useDisclosure();
   const [isSchema, setIsSchema] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isContract, setIsContract] = useState(false);
   const [resultContract, setResultContract] = useState<ResultContract>();
   const [resultSchema, setResultSchema] = useState<ResultSchema[]>([]);
@@ -76,7 +78,6 @@ const SearchModal = ({
   const finalRef = useRef(null);
 
 
-
   const handleSearch = async () => {
     // Perform search based on searchInput and update searchResults
     const _searchResults: SearchResult[] = [];
@@ -84,21 +85,20 @@ const SearchModal = ({
       originContractAddress: '',
       schemaCodes: null
     };
-    
-    
+
+
     const isAddress = validateAddress(searchInput);
     const isTx = validateTxHash(searchInput);
     const isContractByAddress = await validateContract(searchInput);
     const isBlock = await validateBlock(searchInput);
-    const isSchemaaa = await getSchemaByCodeAddr(searchInput)
     const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
-    _LOG(isSchemaaa);
     const schemaByContract = await getSchemaByAddress(searchInput)
 
-    _LOG(JSON.stringify(schemaByContract,null, 2));
+    _LOG(JSON.stringify(schemaByContract, null, 2));
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);
+      setIsLoading(false);
       _searchResults.push({
         type: "address",
         value: searchInput,
@@ -109,6 +109,7 @@ const SearchModal = ({
     if (isTx) {
       setIsSchema(false);
       setIsContract(false);
+      setIsLoading(false);
       _searchResults.push({
         type: "tx",
         value: searchInput,
@@ -119,6 +120,7 @@ const SearchModal = ({
     if (isBlock) {
       setIsSchema(false);
       setIsContract(false);
+      setIsLoading(false);
       _searchResults.push({
         type: "block",
         value: searchInput,
@@ -129,18 +131,24 @@ const SearchModal = ({
     if (isContractByAddress) {
       setIsContract(true);
       setIsSchema(false);
+      if (isContractByAddress) {
+        setIsLoading(false);
+      }
       setResultContract(schemaByContract)
     }
 
     if (!isAddress && !isTx && !isBlock && !isContractByAddress) {
       setIsSchema(true);
       setIsContract(false);
+      if (isSchemaaa2) {
+        setIsLoading(false);
+      }
       setResultSchema(isSchemaaa2)
-      _searchResults.push({
-        type: "schema",
-        value: isSchemaaa2,
-        icon: <FaScroll />,
-      });
+      // _searchResults.push({
+      //   type: "schema",
+      //   value: isSchemaaa2,
+      //   icon: <FaScroll />,
+      // });
     }
     setSearchResults(_searchResults);
   };
@@ -151,6 +159,7 @@ const SearchModal = ({
       const timeout = setTimeout(() => {
         handleSearch();
       }, 100);
+      setIsLoading(true);
       return () => clearTimeout(timeout);
     }
   }, [searchInput]);
@@ -177,6 +186,17 @@ const SearchModal = ({
               onClick={onOpen}
               onChange={(e) => setSearchInput(e.target.value)}
             />
+            {searchInput && isLoading && (
+              <ModalBody>
+                <Spinner
+                  thickness='4px'
+                  speed='0.65s'
+                  emptyColor='gray.200'
+                  color='blue.500'
+                  size='md'
+                />
+              </ModalBody>)
+            }
           </InputGroup>
         </ModalHeader>
         {searchInput && !isSchema && (
@@ -196,15 +216,18 @@ const SearchModal = ({
                     _hover={{ bgColor: "light" }}
                     gap={2}
                     alignItems="center"
+                    onClick={onClose}
                   >
                     <Box color="dark">{result.icon}</Box>
-                    <Text
-                      fontSize="md"
-                      color="dark"
-                      _hover={{ color: "darkest" }}
-                    >
-                      {result.value}
-                    </Text>
+                    <Box overflow="hidden">
+                      <Text
+                        fontSize="md"
+                        color="dark"
+                        _hover={{ color: "darkest" }}
+                      >
+                        {result.value}
+                      </Text>
+                    </Box>
                     <Spacer />
                     <Box color="dark">
                       <motion.div
@@ -242,47 +265,48 @@ const SearchModal = ({
               </Button>
             </Flex>
             {resultSchema.map((x: any, index: number) => (
-                <Flex direction="column" key={index} gap={1} pt={1}>
-                  <motion.div>
-                    <Flex
-                      bgColor={"lightest"}
-                      borderRadius={6}
-                      p={4}
-                      as={LinkComponent}
-                      href={`/schema/${x.schema_code}`}
-                      _hover={{ bgColor: "light" }}
-                      gap={2}
-                      alignItems="center"
+              <Flex direction="column" key={index} gap={1} pt={1}>
+                <motion.div>
+                  <Flex
+                    bgColor={"lightest"}
+                    borderRadius={6}
+                    p={4}
+                    as={LinkComponent}
+                    href={`/schema/${x.schema_code}`}
+                    _hover={{ bgColor: "light" }}
+                    gap={2}
+                    alignItems="center"
+                    onClick={onClose}
+                  >
+                    <Box color="dark"><FaScroll /></Box>
+                    <Text
+                      fontSize="md"
+                      color="dark"
+                      _hover={{ color: "darkest" }}
                     >
-                      <Box color="dark"><FaScroll /></Box>
-                      <Text
-                        fontSize="md"
-                        color="dark"
-                        _hover={{ color: "darkest" }}
+                      {x.schema_code}
+                    </Text>
+                    <Spacer />
+                    <Box color="dark">
+                      <motion.div
+                        initial={{
+                          x: -10,
+                          opacity: 0,
+                        }}
+                        animate={{
+                          x: 0,
+                          opacity: 1,
+                        }}
+                        transition={{
+                          duration: 0.5,
+                        }}
                       >
-                        {x.schema_code}
-                      </Text>
-                      <Spacer />
-                      <Box color="dark">
-                        <motion.div
-                          initial={{
-                            x: -10,
-                            opacity: 0,
-                          }}
-                          animate={{
-                            x: 0,
-                            opacity: 1,
-                          }}
-                          transition={{
-                            duration: 0.5,
-                          }}
-                        >
-                          <FaArrowRight />
-                        </motion.div>
-                      </Box>
-                    </Flex>
-                  </motion.div>
-                </Flex>
+                        <FaArrowRight />
+                      </motion.div>
+                    </Box>
+                  </Flex>
+                </motion.div>
+              </Flex>
             ))}
           </ModalBody>
         )}
@@ -298,49 +322,50 @@ const SearchModal = ({
                 </Clickable>
               </Button>
             </Flex>
-            {Array.isArray(resultContract) && resultContract.map((x: any, index: number) =>  (
-                <Flex direction="column" key={index} gap={1} pt={1}>
-                  <motion.div>
-                    <Flex
-                      bgColor={"lightest"}
-                      borderRadius={6}
-                      p={4}
-                      as={LinkComponent}
-                      href={`/schema/${x.schema_code}`}
-                      _hover={{ bgColor: "light" }}
-                      gap={2}
-                      alignItems="center"
+            {Array.isArray(resultContract) && resultContract.map((x: any, index: number) => (
+              <Flex direction="column" key={index} gap={1} pt={1}>
+                <motion.div>
+                  <Flex
+                    bgColor={"lightest"}
+                    borderRadius={6}
+                    p={4}
+                    as={LinkComponent}
+                    href={`/schema/${x.schema_code}`}
+                    _hover={{ bgColor: "light" }}
+                    gap={2}
+                    alignItems="center"
+                    onClick={onClose}
+                  >
+                    <Box color="dark"><FaScroll /></Box>
+                    <Text
+                      fontSize="md"
+                      color="dark"
+                      _hover={{ color: "darkest" }}
                     >
-                      <Box color="dark"><FaScroll /></Box>
-                      <Text
-                        fontSize="md"
-                        color="dark"
-                        _hover={{ color: "darkest" }}
+                      {x.schema_code}
+                    </Text>
+                    <Spacer />
+                    <Box color="dark">
+                      <motion.div
+                        initial={{
+                          x: -10,
+                          opacity: 0,
+                        }}
+                        animate={{
+                          x: 0,
+                          opacity: 1,
+                        }}
+                        transition={{
+                          duration: 0.5,
+                        }}
                       >
-                        {x.schema_code}
-                      </Text>
-                      <Spacer />
-                      <Box color="dark">
-                        <motion.div
-                          initial={{
-                            x: -10,
-                            opacity: 0,
-                          }}
-                          animate={{
-                            x: 0,
-                            opacity: 1,
-                          }}
-                          transition={{
-                            duration: 0.5,
-                          }}
-                        >
-                          <FaArrowRight />
-                        </motion.div>
-                      </Box>
-                    </Flex>
-                  </motion.div>
-                </Flex>
-              ))}
+                        <FaArrowRight />
+                      </motion.div>
+                    </Box>
+                  </Flex>
+                </motion.div>
+              </Flex>
+            ))}
           </ModalBody>
         )}
 
