@@ -78,7 +78,6 @@ const SearchModal = ({
   const finalRef = useRef(null);
 
 
-
   const handleSearch = async () => {
     // Perform search based on searchInput and update searchResults
     const _searchResults: SearchResult[] = [];
@@ -217,6 +216,7 @@ const SearchModal = ({
                     _hover={{ bgColor: "light" }}
                     gap={2}
                     alignItems="center"
+                    onClick={onClose}
                   >
                     <Box color="dark">{result.icon}</Box>
                     <Box overflow="hidden">
@@ -276,6 +276,7 @@ const SearchModal = ({
                     _hover={{ bgColor: "light" }}
                     gap={2}
                     alignItems="center"
+                    onClick={onClose}
                   >
                     <Box color="dark"><FaScroll /></Box>
                     <Text
@@ -333,6 +334,7 @@ const SearchModal = ({
                     _hover={{ bgColor: "light" }}
                     gap={2}
                     alignItems="center"
+                    onClick={onClose}
                   >
                     <Box color="dark"><FaScroll /></Box>
                     <Text

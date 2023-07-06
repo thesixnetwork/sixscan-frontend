@@ -84,9 +84,14 @@ import dynamic from 'next/dynamic';
 import { FaKeybase } from "react-icons/fa";
 
 
-const ReactJsonViewer = dynamic(
-  () => import('react-json-viewer-cool'),
-  { ssr: false }
+// const ReactJsonViewer = dynamic(
+//   () => import('react-json-viewer-cool'),
+//   { ssr: false }
+// );
+
+const DynamicReactJson = dynamic(
+  () => import('react-json-view'),
+  { ssr: false } 
 );
 
 
@@ -498,7 +503,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === 'Decode' &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
                                             </Flex>
                                           </Box>
                                         }
@@ -538,7 +543,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
                                             </Flex>
                                           </Box>
                                         }
@@ -619,7 +624,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <ReactJsonViewer data={message[key]} />
+                                              <DynamicReactJson src={message[key]}  collapsed={1} displayDataTypes={false}/>
                                             </Flex>
                                           </Box>
                                         }
