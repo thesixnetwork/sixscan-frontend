@@ -22,6 +22,7 @@ import {
   Textarea,
   Button,
   Spacer,
+  Skeleton,
   Tooltip,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
@@ -44,25 +45,35 @@ import { Clickable } from "@/components/Clickable";
 import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
 import { formatTraitValue } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
-import { getMetadata, getSchema, getAllTransactionByTokenID } from "@/service/nftmngr";
+import { getMetadata, getSchema, getAllTransactionByTokenID, getAllActionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
 import { NFTSchema, LatestAction } from "@/types/Nftmngr";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
 
+import dynamic from 'next/dynamic';
+import React from 'react';
+// const ReactJsonViewer = dynamic(
+//   () => import('react-json-viewer-cool'),
+//   { ssr: false }
+// );
 
+const DynamicReactJson = dynamic(
+  () => import('react-json-view'),
+  { ssr: false }
+);
 
 interface Props {
   metadata: Metadata;
   schema: NFTSchema;
-  latestAction: LatestAction;
+  // latestAction: LatestAction;
   schemacode: string;
   pageNumber: string;
   tokenId: string;
 }
 
-export default function Schema({ metadata, schema, latestAction, schemacode, pageNumber, tokenId }: Props) {
+export default function Schema({ metadata, schema, schemacode, pageNumber, tokenId }: Props) {
   const STATS = [
     {
       title: "Chain",
@@ -78,6 +89,63 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
     }, 1000);
   };
   const router = useRouter();
+
+  ////// fetchData  ///////
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadedAction, setIsLoadedAction] = useState(false);
+  const [isStop, setIsStop] = useState(false);
+  const [isPage, setIsPage] = useState("1");
+  const [isPageAction, setIsPageAction] = useState("1");
+  const [txns, setTxns] = useState<LatestAction | null>(null);
+  const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
+  // let totalPages = 0;
+  //////// get Txns /////////
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoaded(false)
+        setTxns(null);
+        const resTxns = await getAllTransactionByTokenID(schemacode, tokenId, isPage, "10");
+        setTxns(resTxns as LatestAction);
+        setIsLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [isPage, isStop])
+
+
+  /////// get action ////////
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoadedAction(false)
+        setLatestAction(null);
+        const resLatestAction = await getAllActionByTokenID(schemacode, tokenId, isPageAction, "10");
+        setLatestAction(resLatestAction as LatestAction);
+        setIsLoadedAction(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [isPageAction, isStop])
+
+  const handlePageLatestAction = (isPage: string) => {
+    setIsLoadedAction(false)
+    setIsPageAction(isPage);
+  };
+
+  const handlePageLatestTxns = (isPage: string) => {
+    setIsLoaded(false)
+    setIsPage(isPage);
+  };
+
+  if (isPage) {
+    latestAction
+  }
+
   if (!metadata) {
     return (
       <Flex minHeight={"100vh"} direction={"column"}>
@@ -135,6 +203,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                 justifyContent={"center"}
                 display={"flex"}
               >
+                {/* {console.log(txns)} */}
                 <Image
                   rounded={"lg"}
                   src={metadata.image}
@@ -176,7 +245,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                   </Flex>
                   <Flex direction="row" gap={5}>
                     <Flex direction="column">
-                      <Text fontWeight={"bold"}>{latestAction.txs.length}</Text>
+                      <Text fontWeight={"bold"}>{latestAction?.txs?.length}</Text>
                       <Text color="medium">actions performed</Text>
                     </Flex>
                   </Flex>
@@ -202,11 +271,13 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                 <Box mb={6}>
                   <CustomCard title="Dynamic Attributes (Gen2)">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
+                      {/* {console.log(metadata.attributes)} */}
                       {metadata.attributes?.map(
                         (attr, index) =>
                           !attr.is_origin &&
                           !attr.display_type &&
-                          attr.value && (
+                          // attr.value && 
+                          (
                             <GridItem colSpan={{ base: 12, md: 6 }} key={index}>
                               <AttributeBox {...attr} />
                             </GridItem>
@@ -263,6 +334,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
+                      <Tab>Latest Txns</Tab>
                       <Tab>Latest Actions</Tab>
                       <Tab>Metadata</Tab>
                     </TabList>
@@ -275,93 +347,95 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                           color={"dark"}
                           justify="space-between"
                         >
-                          <Flex direction="row" gap={2} align="center">
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              Latest {latestAction.txs.length} from a total of{" "}
-                              {/* <Clickable href="/"> */}
-                                {latestAction.totalCount}
-                              {/* </Clickable> */}
-                              {" "}
-                              transactions
-                            </Text>
-                          </Flex>
+                          {isLoaded ?
+                            <Flex direction="row" gap={2} align="center">
+                              <FaSortAmountDown fontSize={12} />
+                              <Text>
+                                Latest {txns?.txs?.length} from a total of{" "}
+                                {/* <Clickable href="/"> */}
+                                {latestAction?.totalCount}
+                                {/* </Clickable> */}
+                                {" "}
+                                transaction
+                              </Text>
+                            </Flex>
+                            :
+                            <Skeleton width={"200px"} height={"15px"} />
+                          }
 
-                          {latestAction && (
+                          {isLoaded ? txns && (
                             <Flex direction="row" gap={2} align="center" px="2">
                               <Button
                                 variant={"solid"}
                                 size="xs"
-                                href={`/schema/${schemacode}/${tokenId}?page=1`}
-                                as={LinkComponent}
-                                isDisabled={parseInt(pageNumber) === 1}
+                                isDisabled={parseInt(isPage) === 1}
+                                onClick={() => handlePageLatestTxns("1")}
                               >
                                 First
                               </Button>
                               <Button
                                 size="xs"
-                                href={`/schema/${schemacode}/${tokenId}?page=1`}
-                                as={LinkComponent}
-                                isDisabled={parseInt(pageNumber) === 1}
+                                isDisabled={parseInt(isPage) === 1}
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) - 1).toString())}
                               >
                                 <FaArrowLeft fontSize={12} />
                               </Button>
                               <Text fontSize="xs">
-                                {`Page ${pageNumber} of ${latestAction.totalPage}`}
+                                {`Page ${isPage} of ${txns?.totalPage}`}
                               </Text>
                               <Button
                                 size="xs"
-                                href={`/schema/${schemacode}/${tokenId}?page=${parseInt(pageNumber) + 1
-                                  }`}
-                                as={LinkComponent}
                                 isDisabled={
-                                  parseInt(pageNumber) === latestAction.totalPage
+                                  parseInt(isPage) === txns?.totalPage
                                 }
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
                               >
                                 <FaArrowRight fontSize={12} />
                               </Button>
                               <Button
                                 size="xs"
-                                href={`/schema/${schemacode}/${tokenId}?page=${latestAction.totalPage}`}
-                                as={LinkComponent}
                                 isDisabled={
-                                  parseInt(pageNumber) === latestAction.totalPage
+                                  parseInt(isPage) === txns?.totalPage
                                 }
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
+
                               >
                                 Last
                               </Button>
                             </Flex>
-                          )}
+                          ) :
+                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
+                          }
 
                         </Flex>
                         <TableContainer>
                           <Table>
                             <Thead>
-                              <Tr>
-                                <Td>
+                              <Tr >
+                                <Td textAlign={"center"}>
                                   <Text>Txhash</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Action</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Age</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Block</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>By</Text>
                                 </Td>
-                                <Td>
+                                <Td textAlign={"center"}>
                                   <Text>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {latestAction.txs.map((action: any, index: number) => (
+                              {isLoaded ? txns?.txs?.map((action: any, index: number) => (
                                 <Tr key={index}>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/tx/${action.txhash}`}>
                                       <Text style={{
                                         color: "#5C34A2",
@@ -375,13 +449,13 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Badge>{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
+                                      <Badge textAlign={"center"} width="100%">{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
                                     </Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>{moment(action.time_stamp).fromNow()}</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/block/${action.block_height}`} >
                                       <Text style={{
                                         color: "#5C34A2",
@@ -393,7 +467,7 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                                       </Text>
                                     </Clickable>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Clickable href={`/address/${action.decode_tx.creator}`} >
                                       <Text style={{
                                         color: "#5C34A2",
@@ -405,15 +479,184 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                                       </Text>
                                     </Clickable>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
                                   </Td>
                                 </Tr>
-                              ))}
+                              )) :
+                                Array.from({ length: 10 }).map((_, index) => (
+                                  <Tr key={index}>
+                                    {Array.from({ length: 6 }).map((_, index) => (
+                                      <Td key={index}>
+                                        <Skeleton width={"auto"} height={"15px"} />
+                                      </Td>
+                                    ))}
+                                  </Tr>
+                                ))
+                              }
                             </Tbody>
                           </Table>
                         </TableContainer>
                       </TabPanel>
+
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          color={"dark"}
+                          justify="space-between"
+                        >
+                          {isLoadedAction ?
+                            <Flex direction="row" gap={2} align="center">
+                              <FaSortAmountDown fontSize={12} />
+                              <Text>
+                                Latest {latestAction?.txs?.length} from a total of{" "}
+                                {/* <Clickable href="/"> */}
+                                {latestAction?.totalCount}
+                                {/* </Clickable> */}
+                                {" "}
+                                actions
+                              </Text>
+                            </Flex> :
+                            <Skeleton width={"200px"} height={"15px"} />
+                          }
+                          {isLoadedAction ? latestAction && (
+                            <Flex direction="row" gap={2} align="center" px="2">
+                              <Button
+                                variant={"solid"}
+                                size="xs"
+                                isDisabled={parseInt(isPageAction) === 1}
+                                onClick={() => handlePageLatestAction("1")}
+                              >
+                                First
+                              </Button>
+                              <Button
+                                size="xs"
+                                isDisabled={parseInt(isPageAction) === 1}
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) - 1).toString())}
+                              >
+                                <FaArrowLeft fontSize={12} />
+                              </Button>
+                              <Text fontSize="xs">
+                                {`Page ${isPage} of ${latestAction?.totalPage}`}
+                              </Text>
+                              <Button
+                                size="xs"
+                                isDisabled={
+                                  parseInt(isPageAction) === latestAction?.totalPage
+                                }
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
+                              >
+                                <FaArrowRight fontSize={12} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                isDisabled={
+                                  parseInt(isPageAction) === latestAction?.totalPage
+                                }
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
+
+                              >
+                                Last
+                              </Button>
+                            </Flex>
+                          ) :
+                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
+                          }
+
+                        </Flex>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr >
+                                <Td textAlign={"center"}>
+                                  <Text>Txhash</Text>
+                                </Td>
+                                <Td textAlign={"center"}>
+                                  <Text>Action</Text>
+                                </Td>
+                                <Td textAlign={"center"}>
+                                  <Text>Age</Text>
+                                </Td>
+                                <Td textAlign={"center"}>
+                                  <Text>Block</Text>
+                                </Td>
+                                <Td textAlign={"center"}>
+                                  <Text>By</Text>
+                                </Td>
+                                <Td textAlign={"center"}>
+                                  <Text>Gas Fee</Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {isLoaded ? latestAction?.txs?.map((action: any, index: number) => (
+                                <Tr key={index}>
+                                  <Td textAlign={"center"}>
+                                    <Clickable href={`/tx/${action.txhash}`}>
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(action.txhash)}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
+                                    <Text>
+                                      <Badge textAlign={"center"} width="100%">{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
+                                    </Text>
+                                  </Td>
+                                  <Td textAlign={"center"}>
+                                    <Text>{moment(action.time_stamp).fromNow()}</Text>
+                                  </Td>
+                                  <Td textAlign={"center"}>
+                                    <Clickable href={`/block/${action.block_height}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {action.block_height}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td textAlign={"center"}>
+                                    <Clickable href={`/address/${action.decode_tx.creator}`} >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "12px"
+                                      }}>
+                                        {formatHex(action.decode_tx.creator)}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td textAlign={"center"}>
+                                    <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              )) :
+                                Array.from({ length: 10 }).map((_, index) => (
+                                  <Tr key={index}>
+                                    {Array.from({ length: 6 }).map((_, index) => (
+                                      <Td key={index}>
+                                        <Skeleton width={"auto"} height={"15px"} />
+                                      </Td>
+                                    ))}
+                                  </Tr>
+                                ))
+                              }
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+
                       <TabPanel>
                         <Flex
                           direction="row"
@@ -442,11 +685,16 @@ export default function Schema({ metadata, schema, latestAction, schemacode, pag
                             </Box>
                           </Tooltip>
                         </Flex>
-                        <Textarea
+                        {/* <Textarea
                           value={JSON.stringify(metadata, null, 2)}
                           readOnly
                           minH={500}
-                        />
+                        /> */}
+                        <Box height={"400px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                          <Flex p={3}>
+                            <DynamicReactJson src={metadata} collapsed={1} displayDataTypes={false} />
+                          </Flex>
+                        </Box>
                       </TabPanel>
                     </TabPanels>
                   </Tabs>
@@ -471,7 +719,7 @@ export const getServerSideProps = async ({
   const [metadata, schema, latestAction] = await Promise.all([
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
-    getAllTransactionByTokenID(schemacode, tokenId, page, "3")
+    getAllTransactionByTokenID(schemacode, tokenId, page, "10")
   ]);
   const pageNumber = page
   if (!schema) {
@@ -482,20 +730,20 @@ export const getServerSideProps = async ({
   };
 };
 
-const CONFIG = [
-  {
-    title: "actions performed",
-    value: "593",
-  },
-];
+// const CONFIG = [
+//   {
+//     title: "actions performed",
+//     value: "593",
+//   },
+// ];
 
-const ACTIONS = [
-  {
-    txhash: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    method: "transfer",
-    age: "1 day",
-    block: "123456",
-    by: "0x898bb3b662419e79366046C625A213B83fB4809B",
-    gasfee: "0.1",
-  },
-];
+// const ACTIONS = [
+//   {
+//     txhash: "0x898bb3b662419e79366046C625A213B83fB4809B",
+//     method: "transfer",
+//     age: "1 day",
+//     block: "123456",
+//     by: "0x898bb3b662419e79366046C625A213B83fB4809B",
+//     gasfee: "0.1",
+//   },
+// ];

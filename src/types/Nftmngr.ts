@@ -108,6 +108,21 @@ export interface NftData {
   onchain_attributes: NftAttributeValue[];
 }
 
+export interface NFTMetadata {
+  token_id: string;
+  image: string;
+  name: string;
+  description: string;
+  attributes: Attribute[];
+  nft_schema_code: string;
+}
+
+interface Attribute {
+  trait_type: string;
+  is_origin: boolean;
+  value: string | number;
+}
+
 export enum OwnerAddressType {
   ORIGIN_ADDRESS = 0,
   INTERNAL_ADDRESS = 1,
@@ -163,15 +178,17 @@ export enum URIRetrievalMethod {
 }
 
 export interface DataNFTStat {
-  totalRecords: number,
-  data: DataActionCount[],
+  schema_code: string,
+  action: string,
+  count: number,
+  image: string,
 }
 
 export interface DataActionCount {
-  _id: {
-    schema_code: string,
-    action: string
-  },
+  _id: string,
+  period: string,
+  schema_code: string,
+  action: string,
   count: number
 }
 

@@ -408,7 +408,7 @@ const MobileNav = ({
     >
       <Box display={{ base: "block", lg: "none" }}>
         <SearchBar
-          placeHolder={"Search by Address / Txn Hash / Block"}
+          placeHolder={"Search by Address / Txn Hash / Block / Schema"}
           hasButton
           modalstate={modalstate}
         />

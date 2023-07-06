@@ -83,7 +83,7 @@ export default function Validators({ validators }: ValidatorProps) {
   // sort validators by voting power and if status is not bonded, put it at the end
   sortValidatorsByPower(validators);
   return (
-    <Flex minHeight={"100vh"} direction={"column"}>
+    <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
       <Head>
         <title>SIXSCAN</title>
