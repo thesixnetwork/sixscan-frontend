@@ -50,7 +50,7 @@ import moment from "moment";
 import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
-import { formatNumber, convertUsixToSix } from "@/utils/format";
+import { formatNumber, convertUsixToSix, formatMethod } from "@/utils/format";
 import { getLatestAction } from "@/service/nftmngr";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
@@ -251,11 +251,7 @@ export default function Address({
                                                                             <Td>
                                                                                 <Text>
                                                                                     <Badge>
-                                                                                        {tx.type
-                                                                                            .split(".")
-                                                                                        [
-                                                                                            tx.type.split(".").length - 1
-                                                                                        ].slice(3)}
+                                                                                        {formatMethod(tx.type)}
                                                                                     </Badge>
                                                                                 </Text>
                                                                             </Td>

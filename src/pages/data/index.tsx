@@ -579,9 +579,9 @@ export default function Data({
                                 </Badge>
                               </Td>
                               <Td>
-                                {tx.tokenId ? (
+                                {tx.decode_tx.tokenId ? (
                                   <Clickable
-                                    href={`/schema/${tx.nftSchemaCode}/${tx.tokenId}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
                                   >
                                     <Text
                                       style={{
@@ -593,7 +593,7 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {tx.tokenId}
+                                      {tx.decode_tx.tokenId}
                                     </Text>
                                   </Clickable>
                                 ) : (
