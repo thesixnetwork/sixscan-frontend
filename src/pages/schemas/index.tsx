@@ -40,27 +40,16 @@ import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 
 import { Clickable } from "@/components/Clickable";
-import { formatHex } from "@/utils/format";
-import { validateContract } from "@/utils/validate";
+
 import { useEffect, useState } from "react";
-import { getValidator } from "@/service/staking";
-import { Validator } from "@/types/Staking";
-import { Balance } from "@/types/Bank";
+
 // ------------------------- Helper Libs -------------------------
-import moment from "moment";
-import { getAccount } from "@/service/auth";
-import { Account } from "@/types/Auth";
-import { getBalance, getBalances } from "@/service/bank";
-import { formatNumber, convertUsixToSix } from "@/utils/format";
-import { getAllTransactionByAddress } from "@/service/nftmngr";
-
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
-import { getTxsFromAddress } from "@/service/txs";
-import { AccountTxs } from "@/types/Txs";
-import { formatMethod } from "@/utils/format";
+import {
+    formatSchemaName,
+  } from "@/utils/format";
 import { getSchemaByCodeAddr2, getAllSchema } from "@/service/nftmngr";
-
+import styles from "@/styles/schema_hover.module.css";
+import { useRouter } from 'next/router';
 
 interface Props {
     schema: any;
@@ -85,6 +74,7 @@ export default function Schema({
     //         setIsCopied(false);
     //     }, 1000);
     // };
+    const router = useRouter();
 
     const addValueToTotalValue = (value: number) => {
         totalValueTmp += value;
@@ -208,21 +198,46 @@ export default function Schema({
                                                         <Table>
                                                             <Thead>
                                                                 <Tr>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>No.</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
+                                                                        <Text>Schema Name</Text>
+                                                                    </Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Schema Code</Text>
                                                                     </Td>
                                                                 </Tr>
                                                             </Thead>
                                                             <Tbody>
                                                                 {schema.data.map((schema: any, index: number) => (
-                                                                    <Tr key={index}>
-                                                                        <Td>
-                                                                            <Text>{index + 1}</Text>
+                                                                    <Tr key={index} 
+                                                                        className={styles["hover-row"]} 
+                                                                        onClick={() => router.push(`/schema/${schema.schema_code}`)}
+                                                                    >
+                                                                        <Td textAlign={"center"}>
+                                                                            <Clickable href={`/schema/${schema.schema_code}`}>
+                                                                                <Text style={{
+                                                                                    color: "#5C34A2",
+                                                                                    textDecoration: "none",
+                                                                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                                                    fontSize: "12px",
+                                                                                }}>{index + 1}</Text>
+                                                                            </Clickable>
                                                                         </Td>
-                                                                        <Td>
+                                                                        <Td textAlign={"center"}>
+                                                                            <Clickable href={`/schema/${schema.schema_code}`}>
+                                                                                <Text style={{
+                                                                                    color: "#5C34A2",
+                                                                                    textDecoration: "none",
+                                                                                    fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                                                    fontSize: "12px",
+                                                                                }}>
+                                                                                    {formatSchemaName(schema.schema_code)}
+                                                                                </Text>
+                                                                            </Clickable>
+                                                                        </Td>
+                                                                        <Td textAlign={"center"}>
                                                                             <Clickable href={`/schema/${schema.schema_code}`}>
                                                                                 <Text style={{
                                                                                     color: "#5C34A2",
