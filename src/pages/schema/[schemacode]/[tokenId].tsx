@@ -61,7 +61,7 @@ import React from 'react';
 
 const DynamicReactJson = dynamic(
   () => import('react-json-view'),
-  { ssr: false } 
+  { ssr: false }
 );
 
 interface Props {
@@ -133,6 +133,11 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
   }, [isPageAction, isStop])
 
   const handlePageLatestAction = (isPage: string) => {
+    setIsLoadedAction(false)
+    setIsPageAction(isPage);
+  };
+
+  const handlePageLatestTxns = (isPage: string) => {
     setIsLoaded(false)
     setIsPage(isPage);
   };
@@ -198,6 +203,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                 justifyContent={"center"}
                 display={"flex"}
               >
+                {/* {console.log(txns)} */}
                 <Image
                   rounded={"lg"}
                   src={metadata.image}
@@ -265,7 +271,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                 <Box mb={6}>
                   <CustomCard title="Dynamic Attributes (Gen2)">
                     <Grid templateColumns="repeat(12, 1fr)" gap={4} p={4}>
-                    {/* {console.log(metadata.attributes)} */}
+                      {/* {console.log(metadata.attributes)} */}
                       {metadata.attributes?.map(
                         (attr, index) =>
                           !attr.is_origin &&
@@ -328,8 +334,8 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Latest Actions</Tab>
                       <Tab>Latest Txns</Tab>
+                      <Tab>Latest Actions</Tab>
                       <Tab>Metadata</Tab>
                     </TabList>
                     <TabPanels>
@@ -341,59 +347,65 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           color={"dark"}
                           justify="space-between"
                         >
-                          <Flex direction="row" gap={2} align="center">
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              Latest {latestAction?.txs?.length} from a total of{" "}
-                              {/* <Clickable href="/"> */}
-                              {latestAction?.totalCount}
-                              {/* </Clickable> */}
-                              {" "}
-                              actions
-                            </Text>
-                          </Flex>
+                          {isLoaded ?
+                            <Flex direction="row" gap={2} align="center">
+                              <FaSortAmountDown fontSize={12} />
+                              <Text>
+                                Latest {txns?.txs?.length} from a total of{" "}
+                                {/* <Clickable href="/"> */}
+                                {latestAction?.totalCount}
+                                {/* </Clickable> */}
+                                {" "}
+                                transaction
+                              </Text>
+                            </Flex>
+                            :
+                            <Skeleton width={"200px"} height={"15px"} />
+                          }
 
-                          {latestAction && (
+                          {isLoaded ? txns && (
                             <Flex direction="row" gap={2} align="center" px="2">
                               <Button
                                 variant={"solid"}
                                 size="xs"
                                 isDisabled={parseInt(isPage) === 1}
-                                onClick={() => handlePageLatestAction("1")}
+                                onClick={() => handlePageLatestTxns("1")}
                               >
                                 First
                               </Button>
                               <Button
                                 size="xs"
                                 isDisabled={parseInt(isPage) === 1}
-                                onClick={() => handlePageLatestAction((parseInt(isPage) - 1).toString())}
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) - 1).toString())}
                               >
                                 <FaArrowLeft fontSize={12} />
                               </Button>
                               <Text fontSize="xs">
-                                {`Page ${isPage} of ${latestAction?.totalPage}`}
+                                {`Page ${isPage} of ${txns?.totalPage}`}
                               </Text>
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === latestAction?.totalPage
+                                  parseInt(isPage) === txns?.totalPage
                                 }
-                                onClick={() => handlePageLatestAction((parseInt(isPage) + 1).toString())}
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
                               >
                                 <FaArrowRight fontSize={12} />
                               </Button>
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === latestAction?.totalPage
+                                  parseInt(isPage) === txns?.totalPage
                                 }
-                                onClick={() => handlePageLatestAction((parseInt(isPage) + 1).toString())}
+                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
 
                               >
                                 Last
                               </Button>
                             </Flex>
-                          )}
+                          ) :
+                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
+                          }
 
                         </Flex>
                         <TableContainer>
@@ -421,7 +433,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoaded ? latestAction?.txs?.map((action: any, index: number) => (
+                              {isLoaded ? txns?.txs?.map((action: any, index: number) => (
                                 <Tr key={index}>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/tx/${action.txhash}`}>
@@ -495,32 +507,34 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           color={"dark"}
                           justify="space-between"
                         >
-                          <Flex direction="row" gap={2} align="center">
-                            <FaSortAmountDown fontSize={12} />
-                            <Text>
-                              Latest {latestAction?.txs?.length} from a total of{" "}
-                              {/* <Clickable href="/"> */}
-                              {latestAction?.totalCount}
-                              {/* </Clickable> */}
-                              {" "}
-                              actions
-                            </Text>
-                          </Flex>
-
-                          {latestAction && (
+                          {isLoadedAction ?
+                            <Flex direction="row" gap={2} align="center">
+                              <FaSortAmountDown fontSize={12} />
+                              <Text>
+                                Latest {latestAction?.txs?.length} from a total of{" "}
+                                {/* <Clickable href="/"> */}
+                                {latestAction?.totalCount}
+                                {/* </Clickable> */}
+                                {" "}
+                                actions
+                              </Text>
+                            </Flex> :
+                            <Skeleton width={"200px"} height={"15px"} />
+                          }
+                          {isLoadedAction ? latestAction && (
                             <Flex direction="row" gap={2} align="center" px="2">
                               <Button
                                 variant={"solid"}
                                 size="xs"
-                                isDisabled={parseInt(isPage) === 1}
+                                isDisabled={parseInt(isPageAction) === 1}
                                 onClick={() => handlePageLatestAction("1")}
                               >
                                 First
                               </Button>
                               <Button
                                 size="xs"
-                                isDisabled={parseInt(isPage) === 1}
-                                onClick={() => handlePageLatestAction((parseInt(isPage) - 1).toString())}
+                                isDisabled={parseInt(isPageAction) === 1}
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) - 1).toString())}
                               >
                                 <FaArrowLeft fontSize={12} />
                               </Button>
@@ -530,24 +544,26 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === latestAction?.totalPage
+                                  parseInt(isPageAction) === latestAction?.totalPage
                                 }
-                                onClick={() => handlePageLatestAction((parseInt(isPage) + 1).toString())}
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
                               >
                                 <FaArrowRight fontSize={12} />
                               </Button>
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === latestAction?.totalPage
+                                  parseInt(isPageAction) === latestAction?.totalPage
                                 }
-                                onClick={() => handlePageLatestAction((parseInt(isPage) + 1).toString())}
+                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
 
                               >
                                 Last
                               </Button>
                             </Flex>
-                          )}
+                          ) :
+                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
+                          }
 
                         </Flex>
                         <TableContainer>
