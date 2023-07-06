@@ -40,7 +40,7 @@ import {
   getLatestBlocks,
 } from "@/service/block";
 import { getValidators } from "@/service/staking";
-import {  Block, BlockchainResult, BlockResult } from "@/types/Block";
+import { Block, BlockchainResult, BlockResult } from "@/types/Block";
 import { Validator } from "@/types/Staking";
 import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 import { formatHex } from "@/utils/format";
@@ -73,14 +73,14 @@ export default function Blocks({
   useEffect(() => {
     const fetchData = async () => {
       const latestBlock = await getLatestBlock();
-        setLatestBlock(latestBlock? latestBlock : latestBlockState);
+      setLatestBlock(latestBlock ? latestBlock : latestBlockState);
     };
     // Fetch data initially
     fetchData();
     const intervalId = setInterval(fetchData, 6000);
     return () => clearInterval(intervalId);
   }, []);
-  
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,17 +94,17 @@ export default function Blocks({
         getBlocksResult(minBlockHeight, latestBlockHeight),
         getValidators(),
       ]);
-      setLatestBlocks(latestBlocks? latestBlocks : latestBlocksState);
-      setBlocksResult(blocksResult? blocksResult : blocksResultState);
+      setLatestBlocks(latestBlocks ? latestBlocks : latestBlocksState);
+      setBlocksResult(blocksResult ? blocksResult : blocksResultState);
       setValidators(validators ? validators : validatorsState);
     };
     fetchData();
 
   }, [latestBlockState]);
-  
+
 
   return (
-    <Flex minHeight={"100vh"} direction={"column"}>
+    <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       <Head>
         <title>SIXSCAN</title>
         <meta name="description" content="SIXSCAN" />
@@ -130,58 +130,88 @@ export default function Blocks({
                 <Table variant="simple">
                   <Thead>
                     <Tr>
-                      <Td>Block Height</Td>
-                      <Td>Block Hash</Td>
-                      <Td>Txns</Td>
-                      <Td>Fee Recipient</Td>
-                      <Td isNumeric>Reward</Td>
+                      <Td textAlign={"center"}>Block Height</Td>
+                      <Td textAlign={"center"}>Block Hash</Td>
+                      <Td textAlign={"center"}>Txns</Td>
+                      <Td textAlign={"center"}>Fee Recipient</Td>
+                      <Td textAlign={"center"}>Reward</Td>
                     </Tr>
                   </Thead>
                   <Tbody>
                     {latestBlocksState?.block_metas.map((block, index) => (
                       <Tr key={index}>
-                        <Td>
+                        <Td textAlign={"center"}>
                           <Flex direction="column">
-                            <Text>
-                              <Clickable
-                                underline
-                                href={`/block/${block.header.height}`}
-                              >
+                            <Clickable
+                              href={`/block/${block.header.height}`}
+                            >
+                              <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "15px"
+                              }}>
                                 {block.header.height}
-                              </Clickable>
-                            </Text>
+                              </Text>
+                            </Clickable>
                             <Text fontSize="xs" color="medium">
                               {new Date(block.header.time).toLocaleString()}
                             </Text>
                           </Flex>
                         </Td>
-                        <Td>
-                          <Text>{formatHex(block.block_id.hash)}</Text>
+                        <Td textAlign={"center"}>
+                          <Clickable
+                            href={`/tx/${block.block_id.hash}`}
+                          >
+                            <Text style={{
+                              color: "#5C34A2",
+                              textDecoration: "none",
+                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                              fontSize: "15px"
+                            }}>
+                              {formatHex(block.block_id.hash)}
+                            </Text>
+                          </Clickable>
+                        </Td>
+                        <Td textAlign={"center"}>
+                          <Text style={{
+                            color: "#5C34A2",
+                            textDecoration: "none",
+                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                            fontSize: "15px"
+                          }}>
+                            {block.num_txs}
+                          </Text>
                         </Td>
                         <Td>
-                          <Text>{block.num_txs}</Text>
-                        </Td>
-                        <Td>
-                          <Text>
-                            Fee Recipient{" "}
+                          <Flex direction="row" justifyContent={"center"}>
+                            Fee Recipient{` `}
                             <Clickable
-                              underline
                               href={`/address/${getBlockRewardValidator(
                                 block,
                                 blocksResultState
                               )}`}
                             >
-                              {validatorsState.map((validator) => {
-                                if (
-                                  validator.operator_address === getBlockRewardValidator(block, blocksResultState)
-                                ) {
-                                  return validator.description.moniker;
-                                }
-                              })}
+                              <Text style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                              }}>
+                                {validatorsState.map((validator) => {
+                                  if (
+                                    validator.operator_address ===
+                                    getBlockRewardValidator(block, blocksResultState)
+                                  ) {
+                                    return validator.description.moniker;
+                                  }
+                                })}
+                              </Text>
                             </Clickable>
-                          </Text>
+                          </Flex>
                         </Td>
-                        <Td isNumeric>
+                        <Td textAlign={"center"} >
                           <Badge>
                             Reward{" "}
                             <Clickable>
@@ -216,6 +246,6 @@ export const getServerSideProps = async () => {
     getValidators(),
   ]);
   return {
-    props: {latestBlock,latestBlocks, blocksResult, validators },
+    props: { latestBlock, latestBlocks, blocksResult, validators },
   };
 };

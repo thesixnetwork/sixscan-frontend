@@ -37,6 +37,7 @@ import {
   Spacer,
   Skeleton,
   Button,
+  textDecoration,
 } from "@chakra-ui/react";
 
 import {
@@ -47,13 +48,13 @@ import {
 import Head from "next/head";
 import Image from "next/image";
 // ------------------------- Styles -------------------------
-import styles from "@/styles/Home.module.css";
-import { FaArrowRight, FaDollarSign } from "react-icons/fa";
+// import styles from "@/styles/Home.module.css";
+// import { FaArrowRight, FaDollarSign } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
-import SearchBar from "@/components/SearchBar";
+// import NavBar from "@/components/NavBar";
+// import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
-import CustomTable from "@/components/CustomTable";
+// import CustomTable from "@/components/CustomTable";
 import { useEffect, useState } from "react";
 import { LinkComponent } from "@/components/Chakralink";
 
@@ -74,16 +75,23 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/utils/ENV";
+import { _LOG } from "@/utils/log_helper";
 import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
 import { parseJsonText } from "typescript";
-// import ReactJson from 'react-json-view'
 import dynamic from 'next/dynamic';
+import { FaKeybase } from "react-icons/fa";
+
+
+// const ReactJsonViewer = dynamic(
+//   () => import('react-json-viewer-cool'),
+//   { ssr: false }
+// );
 
 const DynamicReactJson = dynamic(
   () => import('react-json-view'),
-  { ssr: false } // บอก Next.js ให้ไม่รวม ReactJson เข้ากับส่วนเซิร์ฟเวอร์เซ้นเทริ่ง
+  { ssr: false } 
 );
 
 
@@ -98,12 +106,12 @@ interface Props {
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
-  const [isDecode, setIsDecode] = useState('Default View');
-  const CType = ['Default View', 'UTF-8'];
+  const [isDecode, setIsDecode] = useState('Default');
+  const CType = ['Default', 'Decode'];
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value)
   }
-  // console.log(isDecode)
+  _LOG(isDecode)
   // get object keys from txs.tx.body.messages[0]
   const KeyMsg = Object.keys(txs.tx.body.messages[0]);
   const message = txs.tx.body.messages[0];
@@ -297,6 +305,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                             </Tr>
 
                             {KeyMsg.map((key: any, index) => {
+                              // {console.log(key)}
                               if (typeof message[key] === "string" && message[key].startsWith("6x")) {
                                 if (key === "from_address") {
                                   return (
@@ -329,14 +338,21 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td>
                                       <Flex direction="row">
-                                        <Text style={{ marginRight: '5px' }}>
-                                          <Clickable
-                                            href={`/address/${message[key]}`}
-                                          >
+                                        {key != "ref_id" &&
+                                          <Text style={{ marginRight: '5px' }}>
+                                            <Clickable
+                                              href={`/address/${message[key]}`}
+                                            >
+                                              {message[key]}
+                                            </Clickable>
+                                            <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
+                                          </Text>
+                                        }
+                                        {key === "ref_id" &&
+                                          <Text style={{ marginRight: '5px' }}>
                                             {message[key]}
-                                          </Clickable>
-                                          <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
-                                        </Text>
+                                          </Text>
+                                        }
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -428,9 +444,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                               {Object.values(message[key]).map((data: any, i) => {
                                                 return (
                                                   <TabPanel key={i}>
-                                                    <Textarea readOnly>
-                                                      {data}
-                                                    </Textarea>
+                                                    <Textarea readOnly value={data} />
                                                   </TabPanel>
                                                 );
                                               })}
@@ -469,11 +483,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
-                              if (key === "base64NFTData" || key === "nftSchemaBase64" || 
-                                  key === "base64NewAttriuteDefenition" || key === "base64NewAction" || 
-                                  key === "base64_nft_attribute_value" || key === "base64ActionSignature" || 
-                                  key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
-                                ) {
+                              if (key === "base64NFTData" || key === "nftSchemaBase64" ||
+                                key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
+                                key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
+                                key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
+                              ) {
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none" display={"flex"}>
@@ -483,13 +497,15 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
-                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
-                                            {message[key]}
-                                          </Textarea>)
+                                        {isDecode === 'Default' &&
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
-                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        {isDecode === 'Decode' &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -521,13 +537,15 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         </Textarea>
                                       </Flex> */}
                                       <Flex direction="column">
-                                        {isDecode === 'Default View' &&
-                                          (<Textarea readOnly height={"200px"} backgroundColor={"#f4f4f4"}>
-                                            {message[key]}
-                                          </Textarea>)
+                                        {isDecode === "Default" &&
+                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
                                         }
-                                        {isDecode === 'UTF-8' &&
-                                          <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} />
+                                        {isDecode === "Decode" &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -544,6 +562,50 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 );
                               }
 
+                              if (key === "tokenId") {
+                                return (
+                                  <Tr key={index}>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <Text style={{ marginRight: '5px' }}>
+                                        {typeof message[key] === "string" ? message[key] : message[key].filter((item:any) => item !== "" && item !== "[]").toString()}
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                );
+                              }
+
+                              if (key === "nftSchemaCode" || key === "nft_schema_code") {
+                                return (
+                                  <Tr key={index}>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <LinkComponent marginRight="5px" _hover={{textDecoration: "none"}} href={`/schema/${message[key]}`}>
+                                          <Text
+                                            as={"span"}
+                                            decoration={"none"}
+                                            color="primary.500"
+                                          >
+                                            {message[key]}
+                                          </Text>
+                                        </LinkComponent>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                );
+                              }
+
                               if (key === "parameters") {
                                 return (
                                   <Tr key={index}>
@@ -554,13 +616,17 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="column">
-                                        {isDecode === "Default View" &&
+                                        {isDecode === "Default" &&
                                           <Text style={{ marginRight: '5px' }}>
                                             {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
                                           </Text>
                                         }
-                                        {isDecode === "UTF-8" &&
-                                          <DynamicReactJson src={message[key]} />
+                                        {isDecode === "Decode" &&
+                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                            <Flex p={3}>
+                                              <DynamicReactJson src={message[key]}  collapsed={1} displayDataTypes={false}/>
+                                            </Flex>
+                                          </Box>
                                         }
                                         <Box width={"20%"} marginTop={"10px"}>
                                           <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
@@ -602,10 +668,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                               <Td borderBottom="none">
-                                <Flex direction="row">
+                                <Flex direction="row" alignItems={"center"}>
                                   <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_used}</Text>
                                   <Center height='23px' style={{ marginRight: '5px' }}>
-                                    <Divider orientation='vertical' />
+                                    |
                                   </Center>
                                   <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_wanted}</Text>
                                   <Text>({((parseInt(tx.tx_result.gas_used) / parseInt(tx.tx_result.gas_wanted)) * 100).toFixed(2)}%)</Text>

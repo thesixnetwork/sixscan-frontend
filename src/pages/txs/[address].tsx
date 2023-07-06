@@ -56,6 +56,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
+import { _LOG } from "@/utils/log_helper";
 
 interface Props {
   address: string;
@@ -90,6 +91,8 @@ export default function Address({
   useEffect(() => {
     setTotalValue(totalValueTmp);
   }, [totalValue, totalValueTmp]);
+
+  _LOG(accountTxs)
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
@@ -220,28 +223,28 @@ export default function Address({
                             <Table>
                               <Thead>
                                 <Tr>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Txhash</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Method</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Age</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Block</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>From</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>To</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Value</Text>
                                   </Td>
-                                  <Td>
+                                  <Td textAlign={"center"}>
                                     <Text>Gas Fee</Text>
                                   </Td>
                                 </Tr>
@@ -255,6 +258,7 @@ export default function Address({
                                           direction="row"
                                           gap={1}
                                           align="center"
+                                          justifyContent={"center"}
                                         >
                                           {tx.code !== 0 && (
                                             <FaRegWindowClose
@@ -278,39 +282,53 @@ export default function Address({
                                         </Flex>
                                       </Td>
                                       <Td>
-                                        <Text>
-                                          <Badge>
-                                            {tx.type
-                                              .split(".")
-                                            [
-                                              tx.type.split(".").length - 1
-                                            ].slice(3)}
+                                        <Text justifyContent={"center"}>
+                                          <Badge textAlign={"center"} width="100%">
+                                            {
+                                              tx.type
+                                                .split(".")
+                                              [
+                                                tx.type.split(".").length - 1
+                                              ].slice(3) === "Send" ?
+                                                tx.decode_tx.toAddress === address ? "Receiver" : "Send"
+                                                :
+                                                tx.type
+                                                  .split(".")
+                                                [
+                                                  tx.type.split(".").length - 1
+                                                ].slice(3) === "PerformActionByAdmin" ? "Action" : 
+                                                tx.type
+                                                  .split(".")
+                                                [
+                                                  tx.type.split(".").length - 1
+                                                ].slice(3)
+                                            }
                                           </Badge>
                                         </Text>
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         <Text>
                                           {moment(tx.time_stamp).fromNow()}
                                         </Text>
                                       </Td>
-                                      <Td>
-                                          <Clickable href="/">
-                                            <Text style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px"
-                                            }}>
-                                              {tx.block_height}
-                                            </Text>
-                                          </Clickable>
+                                      <Td textAlign={"center"}>
+                                        <Clickable href={`/block/${tx.block_height}`}>
+                                          <Text style={{
+                                            color: "#5C34A2",
+                                            textDecoration: "none",
+                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                            fontSize: "12px"
+                                          }}>
+                                            {tx.block_height}
+                                          </Text>
+                                        </Clickable>
                                       </Td>
-                                      <Td>
-                                          {tx.decode_tx.toAddress && (
-                                            <Clickable
-                                              href={`/address/${tx.decode_tx.fromAddress}`}
-                                            >
-                                              <Text style={{
+                                      <Td textAlign={"center"}>
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.fromAddress}`}
+                                          >
+                                            <Text style={{
                                               color: "#5C34A2",
                                               textDecoration: "none",
                                               fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
@@ -320,15 +338,15 @@ export default function Address({
                                                 tx.decode_tx.fromAddress
                                               )}
                                             </Text>
-                                            </Clickable>
-                                          )}
+                                          </Clickable>
+                                        )}
                                       </Td>
-                                      <Td>
-                                          {tx.decode_tx.toAddress && (
-                                            <Clickable
-                                              href={`/address/${tx.decode_tx.toAddress}`}
-                                            >
-                                              <Text style={{
+                                      <Td textAlign={"center"}>
+                                        {tx.decode_tx.toAddress && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.toAddress}`}
+                                          >
+                                            <Text style={{
                                               color: "#5C34A2",
                                               textDecoration: "none",
                                               fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
@@ -338,10 +356,10 @@ export default function Address({
                                                 tx.decode_tx.toAddress
                                               )}
                                             </Text>
-                                            </Clickable>
-                                          )}
+                                          </Clickable>
+                                        )}
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         {tx.decode_tx.amount &&
                                           tx.decode_tx.amount[0]?.amount && (
                                             <Text>{`${formatNumber(
@@ -349,7 +367,7 @@ export default function Address({
                                             )} SIX`}</Text>
                                           )}
                                       </Td>
-                                      <Td>
+                                      <Td textAlign={"center"}>
                                         <Text>{`${formatNumber(
                                           convertUsixToSix(
                                             parseInt(tx.decode_tx.fee_amount)

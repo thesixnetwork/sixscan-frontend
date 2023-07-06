@@ -15,11 +15,13 @@ import {
   Table,
   Tr,
   Td,
+  Tooltip,
   Badge,
   Tbody,
   Thead,
   Image,
   Spacer,
+  Skeleton,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
@@ -60,8 +62,13 @@ import {
   getNFTFee,
   getLatestAction,
 } from "@/service/nftmngr";
-import { DataNFTStat, BlockNFTStat } from "@/types/Nftmngr";
+// import { NFTSchema, LatestAction } from "@/types/Nftmngr";
+
+import { DataNFTStat, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
 import { text } from "stream/consumers";
+import { _LOG } from "@/utils/log_helper";
+import { useState, useEffect, Suspense } from "react";
+
 
 const data = [
   {
@@ -90,22 +97,69 @@ const data = [
   },
 ];
 
-const maintain = true;
+const maintain = false;
 
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
-  nftActionCount: DataNFTStat;
+  // nftActionCount: DataNFTStat;
   blockNFTStat: BlockNFTStat;
-  latestAction: any;
+  // latestAction: any;
 }
 
 export default function Data({
   modalstate,
-  nftActionCount,
+  // nftActionCount,
   blockNFTStat,
-  latestAction,
+  // latestAction,
 }: Props) {
-  // console.log(JSON.parse(latestAction.txs[5].rawTx))
+  // _LOG(nftActionCount)
+
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoadedStat, setIsLoadedStat] = useState(false);
+  const [isStop, setIsStop] = useState(false);
+  const [isPage, setIsPage] = useState("1");
+  const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
+  const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(null);
+
+  ///////  get nft metadata /////////
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoaded(false)
+        setLatestAction(null);
+        const resLatestAction = await getLatestAction("1", "20");
+        setLatestAction(resLatestAction);
+        setIsLoaded(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, [isPage, isStop])
+
+  ////////// get stat /////////
+  useEffect(() => {
+    const fetchDataStat = async () => {
+      try {
+        setIsLoadedStat(false)
+        setNftActionCount(null);
+        const resActionStat = await getNFTActionCountStat(
+          "",
+          "1",
+          "5"
+        );
+        setNftActionCount(resActionStat);
+        setIsLoadedStat(true);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchDataStat();
+  }, [isStop])
+
+  // const ssf = nftActionCount.data.map((x:any) => { x.schema_code })
+  // const ssf = nftActionCount.data[0].schema_code
+  // console.log(ssf)
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -131,7 +185,7 @@ export default function Data({
             </Text>
             <SearchBar
               hasButton
-              placeHolder="Search by Address / Txn Hash / Block"
+              placeHolder="Search by Address / Txn Hash / Block / Schema"
               modalstate={modalstate}
             />
           </Flex>
@@ -172,8 +226,8 @@ export default function Data({
                           </Tr>
                         </Thead>
                         <Tbody>
-                          {nftActionCount &&
-                            nftActionCount.data.map((item, index) => (
+                          {isLoadedStat ? Array.isArray(nftActionCount) &&
+                            nftActionCount.map((item, index) => (
                               <Tr key={index}>
                                 <Td>
                                   <Flex
@@ -183,14 +237,20 @@ export default function Data({
                                   >
                                     <Text fontWeight={"bold"}>{index + 1}</Text>
                                     <Image
-                                      src="/logo-nftgen2-01.png"
+                                      src={item.image}
                                       alt="gen2"
                                       width={"40px"}
                                       height={"40px"}
                                     />
-                                    <Text fontWeight={"bold"}>
-                                      {formatSchema(item._id.schema_code)}
-                                    </Text>
+                                    <Clickable
+                                      href={`/schema/${item.schema_code}`}
+                                    >
+                                      <Tooltip label={item.schema_code} aria-label='A tooltip'>
+                                        <Text fontWeight={"bold"} style={{ textDecoration: "none" }}>
+                                          {formatSchema(item.schema_code)}
+                                        </Text>
+                                      </Tooltip>
+                                    </Clickable>
                                   </Flex>
                                 </Td>
                                 <Td>
@@ -199,9 +259,11 @@ export default function Data({
                                     alignItems="center"
                                     gap={3}
                                   >
-                                    <Text>
-                                      {formatSchemaAction(item._id.action)}
-                                    </Text>
+                                    <Tooltip label={item.action} aria-label='A tooltip'>
+                                      <Text>
+                                        {formatSchemaAction(item.action)}
+                                      </Text>
+                                    </Tooltip>
                                   </Flex>
                                 </Td>
                                 <Td>
@@ -214,7 +276,17 @@ export default function Data({
                                   </Flex>
                                 </Td>
                               </Tr>
-                            ))}
+                            )):
+                            Array.from({ length: 5 }).map((_, index) => (
+                              <Tr key={index}>
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                  <Td key={index}>
+                                    <Skeleton width={"auto"} height={"15px"} />
+                                  </Td>
+                                ))}
+                              </Tr>
+                            ))
+                            }
                         </Tbody>
                       </Table>
                     )}
@@ -396,13 +468,13 @@ export default function Data({
                                   >
                                     {blockNFTStat
                                       ? convertUsixToSix(
-                                          parseInt(
-                                            blockNFTStat.nftFee.replace(
-                                              "usix",
-                                              ""
-                                            )
+                                        parseInt(
+                                          blockNFTStat.nftFee.replace(
+                                            "usix",
+                                            ""
                                           )
                                         )
+                                      )
                                       : 0}
                                   </Text>
                                   <Text fontSize="sm" color={"medium"}>
@@ -480,7 +552,7 @@ export default function Data({
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {latestAction &&
+                        {isLoaded ? latestAction &&
                           latestAction.txs.map((tx: any, index: number) => (
                             <Tr key={index}>
                               <Td>
@@ -502,14 +574,14 @@ export default function Data({
                                 </Flex>
                               </Td>
                               <Td>
-                                  <Badge textAlign={"center"} width="100%">
-                                    {formatMethod(tx.type)}
-                                  </Badge>
+                                <Badge textAlign={"center"} width="100%">
+                                  {formatMethod(tx.type)}
+                                </Badge>
                               </Td>
                               <Td>
-                                {tx.tokenId ? (
+                                {tx.decode_tx.tokenId ? (
                                   <Clickable
-                                    href={`/schema/${tx.nftSchemaCode}/${tx.tokenId}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
                                   >
                                     <Text
                                       style={{
@@ -521,22 +593,22 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {tx.tokenId}
+                                      {tx.decode_tx.tokenId}
                                     </Text>
                                   </Clickable>
                                 ) : (
                                   <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {"Will be available"}
-                                    </Text>
+                                    style={{
+                                      color: "#5C34A2",
+                                      textDecoration: "none",
+                                      fontFamily:
+                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                      fontSize: "14px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {"Will be available"}
+                                  </Text>
                                 )}
                               </Td>
                               <Td>
@@ -578,17 +650,17 @@ export default function Data({
                                   </Clickable>
                                 ) : (
                                   <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {"Will be available"}
-                                    </Text>
+                                    style={{
+                                      color: "#5C34A2",
+                                      textDecoration: "none",
+                                      fontFamily:
+                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                      fontSize: "14px",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {"Will be available"}
+                                  </Text>
                                 )}
                               </Td>
                               <Td>
@@ -625,7 +697,17 @@ export default function Data({
                                 )}
                               </Td>
                             </Tr>
-                          ))}
+                          )) :
+                          Array.from({ length: 10 }).map((_, index) => (
+                            <Tr key={index}>
+                              {Array.from({ length: 7 }).map((_, index) => (
+                                <Td key={index}>
+                                  <Skeleton width={"auto"} height={"15px"} />
+                                </Td>
+                              ))}
+                            </Tr>
+                          ))
+                        }
                       </Tbody>
                     </Table>
                   </TableContainer>
@@ -634,6 +716,7 @@ export default function Data({
             </Grid>
           </Flex>
         </Container>
+
       </Box>
       <Spacer />
     </Flex>
@@ -672,9 +755,9 @@ export const getServerSideProps = async () => {
   const schemaCode = "";
   const page = "1";
   const pageSize = "5";
-  const endDate = new Date();
-  const preYear = endDate.getFullYear() - 3;
-  const startDate = new Date(preYear, endDate.getMonth(), endDate.getDate());
+  // const endDate = new Date();
+  // const preYear = endDate.getFullYear() - 3;
+  // const startDate = new Date(preYear, endDate.getMonth(), endDate.getDate());
 
   const start24h = new Date();
   start24h.setHours(0);
@@ -687,41 +770,41 @@ export const getServerSideProps = async () => {
   end24h.setSeconds(0);
   end24h.setMilliseconds(0);
   let count24h = 0;
+  let end_time
+  const day = start24h.getDate();
+  const month = start24h.getMonth() + 1;
+  const year = start24h.getFullYear();
+  if (month > 9) {
+    end_time = `${day}/${month}/${year}`;
+  } else {
+    end_time = `${day}/0${month}/${year}`;
+  }
 
   const [
-    nftActionCount,
+    // nftActionCount,
     totalNFTCollection,
     totalNFTS,
     nftFee,
     action24h,
-    latestAction,
+    // latestAction,
   ] = await Promise.all([
-    getNFTActionCountStat(
-      schemaCode,
-      startDate.toISOString(),
-      endDate.toISOString(),
-      page,
-      pageSize
-    ),
+    // getNFTActionCountStat(
+    //   schemaCode,
+    //   page,
+    //   pageSize
+    // ),
     getTotalNFTCollection(),
     getTotalNFTS(),
     getNFTFee(),
     getNFTActionCountStatDaily(
       schemaCode,
-      start24h.toISOString(),
-      end24h.toISOString(),
-      page,
-      pageSize
+      end_time
     ),
-    getLatestAction("1", "20"),
   ]);
 
   if (action24h) {
-    for (let i = 0; i < action24h.length; i++) {
-      count24h += action24h[i].count;
-    }
+    count24h += action24h.count;
   }
-  // console.log("nftActionCount",nftActionCount);
 
   const blockNFTStat = {
     totalNFTCollection: totalNFTCollection,
@@ -730,21 +813,20 @@ export const getServerSideProps = async () => {
     action24h: count24h,
   };
 
-  if (!latestAction) {
-    return {
-      props: {
-        nftActionCount: null,
-        blockNFTStat: null,
-        latestAction: null,
-      },
-    };
-  }
+  // if (!latestAction) {
+  //   return {
+  //     props: {
+  //       nftActionCount: null,
+  //       blockNFTStat: null,
+  //       // latestAction: null,
+  //     },
+  //   };
+  // }
 
   return {
     props: {
-      nftActionCount,
+      // nftActionCount,
       blockNFTStat,
-      latestAction,
     },
   };
 };

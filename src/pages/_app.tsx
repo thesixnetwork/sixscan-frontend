@@ -6,6 +6,7 @@ import Layout from "@/components/Layout";
 import { useState ,useEffect } from "react";
 import Router from "next/router";
 import NextNProgress from 'nextjs-progressbar';
+import { truncate } from "lodash";
 
 export default function App({ Component, pageProps }: AppProps) {
   const modalState = useDisclosure();
@@ -13,6 +14,8 @@ export default function App({ Component, pageProps }: AppProps) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.metaKey && event.key === "k") {
         modalState.onOpen();
+      } else if (event.key === "Escape") {
+        modalState.onClose();
       }
     }
     document.addEventListener("keydown", handleKeyDown);
@@ -24,7 +27,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
     <ChakraProvider theme={theme}>
       <Layout modalstate={modalState}>
-      <NextNProgress height={8} color="#209cee" /> 
+      <NextNProgress  options={{ showSpinner: false }} height={8} color="#209cee" /> 
       <Component modalstate={modalState} {...pageProps} />
       </Layout>
     </ChakraProvider>

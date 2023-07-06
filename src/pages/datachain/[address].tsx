@@ -225,25 +225,25 @@ export default function Address({
                                                         <Table>
                                                             <Thead>
                                                                 <Tr>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Txhash</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Token ID</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Method</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Age</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Block</Text>
                                                                     </Td>
-                                                                    <Td>
+                                                                    {/* <Td>
                                                                         <Text>By</Text>
-                                                                    </Td>
-                                                                    <Td>
+                                                                    </Td> */}
+                                                                    <Td textAlign={"center"}>
                                                                         <Text>Gas Fee</Text>
                                                                     </Td>
                                                                 </Tr>
@@ -257,6 +257,7 @@ export default function Address({
                                                                                     direction="row"
                                                                                     gap={1}
                                                                                     align="center"
+                                                                                    justifyContent={"center"}
                                                                                 >
                                                                                     {tx.code !== 0 && (
                                                                                         <FaRegWindowClose
@@ -271,14 +272,15 @@ export default function Address({
                                                                                             color: "#5C34A2",
                                                                                             textDecoration: "none",
                                                                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                                                            fontSize: "12px"
+                                                                                            fontSize: "12px",
+                                                                                            textAlign: "center",
                                                                                         }}>
                                                                                             {formatHex(tx.txhash)}
                                                                                         </Text>
                                                                                     </Clickable>
                                                                                 </Flex>
                                                                             </Td>
-                                                                            <Td>
+                                                                            <Td textAlign={"center"}>
                                                                                 <Clickable
                                                                                     href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
                                                                                 >
@@ -292,20 +294,20 @@ export default function Address({
                                                                                     </Text>
                                                                                 </Clickable>
                                                                             </Td>
-                                                                            <Td>
+                                                                            <Td textAlign={"center"}>
                                                                                 <Text>
                                                                                 <Badge textAlign={"center"} width="100%">
                                                                                 {formatMethod(tx.type)}
                                                                                 </Badge>
                                                                                 </Text>
                                                                             </Td>
-                                                                            <Td>
+                                                                            <Td textAlign={"center"}>
                                                                                 <Text>
                                                                                     {moment(tx.time_stamp).fromNow()}
                                                                                 </Text>
                                                                             </Td>
-                                                                            <Td>
-                                                                                <Clickable href="/">
+                                                                            <Td textAlign={"center"}>
+                                                                                <Clickable href={`/block/${tx.block_height}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
@@ -316,7 +318,7 @@ export default function Address({
                                                                                     </Text>
                                                                                 </Clickable>
                                                                             </Td>
-                                                                            <Td>
+                                                                            {/* <Td>
                                                                                 <Clickable href={`/address/${tx.decode_tx.relate_addr[0]}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
@@ -327,8 +329,8 @@ export default function Address({
                                                                                         {formatHex(tx.decode_tx.relate_addr[0])}
                                                                                     </Text>
                                                                                 </Clickable>
-                                                                            </Td>
-                                                                            <Td>
+                                                                            </Td> */}
+                                                                            <Td textAlign={"center"}>
                                                                                 <Text>{`${formatNumber(
                                                                                     convertUsixToSix(
                                                                                         parseInt(tx.decode_tx.fee_amount)
@@ -376,7 +378,7 @@ export const getServerSideProps = async ({
     const [validator, account, accountTxs] = await Promise.all([
         getValidator(address),
         getAccount(address),
-        getAllTransactionByAddress(address, page ? page : "1", "20"),
+        getAllTransactionByAddress(address, page ? page : "1", "10"),
     ]);
     const pageNumber = page
     return {

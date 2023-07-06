@@ -111,6 +111,14 @@ export const formatSchema = (schema: string) => {
   }
 };
 
+export const formatSchemaName = (schema: string) => {
+  const schema_code = schema.split('.')[1];
+  if (!schema_code) {
+    return schema
+  }
+  return schema_code
+};
+
 export const formatSchemaAction = (action: string) => {
   if (action.length <= 8) {
     return action;
