@@ -45,6 +45,7 @@ import {
 // ------------- Components ----------------
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
+import Pagination from "@/components/Pagination";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState, Suspense } from "react";
@@ -169,11 +170,20 @@ export default function Schema({
   let totalPages = 0;
   _LOG("nftCollection", nftCollection);
 
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const totalPagess: number = 10; // จำนวนหน้าทั้งหมดให้แทนที่ด้วยค่าจริงของคุณ
+
+  const handlePageChange = (newPage: number) => {
+    setIsLoaded(false)
+    setCurrentPage(newPage);
+    setIsPage(newPage.toString());
+  };
+
   const [isCopied, setIsCopied] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadedTxns, setIsLoadedTxns] = useState(false);
   const [isStop, setIsStop] = useState(false);
-  const [isPage, setIsPage] = useState("40");
+  const [isPage, setIsPage] = useState("1");
   const [isPageTxns, setIsPageTxns] = useState("1");
   const [isSchemaCode, setIsSchemaCode] = useState(schemacode);
   ///////  get nft metadata /////////
@@ -237,7 +247,7 @@ export default function Schema({
     if (!chain || !chainConfig[chain]) {
       return "";
     }
-    if(chainConfig[chain].opensea){
+    if (chainConfig[chain].opensea) {
       return chainConfig[chain].opensea + address;
     }
     return "";
@@ -640,7 +650,7 @@ export default function Schema({
                                   </Td>
                                   <Td>
                                     <Clickable
-                                      href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode: tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
+                                      href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                     >
                                       <Text style={{
                                         color: "#5C34A2",
@@ -758,122 +768,83 @@ export default function Schema({
                         </Box>
                       </TabPanel>
                       <TabPanel>
-                        <Flex
-                          direction="row"
-                          gap={2}
-                          align="center"
-                          py={4}
-                          justifyContent="right"
-                        >
-                          <Button
-                            variant={"solid"}
-                            size="xs"
-                            isDisabled={parseInt(isPage) === 1}
-                            onClick={() => handlePageMetaData("1")}
-                          >
-                            First
-                          </Button>
-                          <Button
-                            size="xs"
-                            isDisabled={parseInt(isPage) === 1}
-                            onClick={() => handlePageMetaData((parseInt(isPage) - 1).toString())}
-                          >
-                            <FaArrowLeft fontSize={12} />
-                          </Button>
-                          <Text fontSize="xs">
-                            {`Page ${isPage} of ${isTotalMeta}`}
-                          </Text>
-                          <Button
-                            size="xs"
-                            isDisabled={
-                              parseInt(isPage) === isTotalMeta
-                            }
-                            onClick={() => handlePageMetaData((parseInt(isPage) + 1).toString())}
-                          >
-                            <FaArrowRight fontSize={12} />
-                          </Button>
-                          <Button
-                            size="xs"
-                            isDisabled={
-                              parseInt(isPage) === isTotalMeta
-                            }
-                            onClick={() => handlePageMetaData(isTotalMeta.toString())}
-                          >
-                            Last
-                          </Button>
-                        </Flex>
+                        <Pagination
+                          currentPage={currentPage}
+                          totalPages={isTotalMeta}
+                          onPageChange={handlePageChange}
+                        />
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                            {isLoaded && items?.map((metadata, index) => (
-                              <GridItem
-                                colSpan={{ base: 6, md: 4, lg: 2 }}
-                                key={index}
-                              >
-                                <CustomCard>
-                                  <Link
-                                    href={`/schema/${schema.code}/${metadata.token_id}`}
-                                    _hover={{
-                                      textDecoration: "none",
-                                    }}
-                                    as={LinkComponent}
-                                  >
-                                    <motion.div whileHover={{ scale: 1.05 }}>
-                                      {
-                                        imageError ? (
-                                          <Image
-                                            src={
-                                              "/logo-nftgen2-01.png"
-                                            }
-                                            alt="mfer"
-                                            width="100%"
-                                          />
-                                        ) : (
-                                          <Image
-                                            src={
-                                              metadata.image ? metadata.image : "/logo-nftgen2-01.png"
-                                            }
-                                            onError={checkImage}
-                                            alt="mfer"
-                                            width="100%"
-                                          />
-                                        )
-                                      }
-                                    </motion.div>
-                                    <Flex direction="column" p={2}>
-                                      <Flex
-                                        direction="row"
-                                        gap={2}
-                                        align="center"
+                          {isLoaded && items?.map((metadata, index) => (
+                            <GridItem
+                              colSpan={{ base: 6, md: 4, lg: 2 }}
+                              key={index}
+                            >
+                              <CustomCard>
+                                <Link
+                                  href={`/schema/${schema.code}/${metadata.token_id}`}
+                                  _hover={{
+                                    textDecoration: "none",
+                                  }}
+                                  as={LinkComponent}
+                                >
+                                  <motion.div whileHover={{ scale: 1.05 }}>
+                                    {
+                                      imageError ? (
+                                        <Image
+                                          src={
+                                            "/logo-nftgen2-01.png"
+                                          }
+                                          alt="mfer"
+                                          width="100%"
+                                        />
+                                      ) : (
+                                        <Image
+                                          src={
+                                            metadata.image ? metadata.image : "/logo-nftgen2-01.png"
+                                          }
+                                          onError={checkImage}
+                                          alt="mfer"
+                                          width="100%"
+                                        />
+                                      )
+                                    }
+                                  </motion.div>
+                                  <Flex direction="column" p={2}>
+                                    <Flex
+                                      direction="row"
+                                      gap={2}
+                                      align="center"
+                                    >
+                                      <Text
+                                        fontSize="sm"
+                                        fontWeight="bold"
+                                        color="dark"
                                       >
-                                        <Text
-                                          fontSize="sm"
-                                          fontWeight="bold"
-                                          color="dark"
-                                        >
-                                          #
-                                        </Text>
-                                        <Text fontSize="sm" color={"primary.500"}>
-                                          {metadata.token_id}
-                                        </Text>
-                                      </Flex>
+                                        #
+                                      </Text>
+                                      <Text fontSize="sm" color={"primary.500"}>
+                                        {metadata.token_id}
+                                      </Text>
                                     </Flex>
-                                  </Link>
-                                </CustomCard>
-                              </GridItem>
-                            ))}
-                            {!isLoaded && !items && Array.from({ length: 12 }).map((_, index) => (
-                              <GridItem
-                                colSpan={{ base: 6, md: 4, lg: 2 }}
-                                key={index}
-                              >
-                                <CustomCard>
-                                  <Skeleton
-                                    height="228px"
-                                    width="auto"
-                                  />
-                                </CustomCard>
-                              </GridItem>
-                            ))}
-                          </Grid>
+                                  </Flex>
+                                </Link>
+                              </CustomCard>
+                            </GridItem>
+                          ))}
+                          {!isLoaded && !items && Array.from({ length: 12 }).map((_, index) => (
+                            <GridItem
+                              colSpan={{ base: 6, md: 4, lg: 2 }}
+                              key={index}
+                            >
+                              <CustomCard>
+                                <Skeleton
+                                  height="228px"
+                                  width="auto"
+                                />
+                              </CustomCard>
+                            </GridItem>
+                          ))}
+                        </Grid>
                         {/* <Suspense fallback={<LoadingMetadataBox />}>
                           <MetadataBox schema={schemacode} isPage={isPage}/>
                         </Suspense> */}
