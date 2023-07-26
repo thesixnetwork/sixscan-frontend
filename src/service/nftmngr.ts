@@ -121,6 +121,24 @@ export const getNftCollection = async (
   }
 };
 
+export const getImgCollection = async (
+  schemaCode: string,
+  tokenId: string,
+): Promise<any | null> => {
+  try {
+    const res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/${tokenId}`
+    );
+    if (!res.data.image) {
+      return null;
+    }
+    return res.data.image;
+  } catch (error) {
+    // console.error(error);
+    return null;
+  }
+};
+
 export const getNftCollectionNoLoop = async (
   schemaCode: string,
 ): Promise<any | null> => {

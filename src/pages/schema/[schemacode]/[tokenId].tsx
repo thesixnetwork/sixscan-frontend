@@ -43,7 +43,7 @@ import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
 import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
-import { formatTraitValue ,formatMethod} from "@/utils/format";
+import { formatTraitValue, formatMethod } from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
 import { getMetadata, getSchema, getAllTransactionByTokenID, getAllActionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
@@ -142,6 +142,12 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
     setIsPage(isPage);
   };
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   if (isPage) {
     latestAction
   }
@@ -235,8 +241,8 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                     ))}
                   </Flex>
                   <Flex direction="column">
-                    <Text>{metadata.description}</Text>
-                    <Flex align="center" direction="row" gap={1}>
+                    {isExpanded && metadata.description ? metadata.description : `${metadata.description && metadata.description.substring(0, 100)}...`}
+                    <Flex align="center" direction="row" gap={1} onClick={toggleExpand}>
                       <Text fontSize={"sm"} fontWeight={"bold"}>
                         SHOW MORE
                       </Text>

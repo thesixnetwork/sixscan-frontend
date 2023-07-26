@@ -48,7 +48,7 @@ import { LinkComponent } from "@/components/Chakralink";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState, Suspense } from "react";
-import { getNftCollection, getNftCollectionByClient, getSchema, getNftCollectionNoLoop } from "@/service/nftmngr";
+import { getNftCollection, getImgCollection, getSchema, getNftCollectionNoLoop } from "@/service/nftmngr";
 import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
@@ -91,6 +91,7 @@ interface Props {
   totalMetaData: any;
   pageNumber: string;
   metadataPageNumber: string;
+  imgCollection: string;
 }
 
 export default function Schema({
@@ -102,6 +103,7 @@ export default function Schema({
   totalMetaData,
   pageNumber,
   metadataPageNumber,
+  imgCollection,
 }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NFTMetadata[]>([]);
@@ -345,7 +347,7 @@ export default function Schema({
                 ) : (
                   <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={items && items[0]?.image ? items[0]?.image : "/logo-nftgen2-01.png"}
+                    src={imgCollection ? imgCollection : "/logo-nftgen2-01.png"}
                     alt={"collection image not found"}
                     placeholder={"empty"}
                     width="100%"
@@ -904,10 +906,10 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection, totalMetaData] = await Promise.all([
+  const [openseaCollection, totalMetaData, imgCollection] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollectionNoLoop(schemacode),
-    // getNftCollectionV2(schemacode, metadata_page),
+    getImgCollection(schemacode, "1"),
     // getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
   return {
@@ -915,6 +917,7 @@ export const getServerSideProps = async ({
       schemacode,
       schema,
       openseaCollection,
+      imgCollection,
       // nftCollection,
       // nftCollectionV2,
       totalMetaData,
