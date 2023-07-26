@@ -590,7 +590,7 @@ export default function Data({
                               <Td>
                                 {tx.decode_tx.tokenId ? (
                                   <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode: tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                   >
                                     <Text
                                       style={{

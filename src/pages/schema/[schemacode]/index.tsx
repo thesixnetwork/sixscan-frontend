@@ -114,7 +114,7 @@ export default function Schema({
   const router = useRouter();
   const chainConfig: {
     [key: string]: {
-      opensea: string;
+      opensea?: string;
       blockscan: string;
       icon?: string;
     };
@@ -134,6 +134,14 @@ export default function Schema({
       blockscan: `https://goerli.etherscan.io/address/`,
       icon: `/eth-logo.png`,
     },
+    SIXNET: {
+      blockscan: `https://evm.sixscan.io/address/`,
+      icon: `/six.png`,
+    },
+    FIVENET: {
+      blockscan: `https://fivenet.evm.sixscan.io/address/`,
+      icon: `/six.png`,
+    },
   };
   const [organization, code] = schema
     ? schema.code.includes(".")
@@ -146,11 +154,11 @@ export default function Schema({
     //   value: "0",
     // },
     {
-      title: "organization",
+      title: "Organization",
       value: organization,
     },
     {
-      title: "collection",
+      title: "NFT Schema Code",
       value: code,
     },
   ];
@@ -229,7 +237,10 @@ export default function Schema({
     if (!chain || !chainConfig[chain]) {
       return "";
     }
-    return chainConfig[chain].opensea + address;
+    if(chainConfig[chain].opensea){
+      return chainConfig[chain].opensea + address;
+    }
+    return "";
   };
 
   const getIcon = (chain: string) => {
@@ -629,7 +640,7 @@ export default function Schema({
                                   </Td>
                                   <Td>
                                     <Clickable
-                                      href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                      href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode: tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                     >
                                       <Text style={{
                                         color: "#5C34A2",

@@ -257,8 +257,8 @@ export default function Address({
                                                                             </Td>
                                                                             <Td>
                                                                                 {
-                                                                                tx.decode_tx.nftSchemaCode?  
-                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}>
+                                                                                tx.decode_tx.nftSchemaCode || tx.decode_tx.nft_schema_code ?  
+                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode :tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
@@ -308,15 +308,15 @@ export default function Address({
                                                                                 )} SIX` : ""}</Text>
                                                                             </Td>
                                                                             <Td>
-                                                                                {tx.decode_tx.nftSchemaCode? (
-                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode}`}>
+                                                                                {tx.decode_tx.nftSchemaCode || tx.decode_tx.nft_schema_code ? (
+                                                                                <Clickable href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode:tx.decode_tx.nft_schema_code}`}>
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",
                                                                                         textDecoration: "none",
                                                                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                                                                         fontSize: "14px"
                                                                                     }}>
-                                                                                        {formatHex(tx.decode_tx.nftSchemaCode)}
+                                                                                        {formatHex(tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode:tx.decode_tx.nft_schema_code)}
                                                                                     </Text>
                                                                                 </Clickable>) : "Will be available"}
                                                                             </Td>
