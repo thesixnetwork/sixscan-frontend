@@ -847,7 +847,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
 
       {allMultimessage.map((message: any, index: any) => {
         return (
-          <Box p={6}>
+          <Box p={6} key={index}>
           <Container maxW="container.xl">
             <Flex direction={"column"} gap={6}>
               <CustomCard>

@@ -282,7 +282,7 @@ export default function Address({
                                                                             </Td>
                                                                             <Td textAlign={"center"}>
                                                                                 <Clickable
-                                                                                    href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                                                                    href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode: tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                                                                 >
                                                                                     <Text style={{
                                                                                         color: "#5C34A2",

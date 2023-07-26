@@ -833,7 +833,7 @@ export default function Address({
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Clickable
-                                      href={`/schema/${x.decode_tx.nftSchemaCode}/${x.decode_tx.tokenId}`}
+                                      href={`/schema/${x.decode_tx.nftSchemaCode ? x.decode_tx.nftSchemaCode:x.decode_tx.nft_schema_code }/${x.decode_tx.tokenId}`}
                                     >
                                       <Text style={{
                                         color: "#5C34A2",
@@ -899,14 +899,14 @@ export default function Address({
                                     )} SIX`}</Text>
                                   </Td>
                                   <Td textAlign={"center"}>
-                                    <Clickable href={`/schema/${x.decode_tx.nftSchemaCode}`}>
+                                    <Clickable href={`/schema/${x.decode_tx.nftSchemaCode? x.decode_tx.nftSchemaCode: x.decode_tx.nft_schema_code}`}>
                                       <Text style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                         fontSize: "12px"
                                       }}>
-                                        {formatHex(x.decode_tx.nftSchemaCode)}
+                                        {formatHex(x.decode_tx.nftSchemaCode? x.decode_tx.nftSchemaCode: x.decode_tx.nft_schema_code)}
                                       </Text>
                                     </Clickable>
                                   </Td>
