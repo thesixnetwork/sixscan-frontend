@@ -43,7 +43,7 @@ import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
 import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
-import { formatTraitValue } from "@/utils/format";
+import { formatTraitValue ,formatMethod} from "@/utils/format";
 import AttributeBox from "@/components/AttributeBox";
 import { getMetadata, getSchema, getAllTransactionByTokenID, getAllActionByTokenID } from "@/service/nftmngr";
 import { Metadata } from "@/types/Opensea";
@@ -245,7 +245,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                   </Flex>
                   <Flex direction="row" gap={5}>
                     <Flex direction="column">
-                      <Text fontWeight={"bold"}>{latestAction?.txs?.length}</Text>
+                      <Text fontWeight={"bold"}>{latestAction?.totalCount}</Text>
                       <Text color="medium">actions performed</Text>
                     </Flex>
                   </Flex>
@@ -353,7 +353,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Text>
                                 Latest {txns?.txs?.length} from a total of{" "}
                                 {/* <Clickable href="/"> */}
-                                {latestAction?.totalCount}
+                                {txns?.totalCount}
                                 {/* </Clickable> */}
                                 {" "}
                                 transaction
@@ -397,7 +397,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                 isDisabled={
                                   parseInt(isPage) === txns?.totalPage
                                 }
-                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
+                                onClick={() => handlePageLatestTxns(txns?.totalPage.toString())}
 
                               >
                                 Last
@@ -416,7 +416,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                   <Text>Txhash</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>Action</Text>
+                                  <Text>Method</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
                                   <Text>Age</Text>
@@ -449,7 +449,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Badge textAlign={"center"} width="100%">{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
+                                      <Badge textAlign={"center"} width="100%">{formatMethod(action.type)}</Badge>
                                     </Text>
                                   </Td>
                                   <Td textAlign={"center"}>
@@ -539,7 +539,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                 <FaArrowLeft fontSize={12} />
                               </Button>
                               <Text fontSize="xs">
-                                {`Page ${isPage} of ${latestAction?.totalPage}`}
+                                {`Page ${isPageAction} of ${latestAction?.totalPage}`}
                               </Text>
                               <Button
                                 size="xs"
@@ -555,7 +555,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                 isDisabled={
                                   parseInt(isPageAction) === latestAction?.totalPage
                                 }
-                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
+                                onClick={() => handlePageLatestAction(latestAction?.totalPage.toString())}
 
                               >
                                 Last

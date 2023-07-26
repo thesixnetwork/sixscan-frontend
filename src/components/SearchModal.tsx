@@ -91,8 +91,14 @@ const SearchModal = ({
     const isTx = validateTxHash(searchInput);
     const isContractByAddress = await validateContract(searchInput);
     const isBlock = await validateBlock(searchInput);
-    const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
-    const schemaByContract = await getSchemaByAddress(searchInput)
+    // const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
+    // const schemaByContract = await getSchemaByAddress(searchInput)
+    const resSchemaaa2 = await fetch(`/api/getSchemaCode?input=${searchInput}`);
+    const isSchemaaa2 = await resSchemaaa2.json();
+    const resschemaByContract = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
+    const schemaByContract = await resschemaByContract.json();
+
+    
 
     _LOG(JSON.stringify(schemaByContract, null, 2));
     if (isAddress) {
@@ -256,7 +262,7 @@ const SearchModal = ({
           <ModalBody style={{ height: '20%', overflowY: 'scroll' }}>
             <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
               <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
-              <Button fontSize="sl" colorScheme='gray'>
+              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
                 <Clickable href="/schemas">
                   <Text fontSize="xs" fontWeight="bold" color="dark">
                     View More
@@ -314,7 +320,7 @@ const SearchModal = ({
           <ModalBody>
             <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
               <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
-              <Button fontSize="sl" colorScheme='gray'>
+              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
                 <Clickable href={`/contract/${Array.isArray(resultContract) && resultContract[0].origin_contract_address}`}>
                   <Text fontSize="xs" fontWeight="bold" color="dark">
                     View More

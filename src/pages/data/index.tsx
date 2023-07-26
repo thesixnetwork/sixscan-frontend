@@ -121,13 +121,15 @@ export default function Data({
   const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
   const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(null);
 
-  ///////  get nft metadata /////////
+  ///////  get Latest Action /////////
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoaded(false)
         setLatestAction(null);
-        const resLatestAction = await getLatestAction("1", "20");
+        // const resLatestAction = await getLatestAction("1", "20");
+        const response = await fetch(`/api/nftLatestAction?isPage=1&isPageSize=15`);
+        const resLatestAction = await response.json();
         setLatestAction(resLatestAction);
         setIsLoaded(true);
       } catch (error) {
@@ -143,11 +145,8 @@ export default function Data({
       try {
         setIsLoadedStat(false)
         setNftActionCount(null);
-        const resActionStat = await getNFTActionCountStat(
-          "",
-          "1",
-          "5"
-        );
+        const response = await fetch(`/api/nftstat?schemaCode=&isPage=1&isPageSize=5`);
+        const resActionStat = await response.json();
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);
       } catch (error) {
@@ -242,15 +241,25 @@ export default function Data({
                                       width={"40px"}
                                       height={"40px"}
                                     />
-                                    <Clickable
+                                    <Link
                                       href={`/schema/${item.schema_code}`}
+                                      target="_blank"
+                                      _hover={{ textDecoration: "none" }}
                                     >
                                       <Tooltip label={item.schema_code} aria-label='A tooltip'>
-                                        <Text fontWeight={"bold"} style={{ textDecoration: "none" }}>
+                                        <Text fontWeight={"bold"} 
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}>
                                           {formatSchema(item.schema_code)}
                                         </Text>
                                       </Tooltip>
-                                    </Clickable>
+                                    </Link>
                                   </Flex>
                                 </Td>
                                 <Td>

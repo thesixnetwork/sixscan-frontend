@@ -46,7 +46,7 @@ import { useEffect, useState } from "react";
 // ------------------------- Helper Libs -------------------------
 import {
     formatSchemaName,
-  } from "@/utils/format";
+} from "@/utils/format";
 import { getSchemaByCodeAddr2, getAllSchema } from "@/service/nftmngr";
 import styles from "@/styles/schema_hover.module.css";
 import { useRouter } from 'next/router';
@@ -79,6 +79,10 @@ export default function Schema({
     const addValueToTotalValue = (value: number) => {
         totalValueTmp += value;
         return value;
+    };
+
+    const calculateIndex = (index:number) => {
+        return (parseInt(pageNumber )- 1) * 15 + index + 1;
     };
 
     useEffect(() => {
@@ -211,8 +215,8 @@ export default function Schema({
                                                             </Thead>
                                                             <Tbody>
                                                                 {schema.data.map((schema: any, index: number) => (
-                                                                    <Tr key={index} 
-                                                                        className={styles["hover-row"]} 
+                                                                    <Tr key={index}
+                                                                        className={styles["hover-row"]}
                                                                         onClick={() => router.push(`/schema/${schema.schema_code}`)}
                                                                     >
                                                                         <Td textAlign={"center"}>
@@ -222,7 +226,7 @@ export default function Schema({
                                                                                     textDecoration: "none",
                                                                                     fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                                                                     fontSize: "12px",
-                                                                                }}>{index + 1}</Text>
+                                                                                }}>{calculateIndex(index)}</Text>
                                                                             </Clickable>
                                                                         </Td>
                                                                         <Td textAlign={"center"}>
