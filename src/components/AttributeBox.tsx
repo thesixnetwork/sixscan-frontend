@@ -8,7 +8,7 @@ const AttributeBox = (attr: any) => {
         {attr.trait_type}
       </Text>
       <Text fontSize={"sm"} color={"dark"}>
-        {formatTraitValue(attr.value)}
+        {formatTraitValue(attr.value === "" ? "No Value": attr.value )}
       </Text>
     </Flex>
   );

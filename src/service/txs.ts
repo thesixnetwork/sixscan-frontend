@@ -9,7 +9,7 @@ export const getTxsFromSchema = async (
 ): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}/api/nft/getAllTransaction?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransaction?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -24,6 +24,36 @@ export const getTxsFromSchema = async (
       return null;
     }
     return accountTxs;
+
+  } catch (error) {
+    console.error("Error: ", error);
+    return null;
+  }
+};
+
+export const getTxsFromSchemaSixNet = async (
+  schemaCode: string,
+  page: string,
+  limit: string
+): Promise<any> => {
+  try {
+    const res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionBySchema?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
+    );
+    if (res.status !== 200) {
+      _LOG("Error: Non-200 status code returned:", res.status);
+      return null;
+    }
+    if (res.data.statusCode !== "V:0001") {
+      _LOG("Error: API returned status code", res.data.statusCode);
+      return null;
+    }
+    const accountTxs = res.data.data;
+    if (!accountTxs) {
+      return null;
+    }
+    return accountTxs;
+
   } catch (error) {
     console.error("Error: ", error);
     return null;

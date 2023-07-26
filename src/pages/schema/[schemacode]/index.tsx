@@ -61,6 +61,9 @@ import { _LOG } from "@/utils/log_helper";
 
 import dynamic from 'next/dynamic';
 import React from 'react';
+import LoadingMetadataBox from "@/components/LoadingMetadataBox";
+// import MetadataBox from "@/components/MetadataBox";
+// const MetadataBox = React.lazy(() => import('@/components/MetadataBox'));
 // import ReactJsonViewer from 'react-json-viewer-cool';
 // const ReactJsonViewer = dynamic(
 //   () => import('react-json-viewer-cool'),
@@ -69,7 +72,7 @@ import React from 'react';
 
 const DynamicReactJson = dynamic(
   () => import('react-json-view'),
-  { ssr: false } 
+  { ssr: false }
 );
 
 type Txns = {
@@ -151,7 +154,7 @@ export default function Schema({
   ];
   const [page, setPage] = useState(1);
   const [nftCollection, setNftCollection] = useState<any>([]);
-  const perPage = 12;
+  const perPage = 13;
   // const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
   let totalPages = 0;
   _LOG("nftCollection", nftCollection);
@@ -160,7 +163,7 @@ export default function Schema({
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadedTxns, setIsLoadedTxns] = useState(false);
   const [isStop, setIsStop] = useState(false);
-  const [isPage, setIsPage] = useState("1");
+  const [isPage, setIsPage] = useState("40");
   const [isPageTxns, setIsPageTxns] = useState("1");
   const [isSchemaCode, setIsSchemaCode] = useState(schemacode);
   ///////  get nft metadata /////////
@@ -170,7 +173,9 @@ export default function Schema({
         setIsLoaded(false)
         setItems([]);
         setNftCollection([]);
-        const resMetadata = await getNftCollectionByClient(schemacode, isPage);
+        // const resMetadata = await getNftCollectionByClient(schemacode, isPage);
+        const response = await fetch(`/api/getNftCollection?schemaCode=${schemacode}&isPage=${isPage}`);
+        const resMetadata = await response.json();
         setNftCollection(resMetadata);
         setIsLoaded(true);
       } catch (error) {
@@ -195,7 +200,9 @@ export default function Schema({
       try {
         setIsLoadedTxns(false)
         setTxns(null);
-        const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
+        // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
+        const response = await fetch(`/api/getTxsFromSchema?schemaCode=${schemacode}&isPage=${isPageTxns}&isPageSize=15`);
+        const resTxns = await response.json();
         setTxns(resTxns);
         setIsLoadedTxns(true);
       } catch (error) {
@@ -319,186 +326,186 @@ export default function Schema({
       </Head>
 
       <Box>
-          <Box p={6}>
-            <Container maxW="container.xl">
-              <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                <GridItem
-                  colSpan={{ base: 12, md: 3 }}
-                  alignItems={"center"}
-                  justifyContent={"center"}
-                  display={"flex"}
-                >
-                  {openseaCollection && openseaCollection.image_url ? (
-                    <Image
-                      rounded={{ base: "sm", md: "md", lg: "lg" }}
-                      src={openseaCollection.image_url ? openseaCollection.image_url : "/logo-nftgen2-01.png"}
-                      alt={schema.name}
-                      width="100%"
-                    />
-                  ) : (
-                    <Image
-                      rounded={{ base: "sm", md: "md", lg: "lg" }}
-                      src={items && items[0]?.image ? items[0]?.image : "/logo-nftgen2-01.png"}
-                      alt={"collection image not found"}
-                      placeholder={"empty"}
-                      width="100%"
-                    />
-                  )}
-                </GridItem>
-                <GridItem colSpan={{ base: 12, md: 9 }}>
-                  <Flex direction="column" gap={4}>
-                    <Flex direction="column">
-                      <Flex direction="row" gap={2} alignItems="center">
-                        <Text fontSize="2xl" fontWeight="bold">
-                          {schema.name}
-                        </Text>
-                        {!schema.isVerified && (
-                          <FaCheckCircle color={"rgb(69,153,234)"} />
-                        )}
-                      </Flex>
-                      <Flex direction="row" gap={1}>
-                        <Text fontSize="sm">Contract</Text>
-                        <Text fontSize="sm">
-                          <Clickable
-                            href={getExplorerLink(
-                              schema.origin_data.origin_chain,
-                              schema.origin_data.origin_contract_address
-                            )}
-                            underline={
-                              getExplorerLink(schema.origin_data.origin_chain, schema.origin_data.origin_contract_address) === "" ? false : true}
-                          >
-                            {getExplorerLink(
-                              schema.origin_data.origin_chain,
-                              schema.origin_data.origin_contract_address
-                            )
-                              ? schema.origin_data?.origin_contract_address
-                              : "N/A"}
-                          </Clickable>
-                        </Text>
-                      </Flex>
+        <Box p={6}>
+          <Container maxW="container.xl">
+            <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+              <GridItem
+                colSpan={{ base: 12, md: 3 }}
+                alignItems={"center"}
+                justifyContent={"center"}
+                display={"flex"}
+              >
+                {openseaCollection && openseaCollection.image_url ? (
+                  <Image
+                    rounded={{ base: "sm", md: "md", lg: "lg" }}
+                    src={openseaCollection.image_url ? openseaCollection.image_url : "/logo-nftgen2-01.png"}
+                    alt={schema.name}
+                    width="100%"
+                  />
+                ) : (
+                  <Image
+                    rounded={{ base: "sm", md: "md", lg: "lg" }}
+                    src={items && items[0]?.image ? items[0]?.image : "/logo-nftgen2-01.png"}
+                    alt={"collection image not found"}
+                    placeholder={"empty"}
+                    width="100%"
+                  />
+                )}
+              </GridItem>
+              <GridItem colSpan={{ base: 12, md: 9 }}>
+                <Flex direction="column" gap={4}>
+                  <Flex direction="column">
+                    <Flex direction="row" gap={2} alignItems="center">
+                      <Text fontSize="2xl" fontWeight="bold">
+                        {schema.name}
+                      </Text>
+                      {!schema.isVerified && (
+                        <FaCheckCircle color={"rgb(69,153,234)"} />
+                      )}
                     </Flex>
-                    <Flex direction="row" gap={2}>
-                      {getOpenseaLink(
-                        schema.origin_data.origin_chain,
-                        schema.origin_data.origin_contract_address
-                      ) && (
-                          <Flex direction="row" gap={1} alignItems="center">
-                            <motion.div
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                            >
-                              <Link
-                                href={getOpenseaLink(
-                                  schema.origin_data.origin_chain,
-                                  schema.origin_data.origin_contract_address
-                                )}
-                                target="_blank"
-                              >
-                                <Image
-                                  src="/opensea-logo.svg"
-                                  alt="opensea"
-                                  width={6}
-                                />
-                              </Link>
-                            </motion.div>
-                          </Flex>
-                        )}
-                      <Flex direction="row" gap={1} alignItems="center">
-                        <motion.div
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
+                    <Flex direction="row" gap={1}>
+                      <Text fontSize="sm">Contract</Text>
+                      <Text fontSize="sm">
+                        <Clickable
+                          href={getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )}
+                          underline={
+                            getExplorerLink(schema.origin_data.origin_chain, schema.origin_data.origin_contract_address) === "" ? false : true}
                         >
-                          <Link
-                            href={getExplorerLink(
-                              schema.origin_data.origin_chain,
-                              schema.origin_data.origin_contract_address
-                            )}
-                            target="_blank"
-                          >
-                            {getIcon(schema.origin_data.origin_chain) && (
-                              <Box
-                                bgColor="light"
-                                p={1}
-                                borderRadius="full"
-                                border="1px solid"
-                                borderColor={"blackAlpha.100"}
-                              >
-                                {schema.origin_data?.origin_chain && (
-                                  <Image
-                                    src={getIcon(schema.origin_data.origin_chain)}
-                                    alt="icon"
-                                    height={3.5}
-                                  />
-                                )}
-                              </Box>
-                            )}
-                          </Link>
-                        </motion.div>
-                      </Flex>
-                    </Flex>
-                    {openseaCollection && openseaCollection.description && (
-                      <Flex direction="column">
-                        {isShowMore ? (
-                          <Text>{openseaCollection.description}</Text>
-                        ) : (
-                          <Text>
-                            {`${openseaCollection.description.slice(0, 100)}...`}
-                          </Text>
-                        )}
-                        <Flex align="center" direction="row" gap={1}>
-                          <Box
-                            onClick={() => setIsShowMore(!isShowMore)}
-                            cursor={"pointer"}
-                            display={"flex"}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                            gap={1}
-                          >
-                            <Text fontSize={"sm"} fontWeight={"bold"}>
-                              {isShowMore ? `SHOW LESS` : `SHOW MORE`}
-                            </Text>
-                            {isShowMore ? (
-                              <FaChevronUp fontSize={12} />
-                            ) : (
-                              <FaChevronDown fontSize={12} />
-                            )}
-                          </Box>
-                        </Flex>
-                      </Flex>
-                    )}
-                    <Flex direction="row" gap={5}>
-                      {CONFIG.map((config, index) => (
-                        <Flex direction="column" key={index}>
-                          <Text fontWeight={"bold"}>{config.value}</Text>
-                          <Text color="medium">{config.title}</Text>
-                        </Flex>
-                      ))}
+                          {getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )
+                            ? schema.origin_data?.origin_contract_address
+                            : "N/A"}
+                        </Clickable>
+                      </Text>
                     </Flex>
                   </Flex>
-                </GridItem>
-                <GridItem colSpan={12}>
-                  <CustomCard>
-                    <Tabs
-                      isLazy
-                      defaultIndex={parseInt(metadataPageNumber) > 1 ? 2 : 0}
-                    >
-                      <TabList>
-                        <Tab>Txns</Tab>
-                        <Tab>Schema</Tab>
-                        <Tab>Metadata</Tab>
-                        <Spacer />
-                      </TabList>
-                      <TabPanels>
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            align="center"
-                            color={"dark"}
-                            justify="space-between"
+                  <Flex direction="row" gap={2}>
+                    {getOpenseaLink(
+                      schema.origin_data.origin_chain,
+                      schema.origin_data.origin_contract_address
+                    ) && (
+                        <Flex direction="row" gap={1} alignItems="center">
+                          <motion.div
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
                           >
-                            <Flex direction="row" gap={2} align="center">
-                              <FaSortAmountDown fontSize={12} />
-                              {isLoadedTxns ?
+                            <Link
+                              href={getOpenseaLink(
+                                schema.origin_data.origin_chain,
+                                schema.origin_data.origin_contract_address
+                              )}
+                              target="_blank"
+                            >
+                              <Image
+                                src="/opensea-logo.svg"
+                                alt="opensea"
+                                width={6}
+                              />
+                            </Link>
+                          </motion.div>
+                        </Flex>
+                      )}
+                    <Flex direction="row" gap={1} alignItems="center">
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                      >
+                        <Link
+                          href={getExplorerLink(
+                            schema.origin_data.origin_chain,
+                            schema.origin_data.origin_contract_address
+                          )}
+                          target="_blank"
+                        >
+                          {getIcon(schema.origin_data.origin_chain) && (
+                            <Box
+                              bgColor="light"
+                              p={1}
+                              borderRadius="full"
+                              border="1px solid"
+                              borderColor={"blackAlpha.100"}
+                            >
+                              {schema.origin_data?.origin_chain && (
+                                <Image
+                                  src={getIcon(schema.origin_data.origin_chain)}
+                                  alt="icon"
+                                  height={3.5}
+                                />
+                              )}
+                            </Box>
+                          )}
+                        </Link>
+                      </motion.div>
+                    </Flex>
+                  </Flex>
+                  {openseaCollection && openseaCollection.description && (
+                    <Flex direction="column">
+                      {isShowMore ? (
+                        <Text>{openseaCollection.description}</Text>
+                      ) : (
+                        <Text>
+                          {`${openseaCollection.description.slice(0, 100)}...`}
+                        </Text>
+                      )}
+                      <Flex align="center" direction="row" gap={1}>
+                        <Box
+                          onClick={() => setIsShowMore(!isShowMore)}
+                          cursor={"pointer"}
+                          display={"flex"}
+                          alignItems={"center"}
+                          justifyContent={"center"}
+                          gap={1}
+                        >
+                          <Text fontSize={"sm"} fontWeight={"bold"}>
+                            {isShowMore ? `SHOW LESS` : `SHOW MORE`}
+                          </Text>
+                          {isShowMore ? (
+                            <FaChevronUp fontSize={12} />
+                          ) : (
+                            <FaChevronDown fontSize={12} />
+                          )}
+                        </Box>
+                      </Flex>
+                    </Flex>
+                  )}
+                  <Flex direction="row" gap={5}>
+                    {CONFIG.map((config, index) => (
+                      <Flex direction="column" key={index}>
+                        <Text fontWeight={"bold"}>{config.value}</Text>
+                        <Text color="medium">{config.title}</Text>
+                      </Flex>
+                    ))}
+                  </Flex>
+                </Flex>
+              </GridItem>
+              <GridItem colSpan={12}>
+                <CustomCard>
+                  <Tabs
+                    isLazy
+                    defaultIndex={parseInt(metadataPageNumber) > 1 ? 2 : 0}
+                  >
+                    <TabList>
+                      <Tab>Txns</Tab>
+                      <Tab>Schema</Tab>
+                      <Tab>Metadata</Tab>
+                      <Spacer />
+                    </TabList>
+                    <TabPanels>
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          align="center"
+                          color={"dark"}
+                          justify="space-between"
+                        >
+                          <Flex direction="row" gap={2} align="center">
+                            <FaSortAmountDown fontSize={12} />
+                            {isLoadedTxns ?
                               <Text>
                                 {`Showing ${txns ? txns.txs.length : "0"
                                   } txns from a total of `}
@@ -509,118 +516,102 @@ export default function Schema({
                               </Text>
                               :
                               <Skeleton width={"200px"} height={"15px"} />
-                              }
-                            </Flex>
-                            {isLoadedTxns ? txns && (
-                              <Flex
-                                direction="row"
-                                gap={2}
-                                align="center"
-                                py={4}
-                                justifyContent="right"
-                              >
-                                <Button
-                                  variant={"solid"}
-                                  size="xs"
-                                  isDisabled={parseInt(isPageTxns) === 1}
-                                  onClick={() => handlePageTxns("1")}
-                                >
-                                  First
-                                </Button>
-                                <Button
-                                  size="xs"
-                                  isDisabled={parseInt(isPageTxns) === 1}
-                                  onClick={() => handlePageTxns((parseInt(isPageTxns) - 1).toString())}
-                                >
-                                  <FaArrowLeft fontSize={12} />
-                                </Button>
-                                <Text fontSize="xs">
-                                  {`Page ${isPageTxns} of ${txns.totalPage}`}
-                                </Text>
-                                <Button
-                                  size="xs"
-                                  isDisabled={
-                                    parseInt(isPageTxns) === txns.totalPage
-                                  }
-                                  onClick={() => handlePageTxns((parseInt(isPageTxns) + 1).toString())}
-                                >
-                                  <FaArrowRight fontSize={12} />
-                                </Button>
-                                <Button
-                                  size="xs"
-                                  isDisabled={
-                                    parseInt(isPageTxns) === txns.totalPage
-                                  }
-                                  onClick={() => handlePageTxns(txns.totalPage.toString())}
-                                >
-                                  Last
-                                </Button>
-                              </Flex>
-                            ):
-                              <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
                             }
                           </Flex>
-                          <TableContainer>
-                            <Table>
-                              <Thead>
-                                <Tr>
+                          {isLoadedTxns ? txns && (
+                            <Flex
+                              direction="row"
+                              gap={2}
+                              align="center"
+                              py={4}
+                              justifyContent="right"
+                            >
+                              <Button
+                                variant={"solid"}
+                                size="xs"
+                                isDisabled={parseInt(isPageTxns) === 1}
+                                onClick={() => handlePageTxns("1")}
+                              >
+                                First
+                              </Button>
+                              <Button
+                                size="xs"
+                                isDisabled={parseInt(isPageTxns) === 1}
+                                onClick={() => handlePageTxns((parseInt(isPageTxns) - 1).toString())}
+                              >
+                                <FaArrowLeft fontSize={12} />
+                              </Button>
+                              <Text fontSize="xs">
+                                {`Page ${isPageTxns} of ${txns.totalPage}`}
+                              </Text>
+                              <Button
+                                size="xs"
+                                isDisabled={
+                                  parseInt(isPageTxns) >= txns.totalPage
+                                }
+                                onClick={() => handlePageTxns((parseInt(isPageTxns) + 1).toString())}
+                              >
+                                <FaArrowRight fontSize={12} />
+                              </Button>
+                              <Button
+                                size="xs"
+                                isDisabled={
+                                  parseInt(isPageTxns) >= txns.totalPage
+                                }
+                                onClick={() => handlePageTxns(txns.totalPage.toString())}
+                              >
+                                Last
+                              </Button>
+                            </Flex>
+                          ) :
+                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
+                          }
+                        </Flex>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr>
+                                <Td>
+                                  <Text textAlign={'center'}>Txhash</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>Token ID</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>Method</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>Age</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>Block</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>By</Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={'center'}>Gas Fee</Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {isLoadedTxns ? txns && txns.txs.map((tx, index) => (
+                                <Tr key={index}>
                                   <Td>
-                                    <Text textAlign={'center'}>Txhash</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>Token ID</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>Method</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>Age</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>Block</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>By</Text>
-                                  </Td>
-                                  <Td>
-                                    <Text textAlign={'center'}>Gas Fee</Text>
-                                  </Td>
-                                </Tr>
-                              </Thead>
-                              <Tbody>
-                                {isLoadedTxns ? txns && txns.txs.map((tx, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        gap={1}
-                                        align="center"
-                                        justifyContent={"center"}
-                                      >
-                                        {tx.code !== 0 && (
-                                          <FaRegWindowClose
-                                            color="red"
-                                            fontSize={12}
-                                          />
-                                        )}
-                                        <Clickable
-                                          href={`/tx/${tx.txhash}`}
-                                        >
-                                          <Text style={{
-                                            color: "#5C34A2",
-                                            textDecoration: "none",
-                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "14px",
-                                            textAlign: "center",
-                                          }}>
-                                            {formatHex(tx.txhash)}
-                                          </Text>
-                                        </Clickable>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
+                                    <Flex
+                                      direction="row"
+                                      gap={1}
+                                      align="center"
+                                      justifyContent={"center"}
+                                    >
+                                      {tx.code !== 0 && (
+                                        <FaRegWindowClose
+                                          color="red"
+                                          fontSize={12}
+                                        />
+                                      )}
                                       <Clickable
-                                        href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                        href={`/tx/${tx.txhash}`}
                                       >
                                         <Text style={{
                                           color: "#5C34A2",
@@ -629,23 +620,55 @@ export default function Schema({
                                           fontSize: "14px",
                                           textAlign: "center",
                                         }}>
-                                          {tx.decode_tx.tokenId}
+                                          {formatHex(tx.txhash)}
                                         </Text>
                                       </Clickable>
-                                    </Td>
-                                    <Td>
-                                      <Badge textAlign={"center"} width="100%">
-                                        {formatMethod(tx.type)}
-                                      </Badge>
-                                    </Td>
-                                    <Td>
-                                      <Text textAlign={'center'}>
-                                        {moment(tx.time_stamp).fromNow()}
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Clickable
+                                      href={`/schema/${tx.decode_tx.nftSchemaCode}/${tx.decode_tx.tokenId}`}
+                                    >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}>
+                                        {tx.decode_tx.tokenId}
                                       </Text>
-                                    </Td>
-                                    <Td>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
+                                    <Badge textAlign={"center"} width="100%">
+                                      {formatMethod(tx.type)}
+                                    </Badge>
+                                  </Td>
+                                  <Td>
+                                    <Text textAlign={'center'}>
+                                      {moment(tx.time_stamp).fromNow()}
+                                    </Text>
+                                  </Td>
+                                  <Td>
+                                    <Clickable
+                                      href={`/block/${tx.block_height}`}
+                                    >
+                                      <Text style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center"
+                                      }}>
+                                        {tx.block_height}
+                                      </Text>
+                                    </Clickable>
+                                  </Td>
+                                  <Td>
+                                    {tx.decode_tx.creator && (
                                       <Clickable
-                                        href={`/block/${tx.block_height}`}
+                                        href={`/address/${tx.decode_tx.creator}`}
                                       >
                                         <Text style={{
                                           color: "#5C34A2",
@@ -654,36 +677,20 @@ export default function Schema({
                                           fontSize: "14px",
                                           textAlign: "center"
                                         }}>
-                                          {tx.block_height}
+                                          {formatHex(tx.decode_tx.creator)}
                                         </Text>
                                       </Clickable>
-                                    </Td>
-                                    <Td>
-                                      {tx.decode_tx.creator && (
-                                        <Clickable
-                                          href={`/address/${tx.decode_tx.creator}`}
-                                        >
-                                          <Text style={{
-                                            color: "#5C34A2",
-                                            textDecoration: "none",
-                                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "14px",
-                                            textAlign: "center"
-                                          }}>
-                                            {formatHex(tx.decode_tx.creator)}
-                                          </Text>
-                                        </Clickable>
-                                      )}
-                                    </Td>
-                                    <Td>
-                                      <Text textAlign={'center'}>{`${formatNumber(
-                                        convertUsixToSix(
-                                          parseInt(tx.decode_tx.fee_amount)
-                                        )
-                                      )} SIX`}</Text>
-                                    </Td>
-                                  </Tr>
-                                )):
+                                    )}
+                                  </Td>
+                                  <Td>
+                                    <Text textAlign={'center'}>{`${formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(tx.decode_tx.fee_amount)
+                                      )
+                                    )} SIX`}</Text>
+                                  </Td>
+                                </Tr>
+                              )) :
                                 Array.from({ length: 10 }).map((_, index) => (
                                   <Tr key={index}>
                                     {Array.from({ length: 7 }).map((_, index) => (
@@ -693,52 +700,52 @@ export default function Schema({
                                     ))}
                                   </Tr>
                                 ))
-                                }
-                              </Tbody>
-                            </Table>
-                          </TableContainer>
-                        </TabPanel>
-                        <TabPanel>
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            justify="space-between"
-                            py={2}
-                          >
-                            <Flex align="center" direction="row" gap={2}>
-                              <FaScroll fontSize={12} />
-                              <Text>Schema Source Code</Text>
-                            </Flex>
-                            <Spacer />
-                            <Tooltip
-                              label={isCopied ? "Copied" : "Copy"}
-                              placement="top"
-                            >
-                              <Box
-                                bgColor="light"
-                                p={1.5}
-                                rounded="full"
-                                onClick={handleCopyClick}
-                                cursor="pointer"
-                              >
-                                <FaCopy fontSize={12} />
-                              </Box>
-                            </Tooltip>
+                              }
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+                      <TabPanel>
+                        <Flex
+                          direction="row"
+                          gap={2}
+                          align="center"
+                          justify="space-between"
+                          py={2}
+                        >
+                          <Flex align="center" direction="row" gap={2}>
+                            <FaScroll fontSize={12} />
+                            <Text>Schema Source Code</Text>
                           </Flex>
-                          {/* <Textarea
+                          <Spacer />
+                          <Tooltip
+                            label={isCopied ? "Copied" : "Copy"}
+                            placement="top"
+                          >
+                            <Box
+                              bgColor="light"
+                              p={1.5}
+                              rounded="full"
+                              onClick={handleCopyClick}
+                              cursor="pointer"
+                            >
+                              <FaCopy fontSize={12} />
+                            </Box>
+                          </Tooltip>
+                        </Flex>
+                        {/* <Textarea
                           value={JSON.stringify(schema, null, 2)}
                           readOnly
                           minH={500}
                         /> */}
-                          <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
-                            <Flex p={3}>
-                              <DynamicReactJson src={schema} collapsed={1} displayDataTypes={false}/>
-                            </Flex>
-                          </Box>
-                        </TabPanel>
-                        <TabPanel>
-                          {/* <Flex
+                        <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                          <Flex p={3}>
+                            <DynamicReactJson src={schema} collapsed={1} displayDataTypes={false} />
+                          </Flex>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel>
+                        <Flex
                           direction="row"
                           gap={2}
                           align="center"
@@ -748,89 +755,41 @@ export default function Schema({
                           <Button
                             variant={"solid"}
                             size="xs"
-                            isDisabled={page === 1}
-                            onClick={() => {
-                              setPage(1);
-                            }}
+                            isDisabled={parseInt(isPage) === 1}
+                            onClick={() => handlePageMetaData("1")}
                           >
                             First
                           </Button>
                           <Button
                             size="xs"
-                            isDisabled={page === 1}
-                            onClick={() => {
-                              setPage(page - 1);
-                            }}
+                            isDisabled={parseInt(isPage) === 1}
+                            onClick={() => handlePageMetaData((parseInt(isPage) - 1).toString())}
                           >
                             <FaArrowLeft fontSize={12} />
                           </Button>
                           <Text fontSize="xs">
-                            {`Page ${page} of ${Math.ceil(totalPages)}`}
+                            {`Page ${isPage} of ${isTotalMeta}`}
                           </Text>
                           <Button
                             size="xs"
-                            isDisabled={page === Math.ceil(totalPages)}
-                            onClick={() => {
-                              setPage(page + 1);
-                            }}
+                            isDisabled={
+                              parseInt(isPage) === isTotalMeta
+                            }
+                            onClick={() => handlePageMetaData((parseInt(isPage) + 1).toString())}
                           >
                             <FaArrowRight fontSize={12} />
                           </Button>
                           <Button
                             size="xs"
-                            isDisabled={page === Math.ceil(totalPages)}
-                            onClick={() => {
-                              setPage(totalPages);
-                            }}
+                            isDisabled={
+                              parseInt(isPage) === isTotalMeta
+                            }
+                            onClick={() => handlePageMetaData(isTotalMeta.toString())}
                           >
                             Last
                           </Button>
-                        </Flex> */}
-                          <Flex
-                            direction="row"
-                            gap={2}
-                            align="center"
-                            py={4}
-                            justifyContent="right"
-                          >
-                            <Button
-                              variant={"solid"}
-                              size="xs"
-                              isDisabled={parseInt(isPage) === 1}
-                              onClick={() => handlePageMetaData("1")}
-                            >
-                              First
-                            </Button>
-                            <Button
-                              size="xs"
-                              isDisabled={parseInt(isPage) === 1}
-                              onClick={() => handlePageMetaData((parseInt(isPage) - 1).toString())}
-                            >
-                              <FaArrowLeft fontSize={12} />
-                            </Button>
-                            <Text fontSize="xs">
-                              {`Page ${isPage} of ${isTotalMeta}`}
-                            </Text>
-                            <Button
-                              size="xs"
-                              isDisabled={
-                                parseInt(isPage) === isTotalMeta
-                              }
-                              onClick={() => handlePageMetaData((parseInt(isPage) + 1).toString())}
-                            >
-                              <FaArrowRight fontSize={12} />
-                            </Button>
-                            <Button
-                              size="xs"
-                              isDisabled={
-                                parseInt(isPage) === isTotalMeta
-                              }
-                              onClick={() => handlePageMetaData(isTotalMeta.toString())}
-                            >
-                              Last
-                            </Button>
-                          </Flex>
-                          <Grid templateColumns="repeat(12, 1fr)" gap={6}>
+                        </Flex>
+                        <Grid templateColumns="repeat(12, 1fr)" gap={6}>
                             {isLoaded && items?.map((metadata, index) => (
                               <GridItem
                                 colSpan={{ base: 6, md: 4, lg: 2 }}
@@ -902,14 +861,17 @@ export default function Schema({
                               </GridItem>
                             ))}
                           </Grid>
-                        </TabPanel>
-                      </TabPanels>
-                    </Tabs>
-                  </CustomCard>
-                </GridItem>
-              </Grid>
-            </Container>
-          </Box>
+                        {/* <Suspense fallback={<LoadingMetadataBox />}>
+                          <MetadataBox schema={schemacode} isPage={isPage}/>
+                        </Suspense> */}
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
+                </CustomCard>
+              </GridItem>
+            </Grid>
+          </Container>
+        </Box>
       </Box>
       <Spacer />
     </Flex>
@@ -942,7 +904,7 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection,totalMetaData] = await Promise.all([
+  const [openseaCollection, totalMetaData] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollectionNoLoop(schemacode),
     // getNftCollectionV2(schemacode, metadata_page),

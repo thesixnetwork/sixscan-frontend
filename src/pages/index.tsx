@@ -51,7 +51,7 @@ import {
   getLatestBlock,
   getLatestBlocks,
 } from "@/service/block";
-import { Block ,BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
+import { Block, BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
 import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
 // ------------------------- Helper Libs -------------------------
 import { formatNumber } from "@/utils/format";
@@ -93,8 +93,9 @@ export default function Home({
   // fetch last block interval
   useEffect(() => {
     const fetchData = async () => {
-      const latestBlock = await getLatestBlock();
-        setLatestBlock(latestBlock? latestBlock : latestBlockState);
+      const response = await fetch(`/api/rpcLatestBlock`);
+      const latestBlock = await response.json();
+      setLatestBlock(latestBlock ? latestBlock : latestBlockState);
     };
     // Fetch data initially
     fetchData();
@@ -109,13 +110,24 @@ export default function Home({
         ? parseInt(latestBlock?.block?.header?.height) ?? null
         : null;
       const minBlockHeight = latestBlockHeight ? latestBlockHeight - 20 : null;
+      // const [latestBlocks, blocksResult, validators] = await Promise.all([
+      //   getLatestBlocks(minBlockHeight, latestBlockHeight),
+      //   getBlocksResult(minBlockHeight, latestBlockHeight),
+      //   getValidators(),
+      // ]);
+
+      const latestBlocksResponse = fetch(`/api/rpcLatestBlocks?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`);
+      const blocksResultResponse = fetch(`/api/rpcBlocksResult?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`);
+      const validatorsResponse = fetch('/api/validators');
+
       const [latestBlocks, blocksResult, validators] = await Promise.all([
-        getLatestBlocks(minBlockHeight, latestBlockHeight),
-        getBlocksResult(minBlockHeight, latestBlockHeight),
-        getValidators(),
-      ]);
-      setLatestBlocks(latestBlocks? latestBlocks : latestBlocksState);
-      setBlocksResult(blocksResult? blocksResult : blocksResultState);
+        latestBlocksResponse,
+        blocksResultResponse,
+        validatorsResponse
+      ]).then(responses => Promise.all(responses.map(response => response.json())));
+
+      setLatestBlocks(latestBlocks ? latestBlocks : latestBlocksState);
+      setBlocksResult(blocksResult ? blocksResult : blocksResultState);
       setValidators(validators ? validators : validatorsState);
     };
     fetchData();
@@ -287,29 +299,29 @@ export default function Home({
                             <Flex direction="row">
                               Fee Recipient{` `}
                               <Clickable
-                                
+
                                 href={`/address/${getBlockRewardValidator(
                                   block,
                                   blocksResultState
                                 )}`}
                               >
                                 <Text style={{
-                                color: "#5C34A2",
-                                textDecoration: "none",
-                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                fontSize: "14px",
-                                marginLeft: "6px",
-                              }}>
-                                {validatorsState.map((validator) => {
-                                  if (
-                                    validator.operator_address ===
-                                    getBlockRewardValidator(block, blocksResultState)
-                                  ) {
-                                    return validator.description.moniker;
-                                  }
-                                })}
+                                  color: "#5C34A2",
+                                  textDecoration: "none",
+                                  fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                  fontSize: "14px",
+                                  marginLeft: "6px",
+                                }}>
+                                  {validatorsState.map((validator) => {
+                                    if (
+                                      validator.operator_address ===
+                                      getBlockRewardValidator(block, blocksResultState)
+                                    ) {
+                                      return validator.description.moniker;
+                                    }
+                                  })}
                                 </Text>
-                                
+
                               </Clickable>
                             </Flex>
                             <Text fontSize="xs" color="medium">
@@ -327,13 +339,13 @@ export default function Home({
                           <Badge display={"inline-flex"}>
                             Reward{" "}
                             <Text style={{
-                                color: "#5C34A2",
-                                textDecoration: "none",
-                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                fontSize: "14px",
-                                marginLeft: "6px",
-                                marginRight: "6px",
-                              }}>
+                              color: "#5C34A2",
+                              textDecoration: "none",
+                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                              fontSize: "14px",
+                              marginLeft: "6px",
+                              marginRight: "6px",
+                            }}>
                               {getBlockRewardAmount(block, blocksResultState)}
                             </Text>{" "}
                             SIX
