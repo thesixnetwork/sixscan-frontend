@@ -133,7 +133,7 @@ export default function Data({
         setLatestAction(resLatestAction);
         setIsLoaded(true);
       } catch (error) {
-        console.log(error);
+        _LOG(error)
       }
     };
     fetchData();
@@ -150,7 +150,7 @@ export default function Data({
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);
       } catch (error) {
-        console.log(error);
+        _LOG(error)
       }
     };
     fetchDataStat();
@@ -673,9 +673,9 @@ export default function Data({
                                 )}
                               </Td>
                               <Td>
-                                {tx.decode_tx.nftSchemaCode ? (
+                                {tx.decode_tx.nftSchemaCode || tx.decode_tx.nft_schema_code ? (
                                   <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}`}
                                   >
                                     <Text
                                       style={{
@@ -687,7 +687,7 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {formatHex(tx.decode_tx.nftSchemaCode)}
+                                      {formatHex(tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code)}
                                     </Text>
                                   </Clickable>
                                 ) : (
