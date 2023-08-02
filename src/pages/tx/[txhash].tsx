@@ -388,7 +388,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -470,7 +470,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -838,7 +838,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
         <Container maxW="container.xl">
           <Flex direction="column" gap={3} p={3}>
             <Text fontSize="xl" fontWeight="bold" color={"darkest"}>
-              Transaction Details (Multi Messages)
+              Transaction Details (Multi Messages)({allMultimessage.length})
             </Text>
             <Divider />
           </Flex>
@@ -854,7 +854,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                 <TableContainer>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Overview</Tab>
+                      <Tab>Overview:{" "}{index+1}</Tab>
                       <Tab>Logs({Array.isArray(_Logs) && _Logs[0].events !== undefined ? _Logs[0].events.length : "1"})</Tab>
                       <Tab>Events({Array.isArray(_Events) && _Events.length})</Tab>
                     </TabList>
@@ -1009,7 +1009,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -1091,7 +1091,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}

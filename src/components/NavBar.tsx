@@ -106,7 +106,7 @@ export default function WithSubnavigation({
             <Flex direction="column">
               <Box style={{ display: "flex", marginLeft: "10px", background: "#FFFFFF", border: "1px solid #DADEF2", borderRadius: "32px" }}>
                 <Box>
-                  <LinkComponent href={ENV.Block_Scount_API_URL} _hover={{ textDecoration: "none" }}>
+                  <LinkComponent href={ENV.BLOCK_SCOUT_API_URL} _hover={{ textDecoration: "none" }}>
                   <Text style={{
                     marginLeft: "10px", marginRight: "10px", color: "#878CA8",
                     fontStyle: "normal",fontWeight: "550",

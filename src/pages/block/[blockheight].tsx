@@ -275,7 +275,7 @@ export default function BlockPage({
                                         >
                                           {tx.hash}
                                         </Clickable>) : (
-                                        <Link href={`https://fivenet.evm.sixscan.io/tx/${tx.hashEVM}`}>
+                                        <Link href={`${ENV.BLOCK_SCOUT_API_URL}/tx/${tx.hashEVM}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
