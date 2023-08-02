@@ -319,7 +319,7 @@ export default function Data({
                       <CardBody>
                         <Flex direction="column" py={2}>
                           <Text
-                            fontSize="xl"
+                            fontSize="2xl"
                             fontWeight="bold"
                             style={{
                               background:
@@ -328,7 +328,7 @@ export default function Data({
                               WebkitTextFillColor: "transparent",
                             }}
                           >
-                            NFT Gen 2 is a Dynamic Data Layer
+                            Dynamic Data Layer (NFT Gen 2) 
                           </Text>
                           <Text
                             fontSize="xl"
@@ -340,7 +340,7 @@ export default function Data({
                               WebkitTextFillColor: "transparent",
                             }}
                           >
-                            that runs on the SIX Protocol Chain
+                            Developed to optimize NFT capabilities and seamlessly integrate with the business model.
                           </Text>
                         </Flex>
                         <Text

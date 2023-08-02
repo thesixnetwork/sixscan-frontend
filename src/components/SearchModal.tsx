@@ -4,7 +4,7 @@ import {
   ModalContent,
   ModalHeader,
   ModalBody,
-  useDisclosure,
+  // useDisclosure,
   Spacer,
   Spinner,
   InputGroup,
@@ -13,7 +13,7 @@ import {
   Input,
   Text,
   Flex,
-  VStack,
+  // VStack,
   Button
 } from "@chakra-ui/react";
 import {
@@ -34,7 +34,7 @@ import {
 } from "@/utils/validate";
 import { LinkComponent } from "@/components/Chakralink";
 
-import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
+// import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
 import { Clickable } from "./Clickable";
 import { _LOG } from "@/utils/log_helper";
 

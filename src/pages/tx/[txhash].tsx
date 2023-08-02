@@ -388,7 +388,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -470,7 +470,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -1009,7 +1009,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -1091,7 +1091,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Td>
                                     <Td borderBottom="none">
                                       <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.Block_Scount_API_URL}/address/${message[key]}`}>
+                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
