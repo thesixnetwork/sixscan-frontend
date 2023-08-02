@@ -238,12 +238,14 @@ export default function Schema({
   };
 
   const getExplorerLink = (chain: string, address: string) => {
+    chain = chain.toUpperCase();
     if (!chain || !chainConfig[chain]) {
       return "";
     }
     return chainConfig[chain].blockscan + address;
   };
   const getOpenseaLink = (chain: string, address: string) => {
+    chain = chain.toUpperCase();
     if (!chain || !chainConfig[chain]) {
       return "";
     }
@@ -254,10 +256,11 @@ export default function Schema({
   };
 
   const getIcon = (chain: string) => {
+    chain = chain.toUpperCase();
     if (!chain || !chainConfig[chain]) {
       return "";
     }
-    return chainConfig[schema.origin_data?.origin_chain].icon;
+    return chainConfig[chain].icon;
   };
 
   const checkImage = () => {
