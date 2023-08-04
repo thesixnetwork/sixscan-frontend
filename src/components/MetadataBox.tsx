@@ -17,6 +17,7 @@ import { getNftCollectionByClient } from "@/service/nftmngr/collection";
 interface Data {
     schema: string;
     isPage: string;
+    pasgSize: string;
 }
 
 interface NFTMetadata {
@@ -24,13 +25,13 @@ interface NFTMetadata {
     pagegination: string;
 }
 
-const MetadataBox = ({ schema, isPage }: Data) => {
+const MetadataBox = ({ schema, isPage, pasgSize }: Data) => {
     const [metadata, setMetadata] = useState<NFTMetadata | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`/api/metadata?schemaCode=${schema}&isPage=${isPage}`);
+                const response = await fetch(`/api/metadata?schemaCode=${schema}&isPage=${isPage}&pasgSize=${pasgSize}`);
                 const data = await response.json();
                 setMetadata(data);
             } catch (error) {
@@ -39,7 +40,7 @@ const MetadataBox = ({ schema, isPage }: Data) => {
         };
 
         fetchData();
-    }, [schema, isPage]);
+    }, [schema, isPage, pasgSize]);
     // console.log(metadata)
 
     return (
