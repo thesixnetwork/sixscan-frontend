@@ -60,8 +60,8 @@ import {
   getTotalNFTCollection,
   getTotalNFTS,
   getNFTFee,
-  getLatestAction,
-} from "@/service/nftmngr";
+} from "@/service/nftmngr/stats";
+import { getLatestAction } from "@/service/nftmngr/txs";
 // import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 
 import { DataNFTStat, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
@@ -145,7 +145,7 @@ export default function Data({
       try {
         setIsLoadedStat(false)
         setNftActionCount(null);
-        const response = await fetch(`/api/nftstat?schemaCode=&isPage=1&isPageSize=5`);
+        const response = await fetch(`/api/nftstat?schemaCode=&end_Time=&isPage=1&isPageSize=5`);
         const resActionStat = await response.json();
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);

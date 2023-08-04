@@ -49,7 +49,9 @@ import Pagination from "@/components/Pagination";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState, Suspense } from "react";
-import { getNftCollection, getImgCollection, getSchema, getNftCollectionNoLoop } from "@/service/nftmngr";
+import { getNftCollection, getImgCollection, getNftCollectionNoLoop } from "@/service/nftmngr/collection";
+import { getMetadata } from "@/service/nftmngr/common";
+import { getSchema } from "@/service/nftmngr/schema";
 import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
 import { getOpenseaCollectionByName } from "@/service/opensea";
@@ -59,6 +61,7 @@ import { getTxsFromSchema } from "@/service/txs";
 import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
 import moment from "moment";
 import { _LOG } from "@/utils/log_helper";
+import { Metadata } from "@/types/Opensea";
 
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -86,6 +89,7 @@ interface Props {
   schemacode: string;
   schema: NFTSchema;
   openseaCollection: Collection;
+  metadata: Metadata;
   // nftCollection: any;
   // nftCollectionV2: any;
   // txns: Txns;
@@ -99,6 +103,7 @@ export default function Schema({
   schemacode,
   schema,
   openseaCollection,
+  metadata,
   // nftCollection,
   // nftCollectionV2,
   totalMetaData,
@@ -106,12 +111,27 @@ export default function Schema({
   metadataPageNumber,
   imgCollection,
 }: Props) {
+  const perPage = 12;
+
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState<NFTMetadata[]>([]);
   const [txns, setTxns] = useState<Txns | null>(null);
   const [sortedTxs, setSortedTxs] = useState<any[]>([]);
   const [isShowMore, setIsShowMore] = useState(false);
   const [imageError, setImageError] = useState(false);
+
+  const [page, setPage] = useState(1);
+  const [nftCollection, setNftCollection] = useState<any>([]);
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  const [isCopied, setIsCopied] = useState(false);
+  const [isMetadataLoaded, setIsMetadataLoaded] = useState(false);
+  const [isLoadedTxns, setIsLoadedTxns] = useState(false);
+  const [isStop, setIsStop] = useState(false);
+  const [metadataPage, setMetadataPage] = useState("1");
+  const [isPageTxns, setIsPageTxns] = useState("1");
+  const [isSchemaCode, setIsSchemaCode] = useState(schemacode);
   const router = useRouter();
   const chainConfig: {
     [key: string]: {
@@ -163,78 +183,66 @@ export default function Schema({
       value: code,
     },
   ];
-  const [page, setPage] = useState(1);
-  const [nftCollection, setNftCollection] = useState<any>([]);
-  const perPage = 13;
+
   // const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
-  let totalPages = 0;
   _LOG("nftCollection", nftCollection);
 
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const totalPagess: number = 10; // จำนวนหน้าทั้งหมดให้แทนที่ด้วยค่าจริงของคุณ
-
-  const handlePageChange = (newPage: number) => {
-    setIsLoaded(false)
+  const handleMetadaPageChange = (newPage: number) => {
+    console.log("newPage", newPage);
+    
+    setIsMetadataLoaded(false)
     setCurrentPage(newPage);
-    setIsPage(newPage.toString());
+    setMetadataPage(newPage.toString());
+  };
+  ///////  get nft metadata /////////
+
+  const fetchData = async () => {
+    try {
+      setIsMetadataLoaded(false)
+      setItems([]);
+      setNftCollection([]);
+      // const resMetadata = await getNftCollectionByClient(schemacode, metadataPage);
+      const response = await fetch(`/api/getNftCollection?schemaCode=${schemacode}&metadataPage=${metadataPage}&perPage=${perPage}`);
+      const resMetadata = await response.json();
+      setNftCollection(resMetadata);
+      setIsMetadataLoaded(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const [isCopied, setIsCopied] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isLoadedTxns, setIsLoadedTxns] = useState(false);
-  const [isStop, setIsStop] = useState(false);
-  const [isPage, setIsPage] = useState("1");
-  const [isPageTxns, setIsPageTxns] = useState("1");
-  const [isSchemaCode, setIsSchemaCode] = useState(schemacode);
-  ///////  get nft metadata /////////
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoaded(false)
-        setItems([]);
-        setNftCollection([]);
-        // const resMetadata = await getNftCollectionByClient(schemacode, isPage);
-        const response = await fetch(`/api/getNftCollection?schemaCode=${schemacode}&isPage=${isPage}`);
-        const resMetadata = await response.json();
-        setNftCollection(resMetadata);
-        setIsLoaded(true);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchData();
-  }, [schemacode, isPage, isStop])
+  }, [schemacode, metadataPage, isStop])
 
-  if (nftCollection) {
-    totalPages = schema ? Math.ceil(nftCollection?.pagination?.total / perPage) : 0;
-  }
 
-  const handlePageMetaData = (isPage: string) => {
-    setIsLoaded(false)
-    setIsPage(isPage);
+  const handlePageMetaData = (metadataPage: string) => {
+    setIsMetadataLoaded(false)
+    setMetadataPage(metadataPage);
   };
 
   //////////// get Txns /////////
+  const fetchDataTxs = async () => {
+    try {
+      setIsLoadedTxns(false)
+      setTxns(null);
+      // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
+      const response = await fetch(`/api/getTxsFromSchema?schemaCode=${schemacode}&metadataPage=${isPageTxns}&isPageSize=15`);
+      const resTxns = await response.json();
+      setTxns(resTxns);
+      setIsLoadedTxns(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchDataTxs = async () => {
-      try {
-        setIsLoadedTxns(false)
-        setTxns(null);
-        // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
-        const response = await fetch(`/api/getTxsFromSchema?schemaCode=${schemacode}&isPage=${isPageTxns}&isPageSize=15`);
-        const resTxns = await response.json();
-        setTxns(resTxns);
-        setIsLoadedTxns(true);
-      } catch (error) {
-        console.log(error);
-      }
-    };
     fetchDataTxs();
   }, [schemacode, isPageTxns, isStop])
 
-  const handlePageTxns = (isPage: string) => {
+  const handlePageTxns = (metadataPage: string) => {
     setIsLoadedTxns(false)
-    setIsPageTxns(isPage);
+    setIsPageTxns(metadataPage);
   };
 
   const getExplorerLink = (chain: string, address: string) => {
@@ -274,7 +282,7 @@ export default function Schema({
       setIsCopied(false);
     }, 1000);
   };
-  const isTotalMeta = Math.ceil(totalMetaData.total / perPage)
+  const MetadataTotalPage = Math.ceil(totalMetaData.total / perPage)
   useEffect(() => {
     // sort by token_id
     if (!schema) {
@@ -499,6 +507,18 @@ export default function Schema({
                       </Flex>
                     </Flex>
                   )}
+                  {!openseaCollection &&  (
+                    <Flex direction="column">
+                      {isShowMore && metadata?.description ? metadata?.description : `${metadata?.description && metadata?.description.substring(0, 100)}...`}
+                      <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
+                        <Text fontSize={"sm"} fontWeight={"bold"}>
+                          {isShowMore ? "SHOW LESS" : "SHOW MORE"}
+                        </Text>
+                        {isShowMore ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                      </Flex>
+                    </Flex>
+                  )
+                  }
                   <Flex direction="row" gap={5}>
                     {CONFIG.map((config, index) => (
                       <Flex direction="column" key={index}>
@@ -773,11 +793,11 @@ export default function Schema({
                       <TabPanel>
                         <Pagination
                           currentPage={currentPage}
-                          totalPages={isTotalMeta}
-                          onPageChange={handlePageChange}
+                          totalPages={MetadataTotalPage}
+                          onPageChange={handleMetadaPageChange}
                         />
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                          {isLoaded && items?.map((metadata, index) => (
+                          {isMetadataLoaded && items?.map((metadata, index) => (
                             <GridItem
                               colSpan={{ base: 6, md: 4, lg: 2 }}
                               key={index}
@@ -794,17 +814,13 @@ export default function Schema({
                                     {
                                       imageError ? (
                                         <Image
-                                          src={
-                                            "/logo-nftgen2-01.png"
-                                          }
+                                          src={"/logo-nftgen2-01.png"}
                                           alt="mfer"
                                           width="100%"
                                         />
                                       ) : (
                                         <Image
-                                          src={
-                                            metadata.image ? metadata.image : "/logo-nftgen2-01.png"
-                                          }
+                                          src={metadata.image ? metadata.image : "/logo-nftgen2-01.png"}
                                           onError={checkImage}
                                           alt="mfer"
                                           width="100%"
@@ -834,7 +850,7 @@ export default function Schema({
                               </CustomCard>
                             </GridItem>
                           ))}
-                          {!isLoaded && !items && Array.from({ length: 12 }).map((_, index) => (
+                          {!isMetadataLoaded && !items && Array.from({ length: 12 }).map((_, index) => (
                             <GridItem
                               colSpan={{ base: 6, md: 4, lg: 2 }}
                               key={index}
@@ -849,7 +865,7 @@ export default function Schema({
                           ))}
                         </Grid>
                         {/* <Suspense fallback={<LoadingMetadataBox />}>
-                          <MetadataBox schema={schemacode} isPage={isPage}/>
+                          <MetadataBox schema={schemacode} metadataPage={metadataPage}/>
                         </Suspense> */}
                       </TabPanel>
                     </TabPanels>
@@ -891,23 +907,22 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection, totalMetaData, imgCollection] = await Promise.all([
+  const [openseaCollection, totalMetaData, imgCollection, metadata] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollectionNoLoop(schemacode),
     getImgCollection(schemacode, "1"),
+    getMetadata(schemacode, "1"),
     // getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
+
   return {
     props: {
       schemacode,
       schema,
       openseaCollection,
       imgCollection,
-      // nftCollection,
-      // nftCollectionV2,
       totalMetaData,
-      // pageNumber: page,
-      // metadataPageNumber: metadata_page,
+      metadata,
     },
   };
 };

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Flex, Text, Button, Box, Input} from "@chakra-ui/react";
 import {
     FaArrowLeft,
@@ -20,6 +20,10 @@ const Pagination: React.FC<PaginationProps> = ({
     const isLastPage = currentPage === totalPages;
     const showPages = 5; 
     const [inputPage, setInputPage] = useState<number | string>(currentPage);
+
+    useEffect(() => {
+        setInputPage(currentPage.toString());
+    }, [currentPage]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = event.target.value;
@@ -93,6 +97,7 @@ const Pagination: React.FC<PaginationProps> = ({
                         _hover={{
                             border: currentPage === pageNumber ? '0px solid #3864E7' : '1px solid #878ca8'
                         }}
+                        isDisabled={currentPage === pageNumber}
                     >
                         {pageNumber}
                     </Button>

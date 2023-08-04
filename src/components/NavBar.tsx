@@ -408,7 +408,7 @@ const MobileNav = ({
     >
       <Box display={{ base: "block", lg: "none" }}>
         <SearchBar
-          placeHolder={"Search by Address / Txn Hash / Block / Schema"}
+          placeHolder={"Search by Address / Txn Hash / Block / NFTSchema"}
           hasButton
           modalstate={modalstate}
         />
@@ -512,10 +512,10 @@ const NAV_ITEMS: Array<NavItem> = [
 const CHAINS = [
   {
     label: "Mainnet",
-    href: "https://sixscan-frontend-4ze6p6t2ga-an.a.run.app/",
+    href: "https://v2.sixscan.io/",
   },
   {
     label: "Testnet",
-    href: "https://sixscan-frontend-hsmu5sumnq-an.a.run.app/",
+    href: "https://v2.fivenet.sixscan.io/",
   },
 ];

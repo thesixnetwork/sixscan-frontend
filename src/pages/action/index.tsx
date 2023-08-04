@@ -51,7 +51,7 @@ import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
 import { formatNumber, convertUsixToSix, formatMethod } from "@/utils/format";
-import { getLatestAction } from "@/service/nftmngr";
+import { getLatestAction } from "@/service/nftmngr/txs";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";

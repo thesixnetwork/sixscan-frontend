@@ -85,7 +85,7 @@ import { Clickable } from "@/components/Clickable";
 import { formatHex, formatMethod } from "@/utils/format";
 import { useEffect, useState } from "react";
 import { getDelegationsFromValidator, getValidator, getValidators } from "@/service/staking";
-import { getAllTransactionByAddress } from "@/service/nftmngr";
+import { getAllTransactionByAddress } from "@/service/nftmngr/txs";
 import { Delegation, Validator } from "@/types/Staking";
 import { Balance, BalanceETH } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
