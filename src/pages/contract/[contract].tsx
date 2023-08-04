@@ -45,7 +45,7 @@ import { useEffect, useState } from "react";
 
 // ------------------------- Helper Libs -------------------------
 
-import { getSchemaByContractAddress, getSchemaByAddress } from "@/service/nftmngr";
+import { getSchemaByContractAddress, getSchemaByAddress } from "@/service/nftmngr/schema";
 
 
 interface Props {

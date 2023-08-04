@@ -12,7 +12,7 @@ import CustomCard from "@/components/CustomCard";
 import { motion } from "framer-motion";
 import { LinkComponent } from "@/components/Chakralink";
 import { useEffect, useState } from 'react';
-import { getNftCollectionByClient } from "@/service/nftmngr";
+import { getNftCollectionByClient } from "@/service/nftmngr/collection";
 
 interface Data {
     schema: string;

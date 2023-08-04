@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import ENV from "@/utils/ENV";
-import { getLatestAction } from "@/service/nftmngr";
+import { getLatestAction } from "@/service/nftmngr/txs";
 
 export default async function handler(
     req: NextApiRequest,

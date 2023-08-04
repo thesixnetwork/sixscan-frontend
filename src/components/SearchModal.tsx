@@ -25,7 +25,7 @@ import {
   FaSearch,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
   validateAddress,
   validateBlock,
@@ -78,97 +78,67 @@ const SearchModal = ({
   const finalRef = useRef(null);
 
 
-  const handleSearch = async () => {
-    // Perform search based on searchInput and update searchResults
+  const handleSearch = useCallback(async () => {
     const _searchResults: SearchResult[] = [];
-    const _resultsContract: ResultContract = {
-      originContractAddress: '',
-      schemaCodes: null
-    };
-
-
     const isAddress = validateAddress(searchInput);
     const isTx = validateTxHash(searchInput);
-    const isContractByAddress = await validateContract(searchInput);
     const isBlock = await validateBlock(searchInput);
-    // const isSchemaaa2 = await getSchemaByCodeAddr2(searchInput)
-    // const schemaByContract = await getSchemaByAddress(searchInput)
-    const resSchemaaa2 = await fetch(`/api/getSchemaCode?input=${searchInput}`);
-    const isSchemaaa2 = await resSchemaaa2.json();
-    const resschemaByContract = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
-    const schemaByContract = await resschemaByContract.json();
+    const isContractByAddress = await validateContract(searchInput);
+    const _Schema = await fetch(`/api/getSchemaCode?input=${searchInput}`);
+    const isSchema = await _Schema.json();
+    const _ContractSchema = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
+    const schemaByContract = await _ContractSchema.json();
 
-    
-
-    _LOG(JSON.stringify(schemaByContract, null, 2));
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);
-      setIsLoading(false);
       _searchResults.push({
         type: "address",
         value: searchInput,
         icon: <FaFingerprint />,
       });
-    }
-
-    if (isTx) {
+    } else if (isTx) {
       setIsSchema(false);
       setIsContract(false);
-      setIsLoading(false);
       _searchResults.push({
         type: "tx",
         value: searchInput,
         icon: <FaHashtag />,
       });
-    }
-
-    if (isBlock) {
+    } else if (isBlock) {
       setIsSchema(false);
       setIsContract(false);
-      setIsLoading(false);
       _searchResults.push({
         type: "block",
         value: searchInput,
         icon: <FaLayerGroup />,
       });
-    }
-
-    if (isContractByAddress) {
+    } else if (isContractByAddress) {
       setIsContract(true);
       setIsSchema(false);
-      if (isContractByAddress) {
-        setIsLoading(false);
-      }
-      setResultContract(schemaByContract)
-    }
-
-    if (!isAddress && !isTx && !isBlock && !isContractByAddress) {
+      setResultContract(schemaByContract);
+    } else {
       setIsSchema(true);
       setIsContract(false);
-      if (isSchemaaa2) {
-        setIsLoading(false);
-      }
-      setResultSchema(isSchemaaa2)
-      // _searchResults.push({
-      //   type: "schema",
-      //   value: isSchemaaa2,
-      //   icon: <FaScroll />,
-      // });
+      setResultSchema(isSchema);
     }
+
+    setIsLoading(false);
     setSearchResults(_searchResults);
-  };
+  }, [searchInput]);
+
 
   useEffect(() => {
     if (searchInput) {
-      // wait for 1s before performing search
+      // Wait for 500ms before performing search
       const timeout = setTimeout(() => {
         handleSearch();
-      }, 100);
+      }, 500);
+
       setIsLoading(true);
       return () => clearTimeout(timeout);
     }
-  }, [searchInput]);
+  }, [searchInput, handleSearch]);
   return (
     <Modal
       initialFocusRef={initialRef}

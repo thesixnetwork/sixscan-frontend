@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import ENV from "@/utils/ENV";
-import { getNftCollectionByClient } from "@/service/nftmngr";
+import { getNftCollectionByClient } from "@/service/nftmngr/collection";
 
 export default async function handler(
     req: NextApiRequest,

@@ -47,7 +47,7 @@ import { useEffect, useState } from "react";
 import {
     formatSchemaName,
 } from "@/utils/format";
-import { getSchemaByCodeAddr2, getAllSchema } from "@/service/nftmngr";
+import { getSchemaByCodeAddr2, getAllSchema } from "@/service/nftmngr/schema";
 import styles from "@/styles/schema_hover.module.css";
 import { useRouter } from 'next/router';
 
