@@ -52,7 +52,7 @@ import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
 import { formatNumber, convertUsixToSix } from "@/utils/format";
-import { getAllTransactionByAddress } from "@/service/nftmngr";
+import { getAllTransactionByAddress } from "@/service/nftmngr/txs";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";

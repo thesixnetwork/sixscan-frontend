@@ -60,8 +60,8 @@ import {
   getTotalNFTCollection,
   getTotalNFTS,
   getNFTFee,
-  getLatestAction,
-} from "@/service/nftmngr";
+} from "@/service/nftmngr/stats";
+import { getLatestAction } from "@/service/nftmngr/txs";
 // import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 
 import { DataNFTStat, BlockNFTStat, LatestAction } from "@/types/Nftmngr";

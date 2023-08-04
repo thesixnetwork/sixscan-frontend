@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getSchemaByCodeAddr2 } from "@/service/nftmngr";
+import { getSchemaByCodeAddr2 } from "@/service/nftmngr/schema";
 
 
 export default async function handler(

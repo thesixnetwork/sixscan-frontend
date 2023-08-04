@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import ENV from "@/utils/ENV";
-import { getNFTActionCountStat } from "@/service/nftmngr";
+import { getNFTActionCountStat } from "@/service/nftmngr/stats";
 
 export default async function handler(
     req: NextApiRequest,
