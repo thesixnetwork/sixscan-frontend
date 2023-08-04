@@ -50,6 +50,7 @@ import Pagination from "@/components/Pagination";
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState, Suspense } from "react";
 import { getNftCollection, getImgCollection, getNftCollectionNoLoop } from "@/service/nftmngr/collection";
+import { getMetadata } from "@/service/nftmngr/common";
 import { getSchema } from "@/service/nftmngr/schema";
 import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
 import { motion } from "framer-motion";
@@ -60,6 +61,7 @@ import { getTxsFromSchema } from "@/service/txs";
 import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
 import moment from "moment";
 import { _LOG } from "@/utils/log_helper";
+import { Metadata } from "@/types/Opensea";
 
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -87,6 +89,7 @@ interface Props {
   schemacode: string;
   schema: NFTSchema;
   openseaCollection: Collection;
+  metadata: Metadata;
   // nftCollection: any;
   // nftCollectionV2: any;
   // txns: Txns;
@@ -100,6 +103,7 @@ export default function Schema({
   schemacode,
   schema,
   openseaCollection,
+  metadata,
   // nftCollection,
   // nftCollectionV2,
   totalMetaData,
@@ -181,10 +185,11 @@ export default function Schema({
   ];
 
   // const totalPages = schema ? Math.ceil(nftCollection?.pagination.total / perPage) : 0;
-  let totalPages = 0;
   _LOG("nftCollection", nftCollection);
 
   const handleMetadaPageChange = (newPage: number) => {
+    console.log("newPage", newPage);
+    
     setIsMetadataLoaded(false)
     setCurrentPage(newPage);
     setMetadataPage(newPage.toString());
@@ -210,9 +215,6 @@ export default function Schema({
     fetchData();
   }, [schemacode, metadataPage, isStop])
 
-  if (nftCollection) {
-    totalPages = schema ? Math.ceil(totalMetaData / perPage) : 0;
-  }
 
   const handlePageMetaData = (metadataPage: string) => {
     setIsMetadataLoaded(false)
@@ -280,7 +282,7 @@ export default function Schema({
       setIsCopied(false);
     }, 1000);
   };
-  const MetadataTotalPage = Math.ceil(totalMetaData?.total / perPage)
+  const MetadataTotalPage = Math.ceil(totalMetaData.total / perPage)
   useEffect(() => {
     // sort by token_id
     if (!schema) {
@@ -505,6 +507,18 @@ export default function Schema({
                       </Flex>
                     </Flex>
                   )}
+                  {!openseaCollection &&  (
+                    <Flex direction="column">
+                      {isShowMore && metadata?.description ? metadata?.description : `${metadata?.description && metadata?.description.substring(0, 100)}...`}
+                      <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
+                        <Text fontSize={"sm"} fontWeight={"bold"}>
+                          {isShowMore ? "SHOW LESS" : "SHOW MORE"}
+                        </Text>
+                        {isShowMore ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                      </Flex>
+                    </Flex>
+                  )
+                  }
                   <Flex direction="row" gap={5}>
                     {CONFIG.map((config, index) => (
                       <Flex direction="column" key={index}>
@@ -800,17 +814,13 @@ export default function Schema({
                                     {
                                       imageError ? (
                                         <Image
-                                          src={
-                                            "/logo-nftgen2-01.png"
-                                          }
+                                          src={"/logo-nftgen2-01.png"}
                                           alt="mfer"
                                           width="100%"
                                         />
                                       ) : (
                                         <Image
-                                          src={
-                                            metadata.image ? metadata.image : "/logo-nftgen2-01.png"
-                                          }
+                                          src={metadata.image ? metadata.image : "/logo-nftgen2-01.png"}
                                           onError={checkImage}
                                           alt="mfer"
                                           width="100%"
@@ -897,23 +907,22 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection, totalMetaData, imgCollection] = await Promise.all([
+  const [openseaCollection, totalMetaData, imgCollection, metadata] = await Promise.all([
     code ? await getOpenseaCollectionByName(code) : null,
     getNftCollectionNoLoop(schemacode),
     getImgCollection(schemacode, "1"),
+    getMetadata(schemacode, "1"),
     // getTxsFromSchema(schemacode, page ? page : "1", "20"),
   ]);
+
   return {
     props: {
       schemacode,
       schema,
       openseaCollection,
       imgCollection,
-      // nftCollection,
-      // nftCollectionV2,
       totalMetaData,
-      // pageNumber: page,
-      // metadataPageNumber: metadata_page,
+      metadata,
     },
   };
 };

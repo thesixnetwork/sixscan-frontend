@@ -146,11 +146,7 @@ export const getNftCollectionByClient = async (
     let tokenPerPage = parseInt(numberPerPage)
     let FIRST_TOKEN_ID:number;
     let LAST_TOKEN_ID:number;
-    // CHECK IF TOKEN 0 EXIST
-    const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/1`
-      );
-      
+
     const { data: { nftCollection, pagination: { total } } } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${schemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
@@ -169,34 +165,32 @@ export const getNftCollectionByClient = async (
     //   FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id)
     // }    
     // IF TOKEN 0 EXIST THEN WE WILL START FROM TOKEN 0
-    const hasTokenZero = res.data.statusCode;
+    const hasTokenZero = nftCollection[0].token_id;
     
-    if (hasTokenZero){
+    if (hasTokenZero === "0"){
       if (parseInt(metadataPage) === 1) {
         FIRST_TOKEN_ID = 0 // parseInt(nftCollection[0].token_id);
       }else{
-        FIRST_TOKEN_ID = ( (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id) );
+        FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
       }
     }else{
       if (parseInt(metadataPage) === 1) {
         FIRST_TOKEN_ID = parseInt(nftCollection[0].token_id);
       }else{
-        FIRST_TOKEN_ID = ( (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id) );
+        FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
       }
     }
 
     // LOOK STUPID BUT IT IS FOR REDUCING LINE OF CODE
     if (TOTAL_TOKEN < tokenPerPage) {
-      LAST_TOKEN_ID = tokenPerPage // parseInt(metadataPage) * tokenPerPage // bc metadataPage will always be 1 in this case
-    }else{
-      LAST_TOKEN_ID = FIRST_TOKEN_ID + tokenPerPage + 1
+      tokenPerPage = TOTAL_TOKEN // parseInt(metadataPage) * tokenPerPage // bc metadataPage will always be 1 in this case
     }
 
     const promises: Promise<any>[] = [];
     
     const urls = [];
 
-    for (let i = 0; i < LAST_TOKEN_ID; i++) {
+    for (let i = 0; i <= tokenPerPage; i++) {
       const url = `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/${FIRST_TOKEN_ID + i}`;
       urls.push(url);
     }

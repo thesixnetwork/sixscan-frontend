@@ -130,10 +130,10 @@ const SearchModal = ({
 
   useEffect(() => {
     if (searchInput) {
-      // Wait for 100ms before performing search
+      // Wait for 500ms before performing search
       const timeout = setTimeout(() => {
         handleSearch();
-      }, 100);
+      }, 500);
 
       setIsLoading(true);
       return () => clearTimeout(timeout);
