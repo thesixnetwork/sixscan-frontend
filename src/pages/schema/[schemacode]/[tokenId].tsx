@@ -32,6 +32,7 @@ import {
   FaArrowLeft,
   FaArrowRight,
   FaChevronDown,
+  FaChevronUp,
   FaCopy,
   FaExpand,
   FaScroll,
@@ -244,9 +245,9 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                     {isExpanded && metadata.description ? metadata.description : `${metadata.description && metadata.description.substring(0, 100)}...`}
                     <Flex align="center" direction="row" gap={1} onClick={toggleExpand}>
                       <Text fontSize={"sm"} fontWeight={"bold"}>
-                        SHOW MORE
+                        {isExpanded ? "SHOW LESS" : "SHOW MORE"}
                       </Text>
-                      <FaChevronDown fontSize={12} />
+                      {isExpanded ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />} 
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
