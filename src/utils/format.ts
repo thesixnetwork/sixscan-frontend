@@ -81,6 +81,86 @@ export const convertAmountToSix = (amount: any) => {
   return amount.amount;
 };
 
+interface Coin {
+  amount: number;
+  denom: string;
+}
+
+// this function only use for supprt ASIX and USIX TOKEN
+const convertSIXTOKEN = (tokens: Coin): Coin => {
+  const { amount, denom } = tokens;
+  if (denom === "usix") {
+    const amount_ = convertUsixToSix(amount);
+    return {
+      amount: amount_,
+      denom: "SIX",
+    };
+  } else if (denom === "asix") {
+    const amount_ = convertAsixToSix(amount);
+    return {
+      amount: amount_,
+      denom: "SIX",
+    }
+  }else {
+    return {
+      amount: amount,
+      denom: denom,
+    };
+  }
+}
+
+export const convertStringAmountToCoin = (stringAmount: string): Coin => {
+  // find if comma exists
+  let total = 0;
+  let _denom = "";
+  const regex = /^(\d+)([a-z]+)$/i;
+  const commaIndex = stringAmount.indexOf(",");
+  if (commaIndex === -1) {
+    // * EXAMPLES AMOUNT DATA
+    // 513734023usix or 16693567038940111asix
+    const match = regex.exec(stringAmount);
+    if (!match) {
+      return {
+        amount: 0,
+        denom: "SIX",
+      };
+    }
+    const amount = match[1];
+    const denom = match[2];
+    const coin = convertSIXTOKEN({
+      amount: parseInt(amount),
+      denom: denom,
+    });
+    return coin;
+  }else {
+    // * EXAMPLES AMOUNT DATA
+    // 16693567038940111asix,513734023 usix
+    const listCoin = stringAmount.split(",");    
+    for (let i = 0; i < listCoin.length; i++) {
+      const coin = listCoin[i];
+      const match = regex.exec(coin);
+      if (!match) {
+        return {
+          amount: 0,
+          denom: "SIX",
+        };
+      }
+      const amount = match[1];
+      const denom = match[2];
+      const coin_ = convertSIXTOKEN({
+        amount: parseInt(amount),
+        denom: denom,
+      });
+      total += coin_.amount;
+      _denom = coin_.denom;
+    }
+    return {
+      amount: total,
+      denom: _denom,
+    };
+  }
+};
+
 
 export const formatEng = (key:string) => {
   if (key == "@type"){

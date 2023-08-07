@@ -70,7 +70,7 @@ import { BlockEVM } from "@/types/Block";
 
 import { useRouter } from "next/router";
 
-import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank, convertAmountToSix } from "@/utils/format";
+import { formatNumber, convertAsixToSix, convertUsixToSix, formatEng, formatBank, convertAmountToSix, convertStringAmountToCoin } from "@/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -112,12 +112,27 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
     setIsDecode(e.target.value)
   }
   _LOG(isDecode)
+    // add key to object of reward to message if type is MsgWithdrawDelegatorReward
+  if (txs.tx.body.messages[0]['@type'] === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+    txs.tx.body.messages[0].rewards = txs.tx_response.logs[0].events[0].attributes[1].value
+  }
   const isMultimessage = txs.tx.body.messages.length > 1 ? true : false;
+
+  // add key to object of reward to message if type is MsgWithdrawDelegatorReward in case of multimessage
+  if (isMultimessage === true) {
+    for (let i = 0; i < txs.tx.body.messages.length; i++) {
+      if (txs.tx.body.messages[i]['@type'] === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+        txs.tx.body.messages[i].rewards = txs.tx_response.logs[i].events[0].attributes[1].value
+      }
+    }
+  }
+
   const allMultimessage = txs.tx.body.messages
 
   // get object keys from txs.tx.body.messages[0]
   const KeyMsg = Object.keys(txs.tx.body.messages[0]);
   const message = txs.tx.body.messages[0];
+
   const txSuccess = txs.tx_response.code == 0 ? true : false;
   let _Logs:any;
   let _Events:any;
@@ -371,7 +386,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertAmountToSix(message[key][0]) : message[key][0]?.amount[0] !== undefined ? convertAmountToSix(message[key][0]) : convertAmountToSix(message[key][0])} SIX </Text>
+                                        <Text style={{ marginRight: '5px' }}>{message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key][0])} SIX</Text>
                                         <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
                                       </Flex>
                                     </Td>
@@ -645,6 +660,25 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
+                              if(key === "rewards"){
+                                const sixAmount = convertStringAmountToCoin(message[key]);
+                                return (
+                                  <Tr key={index}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Text style={{ marginRight: '5px' }}>
+                                        {sixAmount.amount} {sixAmount.denom}
+                                        </Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                );
+                              }
 
                               return (
                                 <Tr key={index}>
@@ -710,6 +744,29 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Td>
                                   <Td>
                                     {event.attributes.map((attr: any, index: any) => {
+                                      if (attr.key === "amount") {
+                                        const sixAmount = convertStringAmountToCoin(attr.value);
+                                        return (
+                                        <Flex
+                                          direction="row"
+                                          gap={2}
+                                          alignItems="center"
+                                          key={index}
+                                        >
+                                          {attr.key && (
+                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                              {attr.key}
+                                            </Text>
+                                          )}
+                                          {attr.value && (
+                                            <Text style={{ marginBottom: '10px' }}>
+                                              <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
+                                            </Text>
+                                          )}
+
+                                        </Flex>
+                                        )
+                                      }
                                       return (
                                         <Flex
                                           direction="row"
@@ -854,7 +911,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                 <TableContainer>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab>Overview:{" "}{index+1}</Tab>
+                      <Tab>Overview</Tab>
                       <Tab>Logs({Array.isArray(_Logs) && _Logs[0].events !== undefined ? _Logs[0].events.length : "1"})</Tab>
                       <Tab>Events({Array.isArray(_Events) && _Events.length})</Tab>
                     </TabList>
@@ -927,7 +984,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Flex>
                               </Td>
                             </Tr>
-    
+
                             {KeyMsg.map((key: any, index) => {
                               // {console.log(key)}
                               if (typeof message[key] === "string" && message[key].startsWith("6x")) {
@@ -952,7 +1009,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Tr>
                                   );
                                 }
-    
+
                                 return (
                                   <Tr key={index}>
                                     <Td>
@@ -992,7 +1049,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertAmountToSix(message[key][0]) : message[key][0]?.amount[0] !== undefined ? convertAmountToSix(message[key][0]) : convertAmountToSix(message[key][0])} SIX </Text>
+                                        <Text style={{ marginRight: '5px' }} >{Array.isArray(message) && message[key][0].amount[0] !== undefined ? convertAmountToSix(message[key]) : message[key][0]?.amount[0]} SIX </Text>
                                         <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
                                       </Flex>
                                     </Td>
@@ -1024,7 +1081,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-    
+
                               // if (key === "nftSchemaBase64") {
                               //   return (
                               //     <Tr key={index}>
@@ -1043,7 +1100,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               //     </Tr>
                               //   );
                               // }
-    
+
                               if (key === "data") {
                                 return (
                                   <Tr key={index}>
@@ -1106,7 +1163,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-    
+
                               if (key === "base64NFTData" || key === "nftSchemaBase64" ||
                                 key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
                                 key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
@@ -1145,7 +1202,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-    
+
                               if (key === "base64EncodedSetSignerAction") {
                                 return (
                                   <Tr key={index}>
@@ -1185,7 +1242,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-    
+
                               if (key === "tokenId") {
                                 return (
                                   <Tr key={index}>
@@ -1204,7 +1261,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Tr>
                                 );
                               }
-    
+
                               if (key === "nftSchemaCode" || key === "nft_schema_code") {
                                 return (
                                   <Tr key={index}>
@@ -1229,7 +1286,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Tr>
                                 );
                               }
-    
+
                               if (key === "parameters") {
                                 return (
                                   <Tr key={index}>
@@ -1266,7 +1323,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-    
+
                               return (
                                 <Tr key={index}>
                                   <Td borderBottom="none">
@@ -1284,7 +1341,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Tr>
                               );
                             })}
-    
+
                             <Tr>
                               <Td borderBottom="none">
                                 <Flex direction="column">
@@ -1317,20 +1374,43 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                           </Tbody>
                         </Table>
                       </TabPanel>
-    
+
                       {/* ##################### Logs  ##################### */}
                       {txSuccess === true &&
                         <TabPanel>
                           <Table>
                             <Tbody>
                               {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) => (
-    
+
                                 <Tr key={index}>
                                   <Td>
                                     <Badge>{event.type}</Badge>
                                   </Td>
                                   <Td>
                                     {event.attributes.map((attr: any, index: any) => {
+                                      if (attr.key === "amount") {
+                                        const sixAmount = convertStringAmountToCoin(attr.value);
+                                        return (
+                                        <Flex
+                                          direction="row"
+                                          gap={2}
+                                          alignItems="center"
+                                          key={index}
+                                        >
+                                          {attr.key && (
+                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                              {attr.key}
+                                            </Text>
+                                          )}
+                                          {attr.value && (
+                                            <Text style={{ marginBottom: '10px' }}>
+                                              <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
+                                            </Text>
+                                          )}
+
+                                        </Flex>
+                                        )
+                                      }
                                       return (
                                         <Flex
                                           direction="row"
@@ -1367,7 +1447,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                 )}
                                             </Text>
                                           )}
-    
+
                                         </Flex>
                                       )
                                     })}
@@ -1395,7 +1475,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                           </Table>
                         </TabPanel>
                       }
-    
+
                       {/* ##################### Events  ##################### */}
                       <TabPanel>
                         <Table>
@@ -1431,14 +1511,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                           </Tbody>
                         </Table>
                       </TabPanel>
-    
+
                     </TabPanels>
                   </Tabs>
                 </TableContainer>
               </CustomCard>
-    
-    
-    
+
+
+
             </Flex>
           </Container>
         </Box>
