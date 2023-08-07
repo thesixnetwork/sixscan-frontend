@@ -7,8 +7,8 @@ import { _LOG } from "@/utils/log_helper";
 
 export const getNFTActionCountStat = async (
   schemaCode: string,
-  page: string,
   endTime: string,
+  page: string,
   pageSize: string,
 ): Promise<any | null> => {
   try {
@@ -16,7 +16,7 @@ export const getNFTActionCountStat = async (
     //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${schemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${schemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);

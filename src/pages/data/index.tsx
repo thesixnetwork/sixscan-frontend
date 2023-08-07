@@ -145,7 +145,7 @@ export default function Data({
       try {
         setIsLoadedStat(false)
         setNftActionCount(null);
-        const response = await fetch(`/api/nftstat?schemaCode=&end_Time=&isPage=1&isPageSize=5`);
+        const response = await fetch(`/api/nftstat?schemaCode=&endTime=&pageNumber=1&limit=5`);
         const resActionStat = await response.json();
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);
