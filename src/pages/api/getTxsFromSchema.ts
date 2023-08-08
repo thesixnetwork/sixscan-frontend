@@ -9,7 +9,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const schemaCode = req.query.schemaCode as string;
-    const isPage = req.query.isPage as string;
+    const isPage = req.query.metadataPage as string;
     const isPageSize = req.query.isPageSize as string;
     try {
         if (ENV.NEXT_PUBLIC_CHAIN_NAME === "sixnet") {
