@@ -684,8 +684,8 @@ export default function Address({
                                       </Clickable>
                                     </Td>
                                     <Td>
-                                      {tx.decode_tx.fromAddress && (
-                                        <Clickable
+                                      {tx.decode_tx.fromAddress? (
+                                          <Clickable
                                           href={`/address/${tx.decode_tx.fromAddress}`}
                                         >
                                           <Text style={{
@@ -694,15 +694,26 @@ export default function Address({
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                             fontSize: "12px"
                                           }}>
-                                            {formatHex(
-                                              tx.decode_tx.fromAddress
-                                            )}
+                                            {formatHex(tx.decode_tx.fromAddress)}
                                           </Text>
                                         </Clickable>
+                                      ) : (
+                                        <Clickable
+                                        href={`/address/${tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress: tx.decode_tx.fromAddress}`}
+                                      >
+                                        <Text style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "12px"
+                                        }}>
+                                          {formatHex(tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress: tx.decode_tx.fromAddress)}
+                                        </Text>
+                                      </Clickable>
                                       )}
                                     </Td>
                                     <Td>
-                                      {tx.decode_tx.toAddress === address ? (
+                                      { tx.decode_tx.toAddress === address ? (
                                         <Badge
                                           textAlign={"center"}
                                           width="100%"
@@ -710,8 +721,7 @@ export default function Address({
                                         >
                                           IN
                                         </Badge>
-                                      ) : tx.decode_tx.fromAddress ===
-                                        address ? (
+                                      ) : tx.decode_tx.fromAddress ===address? (
                                         <Badge
                                           textAlign={"center"}
                                           width="100%"
@@ -719,12 +729,42 @@ export default function Address({
                                         >
                                           OUT
                                         </Badge>
-                                      ) : null}
+                                      ) : tx.decode_tx.delegatorAddress === address ? (
+                                        <Badge
+                                          textAlign={"center"}
+                                          width="100%"
+                                          colorScheme="pink"
+                                        >
+                                          DELEGATE
+                                        </Badge>
+                                      ): tx.decode_tx.validatorAddress === address ? (
+                                        <Badge
+                                          textAlign={"center"}
+                                          width="100%"
+                                          colorScheme="orange"
+                                        >
+                                          IN
+                                        </Badge>
+                                      ): (null)
+                                      }
                                     </Td>
                                     <Td>
-                                      {tx.decode_tx.toAddress && (
+                                      {tx.decode_tx.toAddress? (
                                         <Clickable
-                                          href={`/address/${tx.decode_tx.toAddress}`}
+                                        href={`/address/${tx.decode_tx.toAddress}`}
+                                      >
+                                        <Text style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "12px"
+                                        }}>
+                                          {  formatHex(tx.decode_tx.toAddress)}
+                                        </Text>
+                                      </Clickable>
+                                        ) : (              
+                                        <Clickable
+                                          href={`/address/${tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress: tx.decode_tx.toAddress}`}
                                         >
                                           <Text style={{
                                             color: "#5C34A2",
@@ -732,10 +772,10 @@ export default function Address({
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                             fontSize: "12px"
                                           }}>
-                                            {formatHex(tx.decode_tx.toAddress)}
+                                            {formatHex(tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress: tx.decode_tx.toAddress)}
                                           </Text>
-                                        </Clickable>
-                                      )}
+                                        </Clickable>)
+                                        }
                                     </Td>
                                     <Td isNumeric>
                                       {

@@ -15,8 +15,9 @@ export const getNFTActionCountStat = async (
     // const res = await axios.get(
     //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
-    const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${schemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
+    let res : any;
+    res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${schemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -26,6 +27,21 @@ export const getNFTActionCountStat = async (
       _LOG("Error: API returned status code", res.data.statusCode);
       return null;
     }
+
+    if (res.data.data.length === 0) {
+      res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+      );
+      if (res.status !== 200) {
+        _LOG("Error: Non-200 status code returned:", res.status);
+        return null;
+      }
+      if (res.data.statusCode !== "V:0001") {
+        _LOG("Error: API returned status code", res.data.statusCode);
+        return null;
+      }
+    }
+    
     const actionCount = res.data.data;
     const promises = [];
     for (const item of actionCount.data) {

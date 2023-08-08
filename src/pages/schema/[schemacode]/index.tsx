@@ -229,6 +229,9 @@ export default function Schema({
       // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
       const response = await fetch(`/api/getTxsFromSchema?schemaCode=${schemacode}&metadataPage=${isPageTxns}&isPageSize=15`);
       const resTxns = await response.json();
+      // console.log("resTxns",resTxns)
+      // console.log("schemacode",schemacode)
+      // console.log("isPageTxns",isPageTxns)
       setTxns(resTxns);
       setIsLoadedTxns(true);
     } catch (error) {

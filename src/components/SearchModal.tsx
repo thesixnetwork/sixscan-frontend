@@ -70,26 +70,21 @@ const SearchModal = ({
   const [isSchema, setIsSchema] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isContract, setIsContract] = useState(false);
-  const [resultContract, setResultContract] = useState<ResultContract>();
+  const [resultContract, setResultContract] = useState<ResultContract[]>([]);
   const [resultSchema, setResultSchema] = useState<ResultSchema[]>([]);
-
-
   const initialRef = useRef(null);
   const finalRef = useRef(null);
 
-
   const handleSearch = useCallback(async () => {
     const _searchResults: SearchResult[] = [];
+    console.log(resultContract);
+    
+    // Validate the input
     const isAddress = validateAddress(searchInput);
     const isTx = validateTxHash(searchInput);
     const isBlock = await validateBlock(searchInput);
     const isContractByAddress = await validateContract(searchInput);
-    const _Schema = await fetch(`/api/getSchemaCode?input=${searchInput}`);
-    const isSchema = await _Schema.json();
-    const _ContractSchema = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
-    const schemaByContract = await _ContractSchema.json();
-    
-
+  
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);
@@ -117,11 +112,20 @@ const SearchModal = ({
     } else if (isContractByAddress) {
       setIsContract(true);
       setIsSchema(false);
+  
+      // Fetch contract schema based on address
+      const _ContractSchema = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
+      const schemaByContract = await _ContractSchema.json();
+  
       setResultContract(schemaByContract);
     } else {
+      // Fetch schema information
+      const _Schema = await fetch(`/api/getSchemaCode?input=${searchInput}`);
+      const schemaData = await _Schema.json();
+  
       setIsSchema(true);
       setIsContract(false);
-      setResultSchema(isSchema);
+      setResultSchema(schemaData);
     }
 
     setIsLoading(false);
@@ -130,16 +134,18 @@ const SearchModal = ({
 
 
   useEffect(() => {
-    if (searchInput) {
+    if (searchInput !== "") {
+      setIsLoading(true); // Set loading state to true immediately
+  
       // Wait for 500ms before performing search
       const timeout = setTimeout(() => {
         handleSearch();
       }, 500);
-
-      setIsLoading(true);
+  
       return () => clearTimeout(timeout);
     }
-  }, [searchInput, handleSearch]);
+  }, [searchInput]);
+  
   return (
     <Modal
       initialFocusRef={initialRef}
@@ -158,7 +164,7 @@ const SearchModal = ({
             </InputLeftElement>
             <Input
               variant="ghost"
-              placeholder={"Search by Address / Txn Hash / Block / Schema"}
+              placeholder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
               value={searchInput}
               onClick={onOpen}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -289,28 +295,28 @@ const SearchModal = ({
         )}
         {searchInput && isContract && resultContract && (
           <ModalBody>
-            {resultContract.originContractAddress === undefined ? (
-              <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
-              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
-                  <Text fontSize="xs" fontWeight="bold" color="red">
-                    NOT FOUND
-                  </Text>
-              </Button>
-            </Flex>
+            {resultContract.length > 0? (
+                <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
+                <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
+                  <Clickable href={`/contract/${resultContract[0].originContractAddress}`}>
+                    <Text fontSize="xs" fontWeight="bold" color="dark">
+                      View More
+                    </Text>
+                  </Clickable>
+                </Button>
+              </Flex>
             ):(
-              <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
-              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
-                <Clickable href={`/contract/${Array.isArray(resultContract) && resultContract.originContractAddress}`}>
-                  <Text fontSize="xs" fontWeight="bold" color="dark">
-                    View More
-                  </Text>
-                </Clickable>
-              </Button>
-            </Flex>
+          <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+          <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
+          <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
+              <Text fontSize="xs" fontWeight="bold" color="red">
+                Close
+              </Text>
+          </Button>
+          </Flex>
             )}
-            {Array.isArray(resultContract) && resultContract.map((x: any, index: number) => (
+            { resultContract.length > 0 && resultContract.map((x: any, index: number) => (
               <Flex direction="column" key={index} gap={1} pt={1}>
                 <motion.div>
                   <Flex
