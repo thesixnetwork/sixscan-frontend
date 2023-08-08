@@ -88,6 +88,7 @@ const SearchModal = ({
     const isSchema = await _Schema.json();
     const _ContractSchema = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
     const schemaByContract = await _ContractSchema.json();
+    
 
     if (isAddress) {
       setIsSchema(false);
@@ -288,16 +289,27 @@ const SearchModal = ({
         )}
         {searchInput && isContract && resultContract && (
           <ModalBody>
-            <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
+            {resultContract.originContractAddress === undefined ? (
+              <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+              <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
               <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
-                <Clickable href={`/contract/${Array.isArray(resultContract) && resultContract[0].origin_contract_address}`}>
+                  <Text fontSize="xs" fontWeight="bold" color="red">
+                    NOT FOUND
+                  </Text>
+              </Button>
+            </Flex>
+            ):(
+              <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+              <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
+              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
+                <Clickable href={`/contract/${Array.isArray(resultContract) && resultContract.originContractAddress}`}>
                   <Text fontSize="xs" fontWeight="bold" color="dark">
                     View More
                   </Text>
                 </Clickable>
               </Button>
             </Flex>
+            )}
             {Array.isArray(resultContract) && resultContract.map((x: any, index: number) => (
               <Flex direction="column" key={index} gap={1} pt={1}>
                 <motion.div>

@@ -1,14 +1,94 @@
 import { SendAmount } from "@/types/Bank";
 
+interface Coin {
+  denom: string;
+  amount: number;
+}
+
+interface TXCoin {
+  denom: string;
+  amount: string;
+}
+
 export const formatNumber = (num: number, decimalPoints: number = 2) => {
   const [integerPart, decimalPart] = num.toFixed(decimalPoints).split(".");
   const formattedIntegerPart = integerPart.replace(
     /(\d)(?=(\d{3})+(?!\d))/g,
     "$1,"
   );
+
   return decimalPoints > 0
     ? `${formattedIntegerPart}.${decimalPart}`
     : formattedIntegerPart;
+};
+
+export const formatCoinNumber = (num: TXCoin[], decimalPoints: number = 2):string => {
+
+  if (num.length > 1) {
+    let total = 0;
+    for (let i = 0; i < num.length; i++) {
+      if (num[i] == undefined) return "0";
+      const amount = convertAmountToSix({
+        denom: num[i].denom,
+        amount: Number(num[i].amount),
+      });
+      total += amount;
+    }
+    
+    const [integerPart, decimalPart] = total.toFixed(decimalPoints).split(".");
+    const formattedIntegerPart = integerPart.replace(
+      /(\d)(?=(\d{3})+(?!\d))/g,
+      "$1,"
+    );
+    return decimalPoints > 0
+      ? `${formattedIntegerPart}.${decimalPart}`
+      : formattedIntegerPart;
+  } else {
+    if (num[0] == undefined) return "0";
+    // THIS IS RARE CASE BUT IT WILL HAPPEN IF DO NOT CHANGE INDEXER
+    if (num[0].amount.indexOf(",") > -1 && num[0].denom === "usix") {
+      // split amount with comma
+      const usix = num[0].amount.split(",");
+      let total = 0;
+      // convert to SIX
+      const asix_amount = convertAmountToSix({
+        denom: "asix",
+        amount: Number(usix[0]),
+      });
+      // convert to ASIX
+      const usix_amount = convertAmountToSix({
+        denom: "usix",
+        amount: Number(usix[1]),
+      });
+
+      total = usix_amount + asix_amount;
+
+      const [integerPart, decimalPart] = Number(total)
+        .toFixed(decimalPoints)
+        .split(".");
+      const formattedIntegerPart = integerPart.replace(
+        /(\d)(?=(\d{3})+(?!\d))/g,
+        "$1,"
+      );
+      return decimalPoints > 0
+        ? `${formattedIntegerPart}.${decimalPart}`
+        : formattedIntegerPart;
+    }else{
+      const amount = convertAmountToSix({
+        denom: num[0].denom,
+        amount: Number(num[0].amount),
+      });
+      
+      const [integerPart, decimalPart] = amount.toFixed(decimalPoints).split(".");
+      const formattedIntegerPart = integerPart.replace(
+        /(\d)(?=(\d{3})+(?!\d))/g,
+        "$1,"
+      );
+      return decimalPoints > 0
+        ? `${formattedIntegerPart}.${decimalPart}`
+        : formattedIntegerPart;
+    }
+  }
 };
 
 export const formatNumberAndRoundUp = (
@@ -42,15 +122,23 @@ export const formatMethod = (method: string) => {
   if (!method) {
     return "";
   }
-  if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMACTIONBYADMIN"){
-    return "ACTION"
-  }else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "PERFORMMULTITOKENACTION"){
-    return "MULTIACION"
-  }else {
-    return method.split(".")[method.split(".").length - 1].slice(3).toUpperCase()
+  if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "PERFORMACTIONBYADMIN"
+  ) {
+    return "ACTION";
+  } else if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "PERFORMMULTITOKENACTION"
+  ) {
+    return "MULTIACION";
+  } else {
+    return method
+      .split(".")
+      [method.split(".").length - 1].slice(3)
+      .toUpperCase();
   }
 };
-
 
 export const formatTraitValue = (value: string | number) => {
   if (typeof value === "string" && value.length > 10) {
@@ -72,19 +160,26 @@ export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
 };
 
-export const convertAmountToSix = (amount: any) => {
+
+export const convertTXAmountToSix = (amount: TXCoin): number => {
+  if (amount.amount == undefined || Number.isNaN(amount.amount)) return 0;
   if (amount.denom === "usix") {
-    return convertUsixToSix(parseInt(amount.amount));
+    return convertUsixToSix(Number(amount.amount));
   } else if (amount.denom === "asix") {
-    return convertAsixToSix(parseInt(amount.amount));
+    return convertAsixToSix(Number(amount.amount));
+  }
+  return Number(amount.amount);
+};
+
+export const convertAmountToSix = (amount: Coin): number => {
+  if (amount.amount == undefined || Number.isNaN(amount.amount)) return 0;
+  if (amount.denom === "usix") {
+    return convertUsixToSix(amount.amount);
+  } else if (amount.denom === "asix") {
+    return convertAsixToSix(amount.amount);
   }
   return amount.amount;
 };
-
-interface Coin {
-  amount: number;
-  denom: string;
-}
 
 // this function only use for supprt ASIX and USIX TOKEN
 const convertSIXTOKEN = (tokens: Coin): Coin => {
@@ -100,14 +195,14 @@ const convertSIXTOKEN = (tokens: Coin): Coin => {
     return {
       amount: amount_,
       denom: "SIX",
-    }
-  }else {
+    };
+  } else {
     return {
       amount: amount,
       denom: denom,
     };
   }
-}
+};
 
 export const convertStringAmountToCoin = (stringAmount: string): Coin => {
   // find if comma exists
@@ -132,10 +227,10 @@ export const convertStringAmountToCoin = (stringAmount: string): Coin => {
       denom: denom,
     });
     return coin;
-  }else {
+  } else {
     // * EXAMPLES AMOUNT DATA
     // 16693567038940111asix,513734023 usix
-    const listCoin = stringAmount.split(",");    
+    const listCoin = stringAmount.split(",");
     for (let i = 0; i < listCoin.length; i++) {
       const coin = listCoin[i];
       const match = regex.exec(coin);
@@ -161,48 +256,49 @@ export const convertStringAmountToCoin = (stringAmount: string): Coin => {
   }
 };
 
-
-export const formatEng = (key:string) => {
-  if (key == "@type"){
-    return "@Type"
+export const formatEng = (key: string) => {
+  if (key == "@type") {
+    return "@Type";
   }
-  const splitParts = key.split('_');
-  const formattedKey = splitParts.map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+  const splitParts = key.split("_");
+  const formattedKey = splitParts
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
   return `${formattedKey}`;
 };
 
-export const formatBank = (key:string) => {
-  if (key == "from_address"){
-    return "From"
+export const formatBank = (key: string) => {
+  if (key == "from_address") {
+    return "From";
   }
-  if (key == "to_address"){
-    return "To"
+  if (key == "to_address") {
+    return "To";
   }
-  key = formatEng(key)
+  key = formatEng(key);
   return `${key}`;
-}
+};
 
 export const formatSchema = (schema: string) => {
-  const schema_code = schema.split('.')[1];
+  const schema_code = schema.split(".")[1];
   if (schema_code.length <= 10) {
     return schema_code.slice(0, 10);
-  }else {
-    return schema_code.slice(0, 10) + '...';;
+  } else {
+    return schema_code.slice(0, 10) + "...";
   }
 };
 
 export const formatSchemaName = (schema: string) => {
-  const schema_code = schema.split('.')[1];
+  const schema_code = schema.split(".")[1];
   if (!schema_code) {
-    return schema
+    return schema;
   }
-  return schema_code
+  return schema_code;
 };
 
 export const formatSchemaAction = (action: string) => {
   if (action.length <= 8) {
     return action;
-  }else {
-    return action.slice(0, 8) + '...';
+  } else {
+    return action.slice(0, 8) + "...";
   }
 };

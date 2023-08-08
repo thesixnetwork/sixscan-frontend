@@ -99,6 +99,7 @@ import {
   convertUsixToSix,
   convertAsixToSix,
   convertDecimalToPercent,
+  formatCoinNumber,
 } from "@/utils/format";
 
 import { validateAddress } from "@/utils/validate";
@@ -737,16 +738,9 @@ export default function Address({
                                       )}
                                     </Td>
                                     <Td isNumeric>
-                                      {tx.decode_tx.amount &&
-                                        tx.decode_tx.amount[0]?.amount && (
-                                          <Text>{`${formatNumber(
-                                            convertUsixToSix(
-                                              parseInt(
-                                                tx.decode_tx.amount[0].amount
-                                              )
-                                            )
-                                          )} SIX`}</Text>
-                                        )}
+                                      {
+                                      tx.decode_tx.amount &&formatCoinNumber(tx.decode_tx.amount) + " SIX"
+                                      }
                                     </Td>
                                     <Td>
                                       <Text>{`${formatNumber(

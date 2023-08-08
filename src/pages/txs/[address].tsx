@@ -50,7 +50,13 @@ import moment from "moment";
 import { getAccount } from "@/service/auth";
 import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
-import { formatNumber, convertUsixToSix, convertAmountToSix } from "@/utils/format";
+import {
+  formatNumber,
+  convertUsixToSix,
+  convertAsixToSix,
+  convertDecimalToPercent,
+  formatCoinNumber,
+} from "@/utils/format";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
@@ -360,11 +366,11 @@ export default function Address({
                                         )}
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {tx.decode_tx.amount &&
-                                          tx.decode_tx.amount[0]?.amount && (
-                                            <Text>{`${formatNumber(
-                                              convertAmountToSix(tx.decode_tx.amount[0])
-                                            )} SIX`}</Text>
+                                        {tx.decode_tx.amount && (
+                                            <Text>{`${
+                                              formatCoinNumber(tx.decode_tx.amount)
+                                            } SIX`  }
+                                            </Text>
                                           )}
                                       </Td>
                                       <Td textAlign={"center"}>

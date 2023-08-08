@@ -403,16 +403,16 @@ export default function Schema({
                         <Clickable
                           href={getExplorerLink(
                             schema.origin_data.origin_chain,
-                            schema.origin_data.origin_contract_address
+                            schema.origin_data.origin_contract_address? schema.origin_data.origin_contract_address : ""
                           )}
                           underline={
                             getExplorerLink(schema.origin_data.origin_chain, schema.origin_data.origin_contract_address) === "" ? false : true}
                         >
                           {getExplorerLink(
                             schema.origin_data.origin_chain,
-                            schema.origin_data.origin_contract_address
+                            schema.origin_data.origin_contract_address ? schema.origin_data.origin_contract_address : ""
                           )
-                            ? schema.origin_data?.origin_contract_address
+                            ? schema.origin_data?.origin_contract_address ? schema.origin_data?.origin_contract_address : "N/A"
                             : "N/A"}
                         </Clickable>
                       </Text>
