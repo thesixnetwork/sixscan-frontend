@@ -198,7 +198,7 @@ export default function Home({
             </Text>
             <SearchBar
               hasButton
-              placeHolder="Search by Address / Txn Hash / Block / Schema"
+              placeHolder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
               modalstate={modalstate}
             />
           </Flex>

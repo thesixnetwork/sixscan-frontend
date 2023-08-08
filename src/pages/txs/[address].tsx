@@ -56,6 +56,7 @@ import {
   convertAsixToSix,
   convertDecimalToPercent,
   formatCoinNumber,
+  formatMethod,
 } from "@/utils/format";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
@@ -290,25 +291,7 @@ export default function Address({
                                       <Td>
                                         <Text justifyContent={"center"}>
                                           <Badge textAlign={"center"} width="100%">
-                                            {
-                                              tx.type
-                                                .split(".")
-                                              [
-                                                tx.type.split(".").length - 1
-                                              ].slice(3) === "Send" ?
-                                                tx.decode_tx.toAddress === address ? "Receiver" : "Send"
-                                                :
-                                                tx.type
-                                                  .split(".")
-                                                [
-                                                  tx.type.split(".").length - 1
-                                                ].slice(3) === "PerformActionByAdmin" ? "Action" : 
-                                                tx.type
-                                                  .split(".")
-                                                [
-                                                  tx.type.split(".").length - 1
-                                                ].slice(3)
-                                            }
+                                            {formatMethod(tx.type, tx.decode_tx.toAddress, address)}
                                           </Badge>
                                         </Text>
                                       </Td>
@@ -330,7 +313,7 @@ export default function Address({
                                         </Clickable>
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {tx.decode_tx.toAddress && (
+                                        {tx.decode_tx.toAddress?  (
                                           <Clickable
                                             href={`/address/${tx.decode_tx.fromAddress}`}
                                           >
@@ -345,10 +328,25 @@ export default function Address({
                                               )}
                                             </Text>
                                           </Clickable>
+                                        ):(
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.delegatorAddress}`}
+                                          >
+                                            <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
+                                              {formatHex(
+                                                tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress: tx.decode_tx.fromAddress
+                                              )}
+                                            </Text>
+                                          </Clickable>
                                         )}
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {tx.decode_tx.toAddress && (
+                                        {tx.decode_tx.toAddress? (
                                           <Clickable
                                             href={`/address/${tx.decode_tx.toAddress}`}
                                           >
@@ -360,6 +358,21 @@ export default function Address({
                                             }}>
                                               {formatHex(
                                                 tx.decode_tx.toAddress
+                                              )}
+                                            </Text>
+                                          </Clickable>
+                                        ): (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.validatorAddress}`}
+                                          >
+                                            <Text style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px"
+                                            }}>
+                                              {formatHex(
+                                                tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress: tx.decode_tx.toAddress
                                               )}
                                             </Text>
                                           </Clickable>

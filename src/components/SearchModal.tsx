@@ -158,7 +158,7 @@ const SearchModal = ({
             </InputLeftElement>
             <Input
               variant="ghost"
-              placeholder={"Search by Address / Txn Hash / Block / Schema"}
+              placeholder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
               value={searchInput}
               onClick={onOpen}
               onChange={(e) => setSearchInput(e.target.value)}

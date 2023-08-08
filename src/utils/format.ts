@@ -117,22 +117,24 @@ export const formatHex = (hash: string) => {
   return hash.slice(0, 6) + "..." + hash.slice(hash.length - 6, hash.length);
 };
 
-export const formatMethod = (method: string) => {
+export const formatMethod = (method: string, inputAddress?: string,decodeTxAddress?:string) => {
   // check input in not null
   if (!method) {
     return "";
   }
-  if (
-    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
-    "PERFORMACTIONBYADMIN"
-  ) {
+  if ( method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="PERFORMACTIONBYADMIN") {
     return "ACTION";
-  } else if (
-    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
-    "PERFORMMULTITOKENACTION"
-  ) {
+  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="PERFORMMULTITOKENACTION") {
     return "MULTIACION";
-  } else {
+  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="WITHDRAWDELEGATORREWARD"){
+    return "CLAIMREWARD";
+  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="SEND"){
+      if(decodeTxAddress === inputAddress){
+        return "RECEIVE";
+      }else{
+        return "SEND";
+      }
+    }else {
     return method
       .split(".")
       [method.split(".").length - 1].slice(3)
