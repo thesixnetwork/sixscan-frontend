@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
 import theme from "@/styles/theme";
 import Layout from "@/components/Layout";
+import FloatingButton from "@/components/Floating";
 import { useState ,useEffect } from "react";
 import Router from "next/router";
 import NextNProgress from 'nextjs-progressbar';
@@ -30,6 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <NextNProgress  options={{ showSpinner: false }} height={8} color="#209cee" /> 
       <Component modalstate={modalState} {...pageProps} />
       </Layout>
+      <FloatingButton />
     </ChakraProvider>
     </>
   );
