@@ -42,6 +42,7 @@ import {
 import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
+import FloatingButton from "@/components/Floating";
 import { Clickable } from "@/components/Clickable";
 import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
 import { formatTraitValue, formatMethod } from "@/utils/format";
@@ -92,6 +93,9 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
     }, 1000);
   };
   const router = useRouter();
+
+  // returnUrl, buttonLabel, buttonColor ==> rt, bl, bc
+  const { rt, bl, bc } = router.query;
 
   ////// fetchData  ///////
   const [isLoaded, setIsLoaded] = useState(false);
@@ -713,6 +717,13 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
           </Container>
         </Box>
       </Box>
+      {rt && bl && (
+        <FloatingButton
+          return_url={rt as string}
+          button_label={bl as string}
+          button_color={bc as string}
+        />
+      )}
       <Spacer />
     </Flex>
   );

@@ -31,7 +31,6 @@ export default function App({ Component, pageProps }: AppProps) {
       <NextNProgress  options={{ showSpinner: false }} height={8} color="#209cee" /> 
       <Component modalstate={modalState} {...pageProps} />
       </Layout>
-      <FloatingButton />
     </ChakraProvider>
     </>
   );
