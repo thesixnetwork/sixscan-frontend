@@ -4,6 +4,7 @@ import {
     FaArrowLeft,
     FaArrowRight,
 } from "react-icons/fa";
+import styles from "@/styles/paganation.module.css"
 
 interface PaginationProps {
     currentPage: number;
@@ -73,13 +74,13 @@ const Pagination: React.FC<PaginationProps> = ({
     }
 
     return (
-        <Flex justify="flex-end" mt={1} width={"100%"}>
+        <Flex justify="flex-end" mt={1} width={"100%"} wrap={"wrap"}>
             <Button
                 isDisabled={isFirstPage}
                 onClick={() => handlePageChange(currentPage - 1)}
                 size="xs"
             >
-                <FaArrowLeft fontSize={12} />
+                <FaArrowLeft className={styles.FaArrowLeft} />
             </Button>
 
             {pageNumbers.map((pageNumber, index) => (
