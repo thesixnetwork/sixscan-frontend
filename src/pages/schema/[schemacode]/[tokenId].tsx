@@ -55,6 +55,7 @@ import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
+import styles from "@/styles/cardLatest.module.css"
 
 import dynamic from 'next/dynamic';
 import React from 'react';
@@ -253,7 +254,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                       <Text fontSize={"sm"} fontWeight={"bold"}>
                         {isExpanded ? "SHOW LESS" : "SHOW MORE"}
                       </Text>
-                      {isExpanded ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />} 
+                      {isExpanded ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
@@ -355,6 +356,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                       <TabPanel>
                         <Flex
                           direction="row"
+                          wrap={"wrap"}
                           gap={2}
                           align="center"
                           color={"dark"}
@@ -363,7 +365,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           {isLoaded ?
                             <Flex direction="row" gap={2} align="center">
                               <FaSortAmountDown fontSize={12} />
-                              <Text>
+                              <Text className={styles.Text2}>
                                 Latest {txns?.txs?.length} from a total of{" "}
                                 {/* <Clickable href="/"> */}
                                 {txns?.totalCount}
@@ -399,7 +401,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === txns?.totalPage
+                                  parseInt(isPage) >= txns?.totalPage
                                 }
                                 onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
                               >
@@ -408,7 +410,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPage) === txns?.totalPage
+                                  parseInt(isPage) >= txns?.totalPage
                                 }
                                 onClick={() => handlePageLatestTxns(txns?.totalPage.toString())}
 
@@ -425,23 +427,23 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           <Table>
                             <Thead>
                               <Tr >
-                                <Td textAlign={"center"}>
-                                  <Text>Txhash</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>Txhash</Text>
                                 </Td>
-                                <Td textAlign={"center"}>
-                                  <Text>Method</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>Method</Text>
                                 </Td>
-                                <Td textAlign={"center"}>
-                                  <Text>Age</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>Age</Text>
                                 </Td>
-                                <Td textAlign={"center"}>
-                                  <Text>Block</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>Block</Text>
                                 </Td>
-                                <Td textAlign={"center"}>
-                                  <Text>By</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>By</Text>
                                 </Td>
-                                <Td textAlign={"center"}>
-                                  <Text>Gas Fee</Text>
+                                <Td>
+                                  <Text className={styles.Text} textAlign={"center"}>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
@@ -450,31 +452,35 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                 <Tr key={index}>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/tx/${action.txhash}`}>
-                                      <Text style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
-                                      }}>
+                                      <Text className={styles.Text}
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          // fontSize: "12px"
+                                        }}>
                                         {formatHex(action.txhash)}
                                       </Text>
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Badge textAlign={"center"} width="100%">{formatMethod(action.type)}</Badge>
-                                    </Text>
+                                    <Badge textAlign={"center"} width="100%">
+                                      <Text className={styles.Text}>
+                                        {formatMethod(action.type)}
+                                      </Text>
+                                    </Badge>
                                   </Td>
                                   <Td textAlign={"center"}>
-                                    <Text>{moment(action.time_stamp).fromNow()}</Text>
+                                    <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/block/${action.block_height}`} >
-                                      <Text style={{
+                                      <Text className={styles.Text}
+                                      style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
+                                        // fontSize: "12px"
                                       }}>
                                         {action.block_height}
                                       </Text>
@@ -482,18 +488,19 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/address/${action.decode_tx.creator}`} >
-                                      <Text style={{
+                                      <Text className={styles.Text}
+                                      style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
+                                        // fontSize: "12px"
                                       }}>
                                         {formatHex(action.decode_tx.creator)}
                                       </Text>
                                     </Clickable>
                                   </Td>
                                   <Td textAlign={"center"}>
-                                    <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
+                                    <Text className={styles.Text}>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
                                   </Td>
                                 </Tr>
                               )) :
@@ -517,13 +524,14 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           direction="row"
                           gap={2}
                           align="center"
+                          wrap={"wrap"}
                           color={"dark"}
                           justify="space-between"
                         >
                           {isLoadedAction ?
-                            <Flex direction="row" gap={2} align="center">
+                            <Flex className={styles.Flex} direction="row" gap={2} align="center">
                               <FaSortAmountDown fontSize={12} />
-                              <Text>
+                              <Text className={styles.Text2}>
                                 Latest {latestAction?.txs?.length} from a total of{" "}
                                 {/* <Clickable href="/"> */}
                                 {latestAction?.totalCount}
@@ -557,7 +565,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPageAction) === latestAction?.totalPage
+                                  parseInt(isPageAction) >= latestAction?.totalPage
                                 }
                                 onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
                               >
@@ -566,7 +574,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               <Button
                                 size="xs"
                                 isDisabled={
-                                  parseInt(isPageAction) === latestAction?.totalPage
+                                  parseInt(isPageAction) >= latestAction?.totalPage
                                 }
                                 onClick={() => handlePageLatestAction(latestAction?.totalPage.toString())}
 
@@ -584,22 +592,22 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                             <Thead>
                               <Tr >
                                 <Td textAlign={"center"}>
-                                  <Text>Txhash</Text>
+                                  <Text className={styles.Text}>Txhash</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>Action</Text>
+                                  <Text className={styles.Text}>Action</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>Age</Text>
+                                  <Text className={styles.Text}>Age</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>Block</Text>
+                                  <Text className={styles.Text}>Block</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>By</Text>
+                                  <Text className={styles.Text}>By</Text>
                                 </Td>
                                 <Td textAlign={"center"}>
-                                  <Text>Gas Fee</Text>
+                                  <Text className={styles.Text}>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
@@ -608,31 +616,36 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                 <Tr key={index}>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/tx/${action.txhash}`}>
-                                      <Text style={{
+                                      <Text 
+                                      className={styles.Text}
+                                      style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
+                                        // fontSize: "12px"
                                       }}>
                                         {formatHex(action.txhash)}
                                       </Text>
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                    <Text>
-                                      <Badge textAlign={"center"} width="100%">{action.decode_tx.action ? action.decode_tx.action : "unknow"}</Badge>
-                                    </Text>
+                                      <Badge textAlign={"center"} width="100%">
+                                        <Text className={styles.Text}>
+                                        {action.decode_tx.action ? action.decode_tx.action : "unknow"}
+                                        </Text>
+                                      </Badge>
                                   </Td>
                                   <Td textAlign={"center"}>
-                                    <Text>{moment(action.time_stamp).fromNow()}</Text>
+                                    <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/block/${action.block_height}`} >
-                                      <Text style={{
+                                      <Text className={styles.Text}
+                                      style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
+                                        // fontSize: "12px"
                                       }}>
                                         {action.block_height}
                                       </Text>
@@ -640,18 +653,18 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Clickable href={`/address/${action.decode_tx.creator}`} >
-                                      <Text style={{
+                                      <Text className={styles.Text} style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "12px"
+                                        // fontSize: "12px"
                                       }}>
                                         {formatHex(action.decode_tx.creator)}
                                       </Text>
                                     </Clickable>
                                   </Td>
                                   <Td textAlign={"center"}>
-                                    <Text>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
+                                    <Text className={styles.Text}>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
                                   </Td>
                                 </Tr>
                               )) :
@@ -703,7 +716,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           readOnly
                           minH={500}
                         /> */}
-                        <Box height={"400px"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                        <Box height={"400px"} overflowY="auto" overflowX="scroll" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                           <Flex p={3}>
                             <DynamicReactJson src={metadata} collapsed={1} displayDataTypes={false} />
                           </Flex>

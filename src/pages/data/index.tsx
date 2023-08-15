@@ -642,7 +642,7 @@ export default function Data({
                               <Td>
                                 {tx.decode_tx.creator ? (
                                   <Clickable
-                                    href={`/addreess/${tx.decode_tx.creator}`}
+                                    href={`/address/${tx.decode_tx.creator}`}
                                   >
                                     <Text
                                       style={{
