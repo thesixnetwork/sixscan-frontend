@@ -112,8 +112,10 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
       try {
         setIsLoaded(false)
         setTxns(null);
-        const resTxns = await getAllTransactionByTokenID(schemacode, tokenId, isPage, "10");
-        setTxns(resTxns as LatestAction);
+        // const resTxns = await getAllTransactionByTokenID(schemacode, tokenId, isPage, "10");
+        const response = await fetch(`/api/getTxByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`);
+        const resMetadata = await response.json();
+        setTxns(resMetadata as LatestAction);
         setIsLoaded(true);
       } catch (error) {
         console.log(error);
@@ -129,8 +131,10 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
       try {
         setIsLoadedAction(false)
         setLatestAction(null);
-        const resLatestAction = await getAllActionByTokenID(schemacode, tokenId, isPageAction, "10");
-        setLatestAction(resLatestAction as LatestAction);
+        // const resLatestAction = await getAllActionByTokenID(schemacode, tokenId, isPageAction, "10");
+        const response = await fetch(`/api/getActionByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`);
+        const resMetadata = await response.json();
+        setLatestAction(resMetadata as LatestAction);
         setIsLoadedAction(true);
       } catch (error) {
         console.log(error);
