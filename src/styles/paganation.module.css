@@ -1,0 +1,46 @@
+/* Default styles for the text */
+.FaArrowLeft {
+    font-size: 12px;
+}
+
+.Button {
+    size: xs;
+}
+
+.Text3 {
+    font-size: 14px;
+}
+
+.Tab {
+    
+}
+
+.Flex {
+    
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+    .FaArrowLeft {
+        font-size: 6px;
+    }
+
+    .Text2 {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .Text3 {
+        font-size: 10px;
+        text-align: center;
+    }
+
+    .Tab {
+        font-size: 40px;
+        text-align: center;
+    }
+
+    .Flex {
+        width: 100%;
+    }
+}

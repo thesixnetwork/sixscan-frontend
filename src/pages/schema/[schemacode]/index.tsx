@@ -42,6 +42,8 @@ import {
   FaScroll,
   FaSortAmountDown,
 } from "react-icons/fa";
+import styles from "@/styles/cardLatest.module.css"
+
 // ------------- Components ----------------
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
@@ -400,7 +402,7 @@ export default function Schema({
                         <FaCheckCircle color={"rgb(69,153,234)"} />
                       )}
                     </Flex>
-                    <Flex direction="row" gap={1}>
+                    <Flex direction="row" gap={1} wrap={"wrap"}>
                       <Text fontSize="sm">Contract</Text>
                       <Text fontSize="sm">
                         <Clickable
@@ -522,7 +524,7 @@ export default function Schema({
                     </Flex>
                   )
                   }
-                  <Flex direction="row" gap={5}>
+                  <Flex direction="row" gap={5} wrap={"wrap"}>
                     {CONFIG.map((config, index) => (
                       <Flex direction="column" key={index}>
                         <Text fontWeight={"bold"}>{config.value}</Text>
@@ -550,12 +552,13 @@ export default function Schema({
                           direction="row"
                           align="center"
                           color={"dark"}
+                          wrap={"wrap"}
                           justify="space-between"
                         >
                           <Flex direction="row" gap={2} align="center">
                             <FaSortAmountDown fontSize={12} />
                             {isLoadedTxns ?
-                              <Text>
+                              <Text className={styles.Text2}>
                                 {`Showing ${txns ? txns.txs.length : "0"
                                   } txns from a total of `}
                                 <Clickable>
@@ -621,25 +624,25 @@ export default function Schema({
                             <Thead>
                               <Tr>
                                 <Td>
-                                  <Text textAlign={'center'}>Txhash</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Txhash</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>Token ID</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Token ID</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>Method</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Method</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>Age</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Age</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>Block</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Block</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>By</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>By</Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={'center'}>Gas Fee</Text>
+                                  <Text className={styles.Text} textAlign={'center'}>Gas Fee</Text>
                                 </Td>
                               </Tr>
                             </Thead>
@@ -662,11 +665,11 @@ export default function Schema({
                                       <Clickable
                                         href={`/tx/${tx.txhash}`}
                                       >
-                                        <Text style={{
+                                        <Text className={styles.Text} style={{
                                           color: "#5C34A2",
                                           textDecoration: "none",
                                           fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                          fontSize: "14px",
+                                          // fontSize: "14px",
                                           textAlign: "center",
                                         }}>
                                           {formatHex(tx.txhash)}
@@ -678,11 +681,11 @@ export default function Schema({
                                     <Clickable
                                       href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                     >
-                                      <Text style={{
+                                      <Text className={styles.Text} style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
+                                        // fontSize: "14px",
                                         textAlign: "center",
                                       }}>
                                         {tx.decode_tx.tokenId}
@@ -691,11 +694,11 @@ export default function Schema({
                                   </Td>
                                   <Td>
                                     <Badge textAlign={"center"} width="100%">
-                                      {formatMethod(tx.type)}
+                                      <Text className={styles.Text}>{formatMethod(tx.type)}</Text>
                                     </Badge>
                                   </Td>
                                   <Td>
-                                    <Text textAlign={'center'}>
+                                    <Text className={styles.Text} textAlign={'center'}>
                                       {moment(tx.time_stamp).fromNow()}
                                     </Text>
                                   </Td>
@@ -703,11 +706,11 @@ export default function Schema({
                                     <Clickable
                                       href={`/block/${tx.block_height}`}
                                     >
-                                      <Text style={{
+                                      <Text className={styles.Text} style={{
                                         color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
+                                        // fontSize: "14px",
                                         textAlign: "center"
                                       }}>
                                         {tx.block_height}
@@ -719,11 +722,11 @@ export default function Schema({
                                       <Clickable
                                         href={`/address/${tx.decode_tx.creator}`}
                                       >
-                                        <Text style={{
+                                        <Text className={styles.Text} style={{
                                           color: "#5C34A2",
                                           textDecoration: "none",
                                           fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                          fontSize: "14px",
+                                          // fontSize: "14px",
                                           textAlign: "center"
                                         }}>
                                           {formatHex(tx.decode_tx.creator)}
@@ -732,7 +735,7 @@ export default function Schema({
                                     )}
                                   </Td>
                                   <Td>
-                                    <Text textAlign={'center'}>{`${formatNumber(
+                                    <Text className={styles.Text} textAlign={'center'}>{`${formatNumber(
                                       convertUsixToSix(
                                         parseInt(tx.decode_tx.fee_amount)
                                       )
@@ -787,7 +790,7 @@ export default function Schema({
                           readOnly
                           minH={500}
                         /> */}
-                        <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                        <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="scroll" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                           <Flex p={3}>
                             <DynamicReactJson src={schema} collapsed={1} displayDataTypes={false} />
                           </Flex>
