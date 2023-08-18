@@ -386,8 +386,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }}>{message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key][0])} SIX</Text>
-                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                        <Text style={{ marginRight: '5px' }}>{ message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key])} SIX</Text>
+                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `(#NA)`}</Text>
                                       </Flex>
                                     </Td>
                                   </Tr>
