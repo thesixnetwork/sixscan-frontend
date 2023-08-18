@@ -13,6 +13,11 @@ import {
   Link,
   TableContainer,
   Table,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
   Tr,
   Td,
   Tooltip,
@@ -195,7 +200,7 @@ export default function Data({
           <Flex direction="column" gap={3} p={3}>
             <Grid templateColumns="repeat(12, 1fr)" gap={6}>
               <GridItem colSpan={{ base: 12, md: 6 }}>
-                <CustomCard title={"Trending"}>
+                {/* <CustomCard title={"Trending"}>
                   <TableContainer>
                     {maintain ? (
                       <Alert status="loading" height="350px">
@@ -300,6 +305,196 @@ export default function Data({
                       </Table>
                     )}
                   </TableContainer>
+                </CustomCard> */}
+                <CustomCard>
+                  <Tabs isLazy>
+                    <TabList>
+                      <Tab fontSize={"18px"} p={4}>Collection Trending</Tab>
+                      <Tab fontSize={"18px"} p={4}>Actions Trending</Tab>
+                    </TabList>
+                    <TabPanels>
+                      <TabPanel>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr >
+                                <Td>
+                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                    Collection
+                                  </Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                    Action Count
+                                  </Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {isLoadedStat ? Array.isArray(nftActionCount) &&
+                                nftActionCount.map((item, index) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={3}
+                                      >
+                                        <Text fontWeight={"bold"}>{index + 1}</Text>
+                                        <Image
+                                          src={item.image}
+                                          alt="gen2"
+                                          width={"40px"}
+                                          height={"40px"}
+                                        />
+                                        <Link
+                                          href={`/schema/${item.schema_code}`}
+                                          target="_blank"
+                                          _hover={{ textDecoration: "none" }}
+                                        >
+                                          <Tooltip label={item.schema_code} aria-label='A tooltip'>
+                                            <Text fontWeight={"bold"}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                              }}>
+                                              {/* {formatSchema(item.schema_code)} */}
+                                              {item.schema_code}
+                                            </Text>
+                                          </Tooltip>
+                                        </Link>
+                                      </Flex>
+                                    </Td>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={3}
+                                      >
+                                        <Text>{item.count}</Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                )) :
+                                Array.from({ length: 5 }).map((_, index) => (
+                                  <Tr key={index}>
+                                    {Array.from({ length: 3 }).map((_, index) => (
+                                      <Td key={index}>
+                                        <Skeleton width={"auto"} height={"15px"} />
+                                      </Td>
+                                    ))}
+                                  </Tr>
+                                ))
+                              }
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+
+                      <TabPanel>
+                        <TableContainer>
+                          <Table>
+                            <Thead>
+                              <Tr >
+                                <Td>
+                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                    Collection
+                                  </Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                    Action
+                                  </Text>
+                                </Td>
+                                <Td>
+                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                    Action Count
+                                  </Text>
+                                </Td>
+                              </Tr>
+                            </Thead>
+                            <Tbody>
+                              {isLoadedStat ? Array.isArray(nftActionCount) &&
+                                nftActionCount.map((item, index) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={3}
+                                      >
+                                        <Text fontWeight={"bold"}>{index + 1}</Text>
+                                        <Image
+                                          src={item.image}
+                                          alt="gen2"
+                                          width={"40px"}
+                                          height={"40px"}
+                                        />
+                                        <Link
+                                          href={`/schema/${item.schema_code}`}
+                                          target="_blank"
+                                          _hover={{ textDecoration: "none" }}
+                                        >
+                                          <Tooltip label={item.schema_code} aria-label='A tooltip'>
+                                            <Text fontWeight={"bold"}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "14px",
+                                                textAlign: "center",
+                                              }}>
+                                              {formatSchema(item.schema_code)}
+                                            </Text>
+                                          </Tooltip>
+                                        </Link>
+                                      </Flex>
+                                    </Td>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={3}
+                                      >
+                                        <Tooltip label={item.action} aria-label='A tooltip'>
+                                          <Text>
+                                            {formatSchemaAction(item.action)}
+                                          </Text>
+                                        </Tooltip>
+                                      </Flex>
+                                    </Td>
+                                    <Td>
+                                      <Flex
+                                        direction="row"
+                                        alignItems="center"
+                                        gap={3}
+                                      >
+                                        <Text>{item.count}</Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
+                                )) :
+                                Array.from({ length: 5 }).map((_, index) => (
+                                  <Tr key={index}>
+                                    {Array.from({ length: 3 }).map((_, index) => (
+                                      <Td key={index}>
+                                        <Skeleton width={"auto"} height={"15px"} />
+                                      </Td>
+                                    ))}
+                                  </Tr>
+                                ))
+                              }
+                            </Tbody>
+                          </Table>
+                        </TableContainer>
+                      </TabPanel>
+                    </TabPanels>
+                  </Tabs>
                 </CustomCard>
               </GridItem>
               <GridItem colSpan={{ base: 12, md: 6 }}>
@@ -328,7 +523,7 @@ export default function Data({
                               WebkitTextFillColor: "transparent",
                             }}
                           >
-                            Dynamic Data Layer (NFT Gen 2) 
+                            Dynamic Data Layer (NFT Gen 2)
                           </Text>
                           <Text
                             fontSize="xl"
@@ -590,7 +785,7 @@ export default function Data({
                               <Td>
                                 {tx.decode_tx.tokenId ? (
                                   <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode: tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
                                   >
                                     <Text
                                       style={{
@@ -675,7 +870,7 @@ export default function Data({
                               <Td>
                                 {tx.decode_tx.nftSchemaCode || tx.decode_tx.nft_schema_code ? (
                                   <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}`}
+                                    href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}`}
                                   >
                                     <Text
                                       style={{
@@ -687,7 +882,7 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {formatHex(tx.decode_tx.nftSchemaCode? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code)}
+                                      {formatHex(tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code)}
                                     </Text>
                                   </Clickable>
                                 ) : (
