@@ -184,6 +184,13 @@ export interface DataNFTStat {
   image: string,
 }
 
+export interface DataNFTCollectionTrending {
+  schema_code: string,
+  action: string,
+  count: number,
+  image: string,
+}
+
 export interface DataActionCount {
   _id: string,
   period: string,

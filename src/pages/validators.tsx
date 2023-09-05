@@ -27,8 +27,8 @@ import { FaCheckCircle, FaUnlink } from "react-icons/fa";
 // ------------- Components ----------------
 import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
-import { getValidators } from "@/service/staking";
-import { Validator } from "@/types/Staking";
+import { getValidators, getPool } from "@/service/staking";
+import { Validator, Pool } from "@/types/Staking";
 import { formatNumber } from "@/utils/format";
 
 const getImageFromDetails = (details: string) => {
@@ -77,9 +77,10 @@ const sortValidatorsByPower = (validators: Validator[]) => {
 
 interface ValidatorProps {
   validators: Validator[];
+  pool: Pool;
 }
 
-export default function Validators({ validators }: ValidatorProps) {
+export default function Validators({ validators, pool }: ValidatorProps) {
   // sort validators by voting power and if status is not bonded, put it at the end
   sortValidatorsByPower(validators);
   return (
@@ -114,16 +115,13 @@ export default function Validators({ validators }: ValidatorProps) {
                         <Text fontWeight={"bold"}>Address</Text>
                       </Td>
                       <Td>
-                        <Text fontWeight={"bold"}>Voting Power</Text>
+                        <Text fontWeight={"bold"}>Commission</Text>
                       </Td>
                       <Td>
-                        <Text fontWeight={"bold"}>First Block</Text>
+                        <Text fontWeight={"bold"}>Delegations</Text>
                       </Td>
                       <Td>
-                        <Text fontWeight={"bold"}>Last Block</Text>
-                      </Td>
-                      <Td>
-                        <Text fontWeight={"bold"}>Validated Blocks</Text>
+                        <Text fontWeight={"bold"}>Power</Text>
                       </Td>
                       <Td>
                         <Text fontWeight={"bold"}>Active</Text>
@@ -173,11 +171,18 @@ export default function Validators({ validators }: ValidatorProps) {
                                       validator.description.details
                                     ) !== ""
                                       ? getNameFromDetails(
-                                          validator.description.details
-                                        )
+                                        validator.description.details
+                                      )
                                       : ""}
                                   </Text>
                                 </Flex>
+                              </Flex>
+                            </Td>
+                            <Td>
+                              <Flex direction="column">
+                                <Text>
+                                  {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
+                                </Text>
                               </Flex>
                             </Td>
                             <Td>
@@ -191,16 +196,10 @@ export default function Validators({ validators }: ValidatorProps) {
                             </Td>
                             <Td>
                               <Text>
-                                <Clickable href="/">0</Clickable>
+                                {(
+                                  parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                ).toFixed(2) + " %"}
                               </Text>
-                            </Td>
-                            <Td>
-                              <Text>
-                                <Clickable href="/">0</Clickable>
-                              </Text>
-                            </Td>
-                            <Td>
-                              <Text>0</Text>
                             </Td>
                             <Td>
                               {!validator.jailed ? (
@@ -275,16 +274,13 @@ export default function Validators({ validators }: ValidatorProps) {
                               <Text fontWeight={"bold"}>Address</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>Voting Power</Text>
+                              <Text fontWeight={"bold"}>Commission</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>First Block</Text>
+                              <Text fontWeight={"bold"}>Delegations</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>Last Block</Text>
-                            </Td>
-                            <Td>
-                              <Text fontWeight={"bold"}>Validated Blocks</Text>
+                              <Text fontWeight={"bold"}>Power</Text>
                             </Td>
                             <Td>
                               <Text fontWeight={"bold"}>Active</Text>
@@ -300,10 +296,10 @@ export default function Validators({ validators }: ValidatorProps) {
                                         {index + 1 === 1
                                           ? `🥇 ${index + 1}`
                                           : index + 1 === 2
-                                          ? `🥈 ${index + 1}`
-                                          : index + 1 === 3
-                                          ? `🥉 ${index + 1}`
-                                          : index + 1}
+                                            ? `🥈 ${index + 1}`
+                                            : index + 1 === 3
+                                              ? `🥉 ${index + 1}`
+                                              : index + 1}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -343,11 +339,18 @@ export default function Validators({ validators }: ValidatorProps) {
                                             validator.description.details
                                           ) !== ""
                                             ? getNameFromDetails(
-                                                validator.description.details
-                                              )
+                                              validator.description.details
+                                            )
                                             : ""}
                                         </Text>
                                       </Flex>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>
+                                        {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
+                                      </Text>
                                     </Flex>
                                   </Td>
                                   <Td>
@@ -361,21 +364,15 @@ export default function Validators({ validators }: ValidatorProps) {
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Clickable href="/">0</Clickable>
+                                      {(
+                                        parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                      ).toFixed(2) + " %"}
                                     </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/">0</Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>0</Text>
                                   </Td>
                                   <Td>
                                     {!validator.jailed ? (
                                       validator.status ===
-                                      "BOND_STATUS_BONDED" ? (
+                                        "BOND_STATUS_BONDED" ? (
                                         <Badge
                                           colorScheme={"green"}
                                           variant={"subtle"}
@@ -439,16 +436,13 @@ export default function Validators({ validators }: ValidatorProps) {
                               <Text fontWeight={"bold"}>Address</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>Voting Power</Text>
+                              <Text fontWeight={"bold"}>Commission</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>First Block</Text>
+                              <Text fontWeight={"bold"}>Delegations</Text>
                             </Td>
                             <Td>
-                              <Text fontWeight={"bold"}>Last Block</Text>
-                            </Td>
-                            <Td>
-                              <Text fontWeight={"bold"}>Validated Blocks</Text>
+                              <Text fontWeight={"bold"}>Power</Text>
                             </Td>
                             <Td>
                               <Text fontWeight={"bold"}>Active</Text>
@@ -464,10 +458,10 @@ export default function Validators({ validators }: ValidatorProps) {
                                         {index + 1 === 1
                                           ? `🥇 ${index + 1}`
                                           : index + 1 === 2
-                                          ? `🥈 ${index + 1}`
-                                          : index + 1 === 3
-                                          ? `🥉 ${index + 1}`
-                                          : index + 1}
+                                            ? `🥈 ${index + 1}`
+                                            : index + 1 === 3
+                                              ? `🥉 ${index + 1}`
+                                              : index + 1}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -507,11 +501,16 @@ export default function Validators({ validators }: ValidatorProps) {
                                             validator.description.details
                                           ) !== ""
                                             ? getNameFromDetails(
-                                                validator.description.details
-                                              )
+                                              validator.description.details
+                                            )
                                             : ""}
                                         </Text>
                                       </Flex>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex direction="column">
+                                      {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
                                     </Flex>
                                   </Td>
                                   <Td>
@@ -525,21 +524,15 @@ export default function Validators({ validators }: ValidatorProps) {
                                   </Td>
                                   <Td>
                                     <Text>
-                                      <Clickable href="/">0</Clickable>
+                                      {(
+                                        parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                      ).toFixed(2) + " %"}
                                     </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>
-                                      <Clickable href="/">0</Clickable>
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Text>0</Text>
                                   </Td>
                                   <Td>
                                     {!validator.jailed ? (
                                       validator.status ===
-                                      "BOND_STATUS_BONDED" ? (
+                                        "BOND_STATUS_BONDED" ? (
                                         <Badge
                                           colorScheme={"green"}
                                           variant={"subtle"}
@@ -604,9 +597,11 @@ export default function Validators({ validators }: ValidatorProps) {
 
 export const getServerSideProps = async () => {
   const validators = await getValidators();
+  const pool = await getPool();
   return {
     props: {
       validators,
+      pool,
     },
   };
 };

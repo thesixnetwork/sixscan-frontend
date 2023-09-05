@@ -69,7 +69,7 @@ import {
 import { getLatestAction } from "@/service/nftmngr/txs";
 // import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 
-import { DataNFTStat, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
+import { DataNFTStat, DataNFTCollectionTrending, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
 import { text } from "stream/consumers";
 import { _LOG } from "@/utils/log_helper";
 import { useState, useEffect, Suspense } from "react";
@@ -121,10 +121,12 @@ export default function Data({
 
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoadedStat, setIsLoadedStat] = useState(false);
+  const [isLoadedCollection, setIsLoadedCollection] = useState(false);
   const [isStop, setIsStop] = useState(false);
   const [isPage, setIsPage] = useState("1");
   const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
   const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(null);
+  const [nftCollectionTrending, setNftCollectionTrending] = useState<DataNFTCollectionTrending | null>(null);
 
   ///////  get Latest Action /////////
   useEffect(() => {
@@ -154,6 +156,23 @@ export default function Data({
         const resActionStat = await response.json();
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);
+      } catch (error) {
+        _LOG(error)
+      }
+    };
+    fetchDataStat();
+  }, [isStop])
+
+  ///// colletion trending ////
+  useEffect(() => {
+    const fetchDataStat = async () => {
+      try {
+        setIsLoadedCollection(false)
+        setNftCollectionTrending(null);
+        const response = await fetch(`/api/nftCollectionTrending?schemaCode=&endTime=&pageNumber=1&limit=5`);
+        const resCollection = await response.json();
+        setNftCollectionTrending(resCollection);
+        setIsLoadedCollection(true);
       } catch (error) {
         _LOG(error)
       }
@@ -331,8 +350,8 @@ export default function Data({
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoadedStat ? Array.isArray(nftActionCount) &&
-                                nftActionCount.map((item, index) => (
+                              {isLoadedCollection ? Array.isArray(nftCollectionTrending) &&
+                                nftCollectionTrending.map((item, index) => (
                                   <Tr key={index}>
                                     <Td>
                                       <Flex
@@ -382,7 +401,7 @@ export default function Data({
                                 )) :
                                 Array.from({ length: 5 }).map((_, index) => (
                                   <Tr key={index}>
-                                    {Array.from({ length: 3 }).map((_, index) => (
+                                    {Array.from({ length: 2 }).map((_, index) => (
                                       <Td key={index}>
                                         <Skeleton width={"auto"} height={"15px"} />
                                       </Td>
@@ -778,8 +797,28 @@ export default function Data({
                                 </Flex>
                               </Td>
                               <Td>
-                                <Badge textAlign={"center"} width="100%">
-                                  {formatMethod(tx.type)}
+                                <Badge justifyContent={"center"} display={"flex"} width="100%">
+                                  <Text style={{
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "10px",
+                                        textAlign: "center",
+                                      }}>
+                                        Action:
+                                  </Text>
+                                  <Tooltip label={tx.decode_tx.action} aria-label='A tooltip'>
+                                  <Text marginLeft={"4px"} style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "10px",
+                                        textAlign: "center",
+                                      }}>
+                                        {formatSchemaAction(tx.decode_tx.action)}
+                                  </Text>
+                                  </Tooltip>
                                 </Badge>
                               </Td>
                               <Td>
