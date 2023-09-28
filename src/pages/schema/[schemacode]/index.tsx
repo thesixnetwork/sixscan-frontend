@@ -512,7 +512,18 @@ export default function Schema({
                       </Flex>
                     </Flex>
                   )}
-                  {!openseaCollection &&  (
+                  {(!openseaCollection && !metadata?.description)? 
+                  (
+                    <Flex direction="column">
+                      {isShowMore && schema?.description ? schema?.description : (schema?.description && schema?.description?.length>100)? `${schema?.description.substring(0, 100)}...`:schema?.description }
+                      <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
+                        <Text fontSize={"sm"} fontWeight={"bold"}>
+                          {isShowMore ? "SHOW LESS" : "SHOW MORE"}
+                        </Text>
+                        {isShowMore ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                      </Flex>
+                    </Flex>
+                  ) : (
                     <Flex direction="column">
                       {isShowMore && metadata?.description ? metadata?.description : `${metadata?.description && metadata?.description.substring(0, 100)}...`}
                       <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
