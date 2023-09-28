@@ -132,8 +132,8 @@ export enum OwnerAddressType {
 export interface NFTSchema {
   code: string;
   name: string;
+  description: string;
   owner: string;
-  system_actioners: string[];
   origin_data: OriginData;
   onchain_data: OnChainData;
   isVerified: boolean;
@@ -151,8 +151,6 @@ export interface OriginData {
 }
 
 export interface OnChainData {
-  reveal_required: boolean;
-  reveal_secret: Uint8Array;
   nft_attributes: AttributeDefinition[];
   token_attributes: AttributeDefinition[];
   actions: Action[];
@@ -178,6 +176,13 @@ export enum URIRetrievalMethod {
 }
 
 export interface DataNFTStat {
+  schema_code: string,
+  action: string,
+  count: number,
+  image: string,
+}
+
+export interface DataNFTCollectionTrending {
   schema_code: string,
   action: string,
   count: number,

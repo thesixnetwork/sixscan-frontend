@@ -80,6 +80,80 @@ export const getNFTActionCountStat = async (
   }
 };
 
+export const getNFTCollectionTrending = async (
+  schemaCode: string,
+  page: string,
+  pageSize: string,
+): Promise<any | null> => {
+  try {
+    // const res = await axios.get(
+    //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    // );
+    let res : any;
+    res = await axios.get(
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getCollectionTrending?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    );
+    if (res.status !== 200) {
+      _LOG("Error: Non-200 status code returned:", res.status);
+      return null;
+    }
+    if (res.data.statusCode !== "V:0001") {
+      _LOG("Error: API returned status code", res.data.statusCode);
+      return null;
+    }
+
+    // if (res.data.data.length === 0) {
+    //   res = await axios.get(
+    //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    //   );
+    //   if (res.status !== 200) {
+    //     _LOG("Error: Non-200 status code returned:", res.status);
+    //     return null;
+    //   }
+    //   if (res.data.statusCode !== "V:0001") {
+    //     _LOG("Error: API returned status code", res.data.statusCode);
+    //     return null;
+    //   }
+    // }
+    
+    const actionCount = res.data.data;
+    const promises = [];
+    for (const item of actionCount.data) {
+      try {
+        const { data } = await axios.get(
+          `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${item._id.schema_code}/1`
+        );
+        if (data.image) {
+          const fmtData = {
+            schema_code: item._id.schema_code,
+            // action: item._id.action,
+            count: item.count,
+            image: data.image
+          }
+          promises.push(fmtData);
+        }
+      } catch (e) {
+        const fmtData = {
+          schema_code: item.schema_code,
+          // action: item.action,
+          count: item.count,
+          image: "/logo-nftgen2-01.png"
+        }
+        promises.push(fmtData);
+      }
+    }
+    const metadata = await Promise.all(promises);
+    // console.log("metadata", metadata)
+    if (!metadata) {
+      return null;
+    }
+    return metadata;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const getNFTActionCountStatDaily = async (
     schemaCode: string,
     endTime: string,

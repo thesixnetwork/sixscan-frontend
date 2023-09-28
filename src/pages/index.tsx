@@ -297,7 +297,7 @@ export default function Home({
                         <Td>
                           <Flex direction="column">
                             <Flex direction="row">
-                              Fee Recipient{` `}
+                              Proposer{` `}
                               <Clickable
 
                                 href={`/address/${getBlockRewardValidator(
