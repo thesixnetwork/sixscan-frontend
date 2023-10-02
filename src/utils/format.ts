@@ -297,7 +297,21 @@ export const formatSchemaName = (schema: string) => {
   return schema_code;
 };
 
-export const formatSchemaAction = (action: string) => {
+export const formatSchemaAction = (action: any) => {
+  // console.log(action);
+  // check if action is array or not
+  if (Array.isArray(action)) {
+    let action_ = "MultiAction";
+    // for (let i = 0; i < action.length; i++) {
+    //   if (i === action.length - 1) {
+    //     action_ += action[i];
+    //   } else {
+    //     action_ += action[i] + ",";
+    //   }
+    // }
+    return action_;
+  }
+
   if (action.length <= 8) {
     return action;
   } else {
