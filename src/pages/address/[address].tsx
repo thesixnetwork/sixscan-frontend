@@ -631,7 +631,7 @@ export default function Address({
                             </Thead>
                             <Tbody>
                               {accountTxs &&
-                                accountTxs.txs.map((tx, index) => (
+                                accountTxs.txs.map((tx:any, index) => (
                                   <Tr key={index}>
                                     <Td>
                                       <Flex
