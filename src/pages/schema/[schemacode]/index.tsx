@@ -704,9 +704,7 @@ export default function Schema({
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                    <Badge textAlign={"center"} width="100%">
-                                      <Text className={styles.Text}>{formatMethod(tx.type)}</Text>
-                                    </Badge>
+                                  {formatMethod(tx.type, tx.decode_tx.toAddress, tx.decode_tx.fromAddress, tx.decode_tx.action)}
                                   </Td>
                                   <Td>
                                     <Text className={styles.Text} textAlign={'center'}>

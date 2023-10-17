@@ -258,7 +258,7 @@ export default function Address({
                               </Thead>
                               <Tbody>
                                 {accountTxs &&
-                                  accountTxs.txs.map((tx, index) => (
+                                  accountTxs.txs.map((tx:any, index) => (
                                     <Tr key={index}>
                                       <Td>
                                         <Flex
@@ -289,11 +289,7 @@ export default function Address({
                                         </Flex>
                                       </Td>
                                       <Td>
-                                        <Text justifyContent={"center"}>
-                                          <Badge textAlign={"center"} width="100%">
-                                            {formatMethod(tx.type, tx.decode_tx.toAddress, address)}
-                                          </Badge>
-                                        </Text>
+                                            {formatMethod(tx.type, tx.decode_tx.toAddress, address, tx.decode_tx.action)}
                                       </Td>
                                       <Td textAlign={"center"}>
                                         <Text>

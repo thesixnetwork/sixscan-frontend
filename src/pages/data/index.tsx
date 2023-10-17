@@ -55,7 +55,6 @@ import {
   formatSchema,
   formatSchemaAction,
   convertUsixToSix,
-  formatMethod,
 } from "@/utils/format";
 
 // -------- service ----------
@@ -70,7 +69,6 @@ import { getLatestAction } from "@/service/nftmngr/txs";
 // import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 
 import { DataNFTStat, DataNFTCollectionTrending, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
-import { text } from "stream/consumers";
 import { _LOG } from "@/utils/log_helper";
 import { useState, useEffect, Suspense } from "react";
 

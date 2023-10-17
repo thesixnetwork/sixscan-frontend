@@ -249,11 +249,7 @@ export default function Address({
                                                                                 </Flex>
                                                                             </Td>
                                                                             <Td>
-                                                                                <Text>
-                                                                                    <Badge>
-                                                                                        {formatMethod(tx.type)}
-                                                                                    </Badge>
-                                                                                </Text>
+                                                                            {formatMethod(tx.type, tx.decode_tx.toAddress, tx.decode_tx.fromAddress, tx.decode_tx.action)}
                                                                             </Td>
                                                                             <Td>
                                                                                 {

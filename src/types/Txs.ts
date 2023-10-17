@@ -214,6 +214,7 @@ interface Tx {
     fee_amount: string;
     err_msg: string | null;
     relate_addr: string[] | null;
+    action: string | null;
   };
   code: number;
   memo: string;

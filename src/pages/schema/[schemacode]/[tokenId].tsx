@@ -468,11 +468,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                    <Badge textAlign={"center"} width="100%">
-                                      <Text className={styles.Text}>
-                                        {formatMethod(action.type)}
-                                      </Text>
-                                    </Badge>
+                                        {formatMethod(action.type, action.decode_tx.toAddress, action.decode_tx.fromAddress, action.decode_tx.action)}
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>

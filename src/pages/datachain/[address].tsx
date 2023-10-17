@@ -295,11 +295,7 @@ export default function Address({
                                                                                 </Clickable>
                                                                             </Td>
                                                                             <Td textAlign={"center"}>
-                                                                                <Text>
-                                                                                <Badge textAlign={"center"} width="100%">
-                                                                                {formatMethod(tx.type)}
-                                                                                </Badge>
-                                                                                </Text>
+                                                                                {formatMethod(tx.type, tx.decode_tx.toAddress, tx.decode_tx.fromAddress, tx.decode_tx.action)}
                                                                             </Td>
                                                                             <Td textAlign={"center"}>
                                                                                 <Text>

@@ -1,4 +1,5 @@
 import { SendAmount } from "@/types/Bank";
+import { Text, Badge, Tooltip } from "@chakra-ui/react";
 
 interface Coin {
   denom: string;
@@ -22,8 +23,10 @@ export const formatNumber = (num: number, decimalPoints: number = 2) => {
     : formattedIntegerPart;
 };
 
-export const formatCoinNumber = (num: TXCoin[], decimalPoints: number = 2):string => {
-
+export const formatCoinNumber = (
+  num: TXCoin[],
+  decimalPoints: number = 2
+): string => {
   if (num.length > 1) {
     let total = 0;
     for (let i = 0; i < num.length; i++) {
@@ -34,7 +37,7 @@ export const formatCoinNumber = (num: TXCoin[], decimalPoints: number = 2):strin
       });
       total += amount;
     }
-    
+
     const [integerPart, decimalPart] = total.toFixed(decimalPoints).split(".");
     const formattedIntegerPart = integerPart.replace(
       /(\d)(?=(\d{3})+(?!\d))/g,
@@ -73,13 +76,15 @@ export const formatCoinNumber = (num: TXCoin[], decimalPoints: number = 2):strin
       return decimalPoints > 0
         ? `${formattedIntegerPart}.${decimalPart}`
         : formattedIntegerPart;
-    }else{
+    } else {
       const amount = convertAmountToSix({
         denom: num[0].denom,
         amount: Number(num[0].amount),
       });
-      
-      const [integerPart, decimalPart] = amount.toFixed(decimalPoints).split(".");
+
+      const [integerPart, decimalPart] = amount
+        .toFixed(decimalPoints)
+        .split(".");
       const formattedIntegerPart = integerPart.replace(
         /(\d)(?=(\d{3})+(?!\d))/g,
         "$1,"
@@ -117,28 +122,157 @@ export const formatHex = (hash: string) => {
   return hash.slice(0, 6) + "..." + hash.slice(hash.length - 6, hash.length);
 };
 
-export const formatMethod = (method: string, inputAddress?: string,decodeTxAddress?:string) => {
+export const formatMethod = (
+  method: string,
+  inputAddress?: string,
+  decodeTxAddress?: string,
+  action_name?: string
+) => {
   // check input in not null
   if (!method) {
     return "";
   }
-  if ( method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="PERFORMACTIONBYADMIN") {
-    return "ACTION";
-  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="PERFORMMULTITOKENACTION") {
-    return "MULTIACION";
-  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="WITHDRAWDELEGATORREWARD"){
-    return "CLAIMREWARD";
-  } else if (method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ==="SEND"){
-      if(decodeTxAddress === inputAddress){
-        return "RECEIVE";
-      }else{
-        return "SEND";
-      }
-    }else {
-    return method
-      .split(".")
-      [method.split(".").length - 1].slice(3)
-      .toUpperCase();
+  if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "PERFORMACTIONBYADMIN"
+  ) {
+    // return action_name? "ACTION: " + action_name : "ACTION";
+    return (
+      <Badge justifyContent={"center"} display={"flex"} width="100%">
+        <Text
+          style={{
+            textDecoration: "none",
+            fontFamily:
+              "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+            fontSize: "10px",
+            textAlign: "center",
+          }}
+        >
+          Action:
+        </Text>
+        <Tooltip label={action_name} aria-label="A tooltip">
+          <Text
+            marginLeft={"4px"}
+            style={{
+              color: "#5C34A2",
+              textDecoration: "none",
+              fontFamily:
+                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+              fontSize: "10px",
+              textAlign: "center",
+            }}
+          >
+            {formatSchemaAction(action_name)}
+          </Text>
+        </Tooltip>
+      </Badge>
+    );
+  } else if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "PERFORMMULTITOKENACTION"
+  ) {
+    return (
+      <Badge justifyContent={"center"} display={"flex"} width="100%">
+        <Text
+          style={{
+            textDecoration: "none",
+            fontFamily:
+              "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+            fontSize: "10px",
+            textAlign: "center",
+          }}
+        >
+          Action:
+        </Text>
+        <Tooltip label={action_name} aria-label="A tooltip">
+          <Text
+            marginLeft={"4px"}
+            style={{
+              color: "#5C34A2",
+              textDecoration: "none",
+              fontFamily:
+                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+              fontSize: "10px",
+              textAlign: "center",
+            }}
+          >
+            {formatSchemaAction(action_name)}
+          </Text>
+        </Tooltip>
+      </Badge>
+    );
+  } else if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "WITHDRAWDELEGATORREWARD"
+  ) {
+    return (
+      <Badge justifyContent={"center"} display={"flex"} width="100%">
+        <Text
+          style={{
+            textDecoration: "none",
+            fontFamily:
+              "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+            fontSize: "10px",
+            textAlign: "center",
+          }}
+        >
+          CLAIMREWARD
+        </Text>
+      </Badge>
+    );
+  } else if (
+    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
+    "SEND"
+  ) {
+    if (decodeTxAddress === inputAddress) {
+      return (
+        <Badge justifyContent={"center"} display={"flex"} width="100%">
+          <Text
+            style={{
+              textDecoration: "none",
+              fontFamily:
+                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+              fontSize: "10px",
+              textAlign: "center",
+            }}
+          >
+            RECEIVE
+          </Text>
+        </Badge>
+      );
+    } else {
+      return (
+        <Badge justifyContent={"center"} display={"flex"} width="100%">
+          <Text
+            style={{
+              textDecoration: "none",
+              fontFamily:
+                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+              fontSize: "10px",
+              textAlign: "center",
+            }}
+          >
+            SEND
+          </Text>
+        </Badge>
+      );
+    }
+  } else {
+    return (
+      <Badge justifyContent={"center"} display={"flex"} width="100%">
+        <Text
+          style={{
+            textDecoration: "none",
+            fontFamily:
+              "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+            fontSize: "10px",
+            textAlign: "center",
+          }}
+        >
+          {method.split(".")[method.split(".").length - 1].slice(3).toUpperCase()}
+        </Text>
+      </Badge>
+    );
   }
 };
 
@@ -161,7 +295,6 @@ export const convertUsixToSix = (usix: number) => {
 export const convertAsixToSix = (asix: number) => {
   return asix / 1000000000000000000;
 };
-
 
 export const convertTXAmountToSix = (amount: TXCoin): number => {
   if (amount.amount == undefined || Number.isNaN(amount.amount)) return 0;
@@ -312,9 +445,13 @@ export const formatSchemaAction = (action: any) => {
     return action_;
   }
 
-  if (action.length <= 8) {
-    return action;
+  if (action) {
+    if (action.length <= 8) {
+      return action;
+    } else {
+      return action.slice(0, 8) + "...";
+    }
   } else {
-    return action.slice(0, 8) + "...";
+    return "";
   }
 };

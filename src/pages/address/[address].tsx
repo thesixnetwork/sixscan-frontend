@@ -660,9 +660,7 @@ export default function Address({
                                       </Flex>
                                     </Td>
                                     <Td>
-                                      <Badge textAlign={"center"} width="100%">
-                                        {formatMethod(tx.type)}
-                                      </Badge>
+                                      {formatMethod(tx.type, tx.decode_tx.toAddress, tx.decode_tx.fromAddress, tx.decode_tx.action)}
                                     </Td>
                                     <Td>
                                       <Text>
