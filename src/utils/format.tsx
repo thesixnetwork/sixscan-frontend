@@ -24,9 +24,25 @@ export const formatNumber = (num: number, decimalPoints: number = 2) => {
 };
 
 export const formatCoinNumber = (
-  num: TXCoin[],
+  num: TXCoin[] | any,
   decimalPoints: number = 2
 ): string => {
+  // if input is not array
+  const isArray = Array.isArray(num);
+
+  if(!isArray) {    
+    const amount = convertAmountToSix({
+      denom: num.denom,
+      amount: Number(num.amount),
+    });
+    const [integerPart, decimalPart] = amount.toFixed(decimalPoints).split(".");
+    const formattedIntegerPart = integerPart.replace(
+      /(\d)(?=(\d{3})+(?!\d))/g,
+      "$1,"
+    );
+    return decimalPoints > 0 ? `${formattedIntegerPart}.${decimalPart}`: formattedIntegerPart;
+  }
+
   if (num.length > 1) {
     let total = 0;
     for (let i = 0; i < num.length; i++) {

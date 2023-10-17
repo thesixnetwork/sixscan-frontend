@@ -289,7 +289,7 @@ export default function Address({
                                         </Flex>
                                       </Td>
                                       <Td>
-                                            {formatMethod(tx.type, tx.decode_tx.toAddress, address, tx.decode_tx.action)}
+                                            {formatMethod(tx.type, tx.decode_tx.toAddress?tx.decode_tx.toAddress:tx.decode_tx.to_address , address, tx.decode_tx.action)}
                                       </Td>
                                       <Td textAlign={"center"}>
                                         <Text>
@@ -309,9 +309,9 @@ export default function Address({
                                         </Clickable>
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {tx.decode_tx.toAddress?  (
+                                        {(tx.decode_tx.toAddress || tx.decode_tx.to_address)?  (
                                           <Clickable
-                                            href={`/address/${tx.decode_tx.fromAddress}`}
+                                            href={`/address/${tx.decode_tx.fromAddress?tx.decode_tx.fromAddress:tx.decode_tx.from_address}`}
                                           >
                                             <Text style={{
                                               color: "#5C34A2",
@@ -320,13 +320,13 @@ export default function Address({
                                               fontSize: "12px"
                                             }}>
                                               {formatHex(
-                                                tx.decode_tx.fromAddress
+                                                tx.decode_tx.fromAddress?tx.decode_tx.fromAddress:tx.decode_tx.from_address
                                               )}
                                             </Text>
                                           </Clickable>
                                         ):(
                                           <Clickable
-                                            href={`/address/${tx.decode_tx.delegatorAddress}`}
+                                            href={`/address/${tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress: tx.decode_tx.delegator_address}`}
                                           >
                                             <Text style={{
                                               color: "#5C34A2",
@@ -335,16 +335,16 @@ export default function Address({
                                               fontSize: "12px"
                                             }}>
                                               {formatHex(
-                                                tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress: tx.decode_tx.fromAddress
+                                                tx.decode_tx.delegatorAddress? tx.decode_tx.delegatorAddress||tx.decode_tx.delegator_address: tx.decode_tx.fromAddress||tx.decode_tx.from_address
                                               )}
                                             </Text>
                                           </Clickable>
                                         )}
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {tx.decode_tx.toAddress? (
+                                        {(tx.decode_tx.toAddress || tx.decode_tx.to_address)? (
                                           <Clickable
-                                            href={`/address/${tx.decode_tx.toAddress}`}
+                                            href={`/address/${tx.decode_tx.toAddress? tx.decode_tx.toAddress: tx.decode_tx.to_address}`}
                                           >
                                             <Text style={{
                                               color: "#5C34A2",
@@ -353,13 +353,13 @@ export default function Address({
                                               fontSize: "12px"
                                             }}>
                                               {formatHex(
-                                                tx.decode_tx.toAddress
+                                                tx.decode_tx.toAddress? tx.decode_tx.toAddress: tx.decode_tx.to_address
                                               )}
                                             </Text>
                                           </Clickable>
                                         ): (
                                           <Clickable
-                                            href={`/address/${tx.decode_tx.validatorAddress}`}
+                                            href={`/address/${tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress: tx.decode_tx.validator_address}`}
                                           >
                                             <Text style={{
                                               color: "#5C34A2",
@@ -368,7 +368,7 @@ export default function Address({
                                               fontSize: "12px"
                                             }}>
                                               {formatHex(
-                                                tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress: tx.decode_tx.toAddress
+                                                tx.decode_tx.validatorAddress? tx.decode_tx.validatorAddress||tx.decode_tx.validator_address: tx.decode_tx.toAddress||tx.decode_tx.to_address
                                               )}
                                             </Text>
                                           </Clickable>
