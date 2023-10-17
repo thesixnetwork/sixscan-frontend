@@ -468,7 +468,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                        {formatMethod(action.type, action.decode_tx.toAddress, action.decode_tx.fromAddress, action.decode_tx.action)}
+                                        {formatMethod(action.type, action.decode_tx.toAddress? action.decode_tx.toAddress:action.decode_tx.to_address, action.decode_tx.fromAddress?action.decode_tx.fromAddress:action.decode_tx.from_address , action.decode_tx.action)}
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
