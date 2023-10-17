@@ -660,7 +660,7 @@ export default function Address({
                                       </Flex>
                                     </Td>
                                     <Td>
-                                      {formatMethod(tx.type, tx.decode_tx.toAddress, tx.decode_tx.fromAddress, tx.decode_tx.action)}
+                                      {formatMethod(tx.type, tx.decode_tx.toAddress?tx.decode_tx.toAddress:tx.decode_tx.to_address , address, tx.decode_tx.action)}
                                     </Td>
                                     <Td>
                                       <Text>
