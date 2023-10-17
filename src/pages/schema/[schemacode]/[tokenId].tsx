@@ -253,12 +253,16 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                     ))}
                   </Flex>
                   <Flex direction="column">
-                    {isExpanded && metadata.description ? metadata.description : `${metadata.description && metadata.description.substring(0, 100)}...`}
+                    {isExpanded && metadata?.description? (
+                      metadata?.description? metadata?.description : (metadata.description && metadata.description?.length>100)? metadata?.description?.substring(0, 100) : metadata?.description
+                    ): (
+                      schema?.description? schema?.description : (schema.description && schema.description?.length>100)? schema?.description?.substring(0, 100) : schema?.description
+                    )}
                     <Flex align="center" direction="row" gap={1} onClick={toggleExpand}>
                       <Text fontSize={"sm"} fontWeight={"bold"}>
                         {isExpanded ? "SHOW LESS" : "SHOW MORE"}
                       </Text>
-                      {isExpanded ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                      {isExpanded ?  <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
@@ -468,7 +472,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                                     </Clickable>
                                   </Td>
                                   <Td>
-                                        {formatMethod(action.type, action.decode_tx.toAddress, action.decode_tx.fromAddress, action.decode_tx.action)}
+                                        {formatMethod(action.type, action.decode_tx.toAddress? action.decode_tx.toAddress:action.decode_tx.to_address, action.decode_tx.fromAddress?action.decode_tx.fromAddress:action.decode_tx.from_address , action.decode_tx.action)}
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
