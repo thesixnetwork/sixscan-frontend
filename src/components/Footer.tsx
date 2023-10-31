@@ -75,7 +75,7 @@ const Footer = () => {
             justifyContent="center"
             gap={4}
           >
-            <Image src="/icon-by-six.png" alt="logo" height={8} />
+            <Image src="/powered-by-black.png" alt="logo" height={8} />
           </Flex>
 
         </Flex>
