@@ -996,10 +996,9 @@ export default function Address({
                                             fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                                             fontSize: "12px"
                                           }}>
-                                            {formatHex(
-                                            delegation.delegation
+                                            {delegation.delegation
                                               .delegator_address
-                                          )}
+                                            }
                                           </Text>
                                         </Clickable>
                                     </Td>
