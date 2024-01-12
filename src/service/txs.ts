@@ -73,7 +73,7 @@ export const getTxsFromAddress = async (
     if (!accountTxs) {
       return null;
     }
-    return accountTxs;
+    return accountTxs.data;
   } catch (error) {
     console.error(error);
     return null;

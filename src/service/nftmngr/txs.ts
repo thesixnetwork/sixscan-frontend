@@ -108,7 +108,7 @@ export const getAllTransactionByAddress = async (
         return null;
       }
       const Txs = res.data.data;
-      if (!Txs) {
+      if (!Txs) { 
         return null;
       }
       return Txs;
