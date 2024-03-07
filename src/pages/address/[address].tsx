@@ -630,7 +630,7 @@ export default function Address({
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {accountTxs &&
+                              {accountTxs && accountTxs.txs &&
                                 accountTxs.txs.map((tx:any, index) => (
                                   <Tr key={index}>
                                     <Td>
