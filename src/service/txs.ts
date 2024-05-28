@@ -86,9 +86,9 @@ export const getTxsFromBlock = async (height: string): Promise<any> => {
       `${ENV.ARCH_RPC_URL}/tx_search?query="tx.height=${height}"`
     );
     const blockTxs = res.data.result;
-    if (!blockTxs) {
-      return null;
-    }
+    // if (!blockTxs) {
+    //   return null;
+    // }
     return blockTxs;
   } catch (error) {
     console.error(error);
@@ -96,7 +96,7 @@ export const getTxsFromBlock = async (height: string): Promise<any> => {
   }
 };
 
-export const getTxsFromHash = async (txhash: string): Promise<any> => {
+export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
   try {
     const res = await axios.get(
       `${ENV.API_URL}/cosmos/tx/v1beta1/txs/${txhash}`
@@ -107,12 +107,14 @@ export const getTxsFromHash = async (txhash: string): Promise<any> => {
     }
     return blockTxs;
   } catch (error) {
-    console.error(error);
-    return null;
+    const res = await axios.get(`${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${txhash}`);
+
+    
+    return res.data;
   }
 };
 
-export const getTxFromHash = async (hash: string): Promise<any> => {
+export const getTxByHashFromRPC = async (hash: string): Promise<any> => {
   try {
     const res = await axios.get(`${ENV.ARCH_RPC_URL}/tx?hash=0x${hash}`);
     const tx = res.data.result;
@@ -121,8 +123,9 @@ export const getTxFromHash = async (hash: string): Promise<any> => {
     }
     return tx;
   } catch (error) {
-    console.error(error);
-    return null;
+    const res = await axios.get(`${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${hash}`);
+    
+    return res.data;
   }
 };
 

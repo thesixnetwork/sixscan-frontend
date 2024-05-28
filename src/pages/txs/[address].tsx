@@ -99,8 +99,6 @@ export default function Address({
     setTotalValue(totalValueTmp);
   }, [totalValue, totalValueTmp]);
 
-  _LOG(accountTxs)
-
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
       {/* testing eslint */}
@@ -378,7 +376,7 @@ export default function Address({
                                         {tx.decode_tx.amount && (
                                             <Text>{`${
                                               formatCoinNumber(tx.decode_tx.amount)
-                                            } SIX`  }
+                                            } ${(tx.decode_tx.amount.denom || tx.decode_tx.amount[0].denom) == "usix"?  "SIX": tx.decode_tx.amount.denom}`  }
                                             </Text>
                                           )}
                                       </Td>

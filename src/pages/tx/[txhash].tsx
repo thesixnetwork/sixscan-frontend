@@ -61,7 +61,7 @@ import { LinkComponent } from "@/components/Chakralink";
 import moment from "moment";
 
 import { Clickable } from "@/components/Clickable";
-import { getTxFromHash, getTxEVMFromHash, getTxsFromHash } from "@/service/txs";
+import { getTxsByHashFromAPI, getTxEVMFromHash, getTxByHashFromRPC } from "@/service/txs";
 import { getBlockEVM } from "@/service/block";
 import { getIsContract } from "@/service/auth";
 import { Transaction, Transactions, TransactionEVM } from "@/types/Txs";
@@ -91,7 +91,7 @@ import { FaKeybase } from "react-icons/fa";
 
 const DynamicReactJson = dynamic(
   () => import('react-json-view'),
-  { ssr: false } 
+  { ssr: false }
 );
 
 
@@ -112,11 +112,14 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
     setIsDecode(e.target.value)
   }
   _LOG(isDecode)
-    // add key to object of reward to message if type is MsgWithdrawDelegatorReward
-  if (txs.tx.body.messages[0]['@type'] === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+
+  // add key to object of reward to message if type is MsgWithdrawDelegatorReward
+  if (txs.tx && txs.tx.body.messages[0]['@type'] === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
     txs.tx.body.messages[0].rewards = txs.tx_response.logs[0].events[0].attributes[1].value
+  } else if (txs.messages && txs.messages[0]['@type'] === "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward") {
+    txs.messages[0].rewards = txs.tx_response.logs[0].events[0].attributes[1].value
   }
-  const isMultimessage = txs.tx.body.messages.length > 1 ? true : false;
+  const isMultimessage = txs.tx && txs.tx.body.messages.length > 1 ? true : false;
 
   // add key to object of reward to message if type is MsgWithdrawDelegatorReward in case of multimessage
   if (isMultimessage === true) {
@@ -127,21 +130,28 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
     }
   }
 
-  const allMultimessage = txs.tx.body.messages
+  const allMultimessage = txs.tx && txs.tx.body.messages
 
   // get object keys from txs.tx.body.messages[0]
-  const KeyMsg = Object.keys(txs.tx.body.messages[0]);
-  const message = txs.tx.body.messages[0];
+  const KeyMsg = txs.tx ? Object.keys(txs.tx.body.messages[0]) : Object.keys(txs.messages[0]);
+  const message = txs.tx ? txs.tx.body.messages[0] : txs.messages[0];
 
-  const txSuccess = txs.tx_response.code == 0 ? true : false;
-  let _Logs:any;
-  let _Events:any;
-  if (txSuccess === true) {
-    _Logs = txs.tx_response.logs
-    _Events = txs.tx_response.events
+  // const txSuccess = txs.tx_response.code == 0 ? true : false;
+  let txSuccess = false
+  if (txs.tx_response) {
+    txSuccess = txs.tx_response.code == 0 ? true : false;
   } else {
-    _Logs = txs.tx_response.raw_log.split("\n").pop();
-    _Events = txs.tx_response.events
+    txSuccess = txs.code == 0 ? true : false;
+  }
+
+  let _Logs: any;
+  let _Events: any;
+  if (txSuccess === true) {
+    _Logs = txs.tx_response && txs.tx_response.logs
+    _Events = txs.tx_response && txs.tx_response.events
+  } else {
+    _Logs = txs.tx_response && txs.tx_response.raw_log.split("\n").pop();
+    _Events = txs.tx_response && txs.tx_response.events
   }
 
   let totalValueTmp = 0;
@@ -265,8 +275,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Td>
                               <Td borderBottom="none">
                                 <Flex direction="row">
-                                  <Text marginRight="6px">{txs.tx_response.txhash}</Text>
-                                  <CopyIcon onClick={() => navigator.clipboard.writeText(txs.tx_response.txhash)} />
+                                  <Text marginRight="6px">{txs.tx_response ? txs.tx_response.txhash : txs.txhash}</Text>
+                                  <CopyIcon onClick={() => navigator.clipboard.writeText(txs.tx_response ? txs.tx_response.txhash : txs.txhash)} />
                                 </Flex>
                               </Td>
                             </Tr>
@@ -300,8 +310,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="column">
                                   <Text>
-                                    <Clickable href={`/block/${tx.height}`}>
-                                      {txs.tx_response.height}
+                                    <Clickable href={`/block/${tx.height ? tx.height : txs.block_height}`}>
+                                      {txs.tx_response ? txs.tx_response.height : txs.block_height}
                                     </Clickable>
                                   </Text>
                                 </Flex>
@@ -316,8 +326,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td>
                                 <Flex direction="row">
                                   <TimeIcon style={{ marginRight: '5px' }} />
-                                  {moment(txs.tx_response.timestamp).format("HH:mm:ss YYYY-MM-DD")}{" "}
-                                  ({moment(txs.tx_response.timestamp).fromNow()})
+                                  {moment(txs.tx_response ? txs.tx_response.timestamp : txs.time_stamp).format("HH:mm:ss YYYY-MM-DD")}{" "}
+                                  ({moment(txs.tx_response ? txs.tx_response.timestamp : txs.time_stamp).fromNow()})
                                 </Flex>
                               </Td>
                             </Tr>
@@ -386,8 +396,20 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }}>{ message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key])} SIX</Text>
-                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `(#NA)`}</Text>
+                                        {
+                                          message[key][0]?.amount?.[0] !== undefined ? (
+                                            <Text style={{ marginRight: '5px' }}>
+                                              {convertAmountToSix(message[key][0])} {message[key][0].denom === "usix" ? "SIX" : message[key][0].denom}
+                                            </Text>
+                                            
+                                          ) : (
+                                            <Text style={{ marginRight: '5px' }}>
+                                              {convertAmountToSix(message[key])} {message[key].denom === "usix" ? "SIX" : message[key].denom}
+                                            </Text>
+                                          )
+                                        }
+                                        {/* <Text style={{ marginRight: '5px' }}>{ message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key])} SIX</Text> */}
+                                        <Text style={{ color: '#6c757d' }} >{(message[key].denom || message[key][0].denom == "usix") && price && price.usd ? `($${formatNumber(5 * price.usd)})` : `(#NA)`}</Text>
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -583,33 +605,33 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               if (key === "tokenId") {
                                 return (
                                   <Tr key={index}>
-                                  <Td borderBottom="none">
-                                    <Flex direction="column">
-                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
-                                    </Flex>
-                                  </Td>
-                                  <Td borderBottom="none">
-                                    <Flex direction="row">
-                                      <Text style={{ marginRight: '5px' }}>
-                                        {typeof message[key] === "string" ? message[key] : message[key].filter((item:any) => item !== "" && item !== "[]").toString()}
-                                      </Text>
-                                    </Flex>
-                                  </Td>
-                                </Tr>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <Text style={{ marginRight: '5px' }}>
+                                          {typeof message[key] === "string" ? message[key] : message[key].filter((item: any) => item !== "" && item !== "[]").toString()}
+                                        </Text>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
                                 );
                               }
 
                               if (key === "nftSchemaCode" || key === "nft_schema_code") {
                                 return (
                                   <Tr key={index}>
-                                  <Td borderBottom="none">
-                                    <Flex direction="column">
-                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
-                                    </Flex>
-                                  </Td>
-                                  <Td borderBottom="none">
-                                    <Flex direction="row">
-                                      <LinkComponent marginRight="5px" _hover={{textDecoration: "none"}} href={`/schema/${message[key]}`}>
+                                    <Td borderBottom="none">
+                                      <Flex direction="column">
+                                        <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                      </Flex>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Flex direction="row">
+                                        <LinkComponent marginRight="5px" _hover={{ textDecoration: "none" }} href={`/schema/${message[key]}`}>
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -618,9 +640,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             {message[key]}
                                           </Text>
                                         </LinkComponent>
-                                    </Flex>
-                                  </Td>
-                                </Tr>
+                                      </Flex>
+                                    </Td>
+                                  </Tr>
                                 );
                               }
 
@@ -642,7 +664,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {isDecode === "Decode" &&
                                           <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
                                             <Flex p={3}>
-                                              <DynamicReactJson src={message[key]}  collapsed={1} displayDataTypes={false}/>
+                                              <DynamicReactJson src={message[key]} collapsed={1} displayDataTypes={false} />
                                             </Flex>
                                           </Box>
                                         }
@@ -660,7 +682,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               }
-                              if(key === "rewards"){
+                              if (key === "rewards") {
                                 const sixAmount = convertStringAmountToCoin(message[key]);
                                 return (
                                   <Tr key={index}>
@@ -672,7 +694,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     <Td borderBottom="none">
                                       <Flex direction="row">
                                         <Text style={{ marginRight: '5px' }}>
-                                        {sixAmount.amount} {sixAmount.denom}
+                                          {sixAmount.amount} {sixAmount.denom}
                                         </Text>
                                       </Flex>
                                     </Td>
@@ -723,7 +745,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Td>
                               <Td borderBottom="none">
                                 <Flex direction="row">
-                                  <Text style={{ marginRight: '5px' }}>{convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100)} SIX {price && price.usd ? `($${formatNumber(convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100) * price.usd)})` : `($999)`}</Text>
+                                  <Text style={{ marginRight: '5px' }}>{convertUsixToSix(parseInt(txs.tx_response ? txs.tx_response.gas_wanted : txs.decode_tx.gas_wanted) * 125 / 100)} SIX {price && price.usd ? `($${formatNumber(convertUsixToSix(parseInt(txs.tx_response ? txs.tx_response.gas_wanted : txs.decode_tx.gas_wanted) * 125 / 100) * price.usd)})` : `($999)`}</Text>
                                 </Flex>
                               </Td>
                             </Tr>
@@ -747,24 +769,24 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       if (attr.key === "amount") {
                                         const sixAmount = convertStringAmountToCoin(attr.value);
                                         return (
-                                        <Flex
-                                          direction="row"
-                                          gap={2}
-                                          alignItems="center"
-                                          key={index}
-                                        >
-                                          {attr.key && (
-                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
-                                              {attr.key}
-                                            </Text>
-                                          )}
-                                          {attr.value && (
-                                            <Text style={{ marginBottom: '10px' }}>
-                                              <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
-                                            </Text>
-                                          )}
+                                          <Flex
+                                            direction="row"
+                                            gap={2}
+                                            alignItems="center"
+                                            key={index}
+                                          >
+                                            {attr.key && (
+                                              <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                                {attr.key}
+                                              </Text>
+                                            )}
+                                            {attr.value && (
+                                              <Text style={{ marginBottom: '10px' }}>
+                                                <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
+                                              </Text>
+                                            )}
 
-                                        </Flex>
+                                          </Flex>
                                         )
                                       }
                                       return (
@@ -881,657 +903,657 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
         <Spacer />
       </Flex >
     );
-  }else if (!block_evm && isMultimessage){
-    return(
+  } else if (!block_evm && isMultimessage) {
+    return (
       <Flex minHeight={"100vh"} direction={"column"}>
-      <Head>
-        <title>SIXSCAN</title>
-        <meta name="description" content="SIXSCAN" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-  
-      <Box>
-        <Container maxW="container.xl">
-          <Flex direction="column" gap={3} p={3}>
-            <Text fontSize="xl" fontWeight="bold" color={"darkest"}>
-              Transaction Details (Multi Messages)({allMultimessage.length})
-            </Text>
-            <Divider />
-          </Flex>
-        </Container>
-      </Box>
+        <Head>
+          <title>SIXSCAN</title>
+          <meta name="description" content="SIXSCAN" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      {allMultimessage.map((message: any, index: any) => {
-        console.log(message["amount"]);
-        
-        return (
-          <Box p={6} key={index}>
+        <Box>
           <Container maxW="container.xl">
-            <Flex direction={"column"} gap={6}>
-              <CustomCard>
-                <TableContainer>
-                  <Tabs isLazy>
-                    <TabList>
-                      <Tab>Overview</Tab>
-                      <Tab>Logs({Array.isArray(_Logs) && _Logs[0].events !== undefined ? _Logs[0].events.length : "1"})</Tab>
-                      <Tab>Events({Array.isArray(_Events) && _Events.length})</Tab>
-                    </TabList>
-                    <TabPanels>
-                      {/* ///// Over view //// */}
-                      <TabPanel>
-                        <Table>
-                          <Tbody>
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Transaction Hash:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row">
-                                  <Text marginRight="6px">{txs.tx_response.txhash}</Text>
-                                  <CopyIcon onClick={() => navigator.clipboard.writeText(txs.tx_response.txhash)} />
-                                </Flex>
-                              </Td>
-                            </Tr>
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Status:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>
-                                    {txSuccess === true ?
-                                      <Badge colorScheme={"green"}>
-                                        Success
-                                      </Badge>
-                                      : <Badge colorScheme={"red"}>
-                                        Failed
-                                      </Badge>
-                                    }
-                                  </Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Block:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>
-                                    <Clickable href={`/block/${tx.height}`}>
-                                      {txs.tx_response.height}
-                                    </Clickable>
-                                  </Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
-                            <Tr>
-                              <Td>
-                                <Flex direction="column">
-                                  <Text>{`Timestamp:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td>
-                                <Flex direction="row">
-                                  <TimeIcon style={{ marginRight: '5px' }} />
-                                  {moment(txs.tx_response.timestamp).format("HH:mm:ss YYYY-MM-DD")}{" "}
-                                  ({moment(txs.tx_response.timestamp).fromNow()})
-                                </Flex>
-                              </Td>
-                            </Tr>
+            <Flex direction="column" gap={3} p={3}>
+              <Text fontSize="xl" fontWeight="bold" color={"darkest"}>
+                Transaction Details (Multi Messages)({allMultimessage.length})
+              </Text>
+              <Divider />
+            </Flex>
+          </Container>
+        </Box>
 
-                            {KeyMsg.map((key: any, index) => {
-                              // {console.log(key)}
-                              if (typeof message[key] === "string" && message[key].startsWith("6x")) {
-                                if (key === "from_address") {
-                                  return (
-                                    <Tr key={index}>
-                                      <Td borderBottom="none">
-                                        <Flex direction="column">
-                                          <Text>{typeof key === "string" ? formatBank(key) : key}</Text>
-                                        </Flex>
-                                      </Td>
-                                      <Td borderBottom="none">
-                                        <Flex direction="row">
-                                          <Clickable
-                                            href={`/address/${message[key]}`}
-                                          >
-                                            {message[key]}
-                                          </Clickable>
-                                          <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
-                                        </Flex>
-                                      </Td>
-                                    </Tr>
-                                  );
-                                }
+        {allMultimessage.map((message: any, index: any) => {
+          console.log(message["amount"]);
 
-                                return (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
-                                      <Flex direction="row">
-                                        {key != "ref_id" &&
-                                          <Text style={{ marginRight: '5px' }}>
-                                            <Clickable
-                                              href={`/address/${message[key]}`}
-                                            >
-                                              {message[key]}
-                                            </Clickable>
-                                            <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
-                                          </Text>
+          return (
+            <Box p={6} key={index}>
+              <Container maxW="container.xl">
+                <Flex direction={"column"} gap={6}>
+                  <CustomCard>
+                    <TableContainer>
+                      <Tabs isLazy>
+                        <TabList>
+                          <Tab>Overview</Tab>
+                          <Tab>Logs({Array.isArray(_Logs) && _Logs[0].events !== undefined ? _Logs[0].events.length : "1"})</Tab>
+                          <Tab>Events({Array.isArray(_Events) && _Events.length})</Tab>
+                        </TabList>
+                        <TabPanels>
+                          {/* ///// Over view //// */}
+                          <TabPanel>
+                            <Table>
+                              <Tbody>
+                                <Tr>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{`Transaction Hash:`}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row">
+                                      <Text marginRight="6px">{txs.tx_response.txhash}</Text>
+                                      <CopyIcon onClick={() => navigator.clipboard.writeText(txs.tx_response.txhash)} />
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                <Tr>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{`Status:`}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>
+                                        {txSuccess === true ?
+                                          <Badge colorScheme={"green"}>
+                                            Success
+                                          </Badge>
+                                          : <Badge colorScheme={"red"}>
+                                            Failed
+                                          </Badge>
                                         }
-                                        {key === "ref_id" &&
-                                          <Text style={{ marginRight: '5px' }}>
-                                            {message[key]}
-                                          </Text>
-                                        }
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              } else if (key == "amount") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{`Value:`}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
-                                        <Text style={{ marginRight: '5px' }} >{convertAmountToSix(message[key][0])} SIX </Text>
-                                        <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                )
-                              }
-                              if (key === "receiver") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
-                                          <Text
-                                            as={"span"}
-                                            decoration={"none"}
-                                            color="primary.500"
-                                          >
-                                            {message[key]}
-                                          </Text>
-                                        </LinkComponent>
-                                        <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                <Tr>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{`Block:`}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>
+                                        <Clickable href={`/block/${tx.height}`}>
+                                          {txs.tx_response.height}
+                                        </Clickable>
+                                      </Text>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                <Tr>
+                                  <Td>
+                                    <Flex direction="column">
+                                      <Text>{`Timestamp:`}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td>
+                                    <Flex direction="row">
+                                      <TimeIcon style={{ marginRight: '5px' }} />
+                                      {moment(txs.tx_response.timestamp).format("HH:mm:ss YYYY-MM-DD")}{" "}
+                                      ({moment(txs.tx_response.timestamp).fromNow()})
+                                    </Flex>
+                                  </Td>
+                                </Tr>
 
-                              // if (key === "nftSchemaBase64") {
-                              //   return (
-                              //     <Tr key={index}>
-                              //       <Td borderBottom="none">
-                              //         <Flex direction="column">
-                              //           <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                              //         </Flex>
-                              //       </Td>
-                              //       <Td borderBottom="none">
-                              //         <Flex direction="row">
-                              //           <Textarea readOnly>
-                              //             {message[key]}
-                              //           </Textarea>
-                              //         </Flex>
-                              //       </Td>
-                              //     </Tr>
-                              //   );
-                              // }
-
-                              if (key === "data") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        {/* <CustomCard> */}
-                                        <TableContainer>
-                                          <Tabs isLazy>
-                                            <TabList>
-                                              {Object.keys(message[key]).map((keys: any, index) => {
-                                                return (
-                                                  <Tab key={index}>{keys}</Tab>
-                                                );
-                                              })}
-                                            </TabList>
-                                            <TabPanels>
-                                              {Object.values(message[key]).map((data: any, i) => {
-                                                return (
-                                                  <TabPanel key={i}>
-                                                    <Textarea readOnly value={data} />
-                                                  </TabPanel>
-                                                );
-                                              })}
-                                            </TabPanels>
-                                          </Tabs>
-                                        </TableContainer>
-                                        {/* </CustomCard> */}
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
-                              if (key === "hash") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="row">
-                                        <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
-                                          <Text
-                                            as={"span"}
-                                            decoration={"none"}
-                                            color="primary.500"
-                                          >
-                                            {message[key]}
-                                          </Text>
-                                        </LinkComponent>
-                                        <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
-
-                              if (key === "base64NFTData" || key === "nftSchemaBase64" ||
-                                key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
-                                key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
-                                key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
-                              ) {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none" display={"flex"}>
-                                      <Flex>
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        {isDecode === 'Default' &&
-                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
-                                        }
-                                        {isDecode === 'Decode' &&
-                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
-                                            <Flex p={3}>
-                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
+                                {KeyMsg.map((key: any, index) => {
+                                  // {console.log(key)}
+                                  if (typeof message[key] === "string" && message[key].startsWith("6x")) {
+                                    if (key === "from_address") {
+                                      return (
+                                        <Tr key={index}>
+                                          <Td borderBottom="none">
+                                            <Flex direction="column">
+                                              <Text>{typeof key === "string" ? formatBank(key) : key}</Text>
                                             </Flex>
-                                          </Box>
-                                        }
-                                        <Box width={"20%"} marginTop={"10px"}>
-                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
-                                            {CType.map((option, index) => (
-                                              <option key={index} value={option}>
-                                                {option}
-                                              </option>
-                                            ))}
-                                          </Select>
-                                        </Box>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
+                                          </Td>
+                                          <Td borderBottom="none">
+                                            <Flex direction="row">
+                                              <Clickable
+                                                href={`/address/${message[key]}`}
+                                              >
+                                                {message[key]}
+                                              </Clickable>
+                                              <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
+                                            </Flex>
+                                          </Td>
+                                        </Tr>
+                                      );
+                                    }
 
-                              if (key === "base64EncodedSetSignerAction") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      {/* <Flex direction="row">
+                                    return (
+                                      <Tr key={index}>
+                                        <Td>
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td>
+                                          <Flex direction="row">
+                                            {key != "ref_id" &&
+                                              <Text style={{ marginRight: '5px' }}>
+                                                <Clickable
+                                                  href={`/address/${message[key]}`}
+                                                >
+                                                  {message[key]}
+                                                </Clickable>
+                                                <CopyIcon marginLeft="5px" onClick={() => navigator.clipboard.writeText(message[key])} />
+                                              </Text>
+                                            }
+                                            {key === "ref_id" &&
+                                              <Text style={{ marginRight: '5px' }}>
+                                                {message[key]}
+                                              </Text>
+                                            }
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  } else if (key == "amount") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{`Value:`}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            <Image src="/six.png" alt="coin" height={20} width={20} style={{ marginRight: '5px' }} />
+                                            <Text style={{ marginRight: '5px' }} >{convertAmountToSix(message[key][0])} SIX </Text>
+                                            <Text style={{ color: '#6c757d' }} >{price && price.usd ? `($${formatNumber(5 * price.usd)})` : `($999)`}</Text>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    )
+                                  }
+                                  if (key === "receiver") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
+                                              <Text
+                                                as={"span"}
+                                                decoration={"none"}
+                                                color="primary.500"
+                                              >
+                                                {message[key]}
+                                              </Text>
+                                            </LinkComponent>
+                                            <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
+
+                                  // if (key === "nftSchemaBase64") {
+                                  //   return (
+                                  //     <Tr key={index}>
+                                  //       <Td borderBottom="none">
+                                  //         <Flex direction="column">
+                                  //           <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                  //         </Flex>
+                                  //       </Td>
+                                  //       <Td borderBottom="none">
+                                  //         <Flex direction="row">
+                                  //           <Textarea readOnly>
+                                  //             {message[key]}
+                                  //           </Textarea>
+                                  //         </Flex>
+                                  //       </Td>
+                                  //     </Tr>
+                                  //   );
+                                  // }
+
+                                  if (key === "data") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            {/* <CustomCard> */}
+                                            <TableContainer>
+                                              <Tabs isLazy>
+                                                <TabList>
+                                                  {Object.keys(message[key]).map((keys: any, index) => {
+                                                    return (
+                                                      <Tab key={index}>{keys}</Tab>
+                                                    );
+                                                  })}
+                                                </TabList>
+                                                <TabPanels>
+                                                  {Object.values(message[key]).map((data: any, i) => {
+                                                    return (
+                                                      <TabPanel key={i}>
+                                                        <Textarea readOnly value={data} />
+                                                      </TabPanel>
+                                                    );
+                                                  })}
+                                                </TabPanels>
+                                              </Tabs>
+                                            </TableContainer>
+                                            {/* </CustomCard> */}
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
+                                  if (key === "hash") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            <LinkComponent marginRight="5px" href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}>
+                                              <Text
+                                                as={"span"}
+                                                decoration={"none"}
+                                                color="primary.500"
+                                              >
+                                                {message[key]}
+                                              </Text>
+                                            </LinkComponent>
+                                            <CopyIcon onClick={() => navigator.clipboard.writeText(message[key])} />
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
+
+                                  if (key === "base64NFTData" || key === "nftSchemaBase64" ||
+                                    key === "base64NewAttriuteDefenition" || key === "base64NewAction" ||
+                                    key === "base64_nft_attribute_value" || key === "base64ActionSignature" ||
+                                    key === "base64VerifyRequestorSignature" || key === "base64OriginContractInfo"
+                                  ) {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none" display={"flex"}>
+                                          <Flex>
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            {isDecode === 'Default' &&
+                                              (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
+                                            }
+                                            {isDecode === 'Decode' &&
+                                              <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                                <Flex p={3}>
+                                                  <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
+                                                </Flex>
+                                              </Box>
+                                            }
+                                            <Box width={"20%"} marginTop={"10px"}>
+                                              <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                                {CType.map((option, index) => (
+                                                  <option key={index} value={option}>
+                                                    {option}
+                                                  </option>
+                                                ))}
+                                              </Select>
+                                            </Box>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
+
+                                  if (key === "base64EncodedSetSignerAction") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatBank(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          {/* <Flex direction="row">
                                         <Textarea readOnly>
                                           {message[key]}
                                         </Textarea>
                                       </Flex> */}
-                                      <Flex direction="column">
-                                        {isDecode === "Default" &&
-                                          (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
-                                        }
-                                        {isDecode === "Decode" &&
-                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
-                                            <Flex p={3}>
-                                              <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
-                                            </Flex>
-                                          </Box>
-                                        }
-                                        <Box width={"20%"} marginTop={"10px"}>
-                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
-                                            {CType.map((option, index) => (
-                                              <option key={index} value={option}>
-                                                {option}
-                                              </option>
-                                            ))}
-                                          </Select>
-                                        </Box>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
+                                          <Flex direction="column">
+                                            {isDecode === "Default" &&
+                                              (<Textarea readOnly value={message[key]} height={"200px"} backgroundColor={"#f4f4f4"} />)
+                                            }
+                                            {isDecode === "Decode" &&
+                                              <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                                <Flex p={3}>
+                                                  <DynamicReactJson src={JSON.parse(Buffer.from(message[key], 'base64').toString('utf-8'))} collapsed={1} displayDataTypes={false} />
+                                                </Flex>
+                                              </Box>
+                                            }
+                                            <Box width={"20%"} marginTop={"10px"}>
+                                              <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                                {CType.map((option, index) => (
+                                                  <option key={index} value={option}>
+                                                    {option}
+                                                  </option>
+                                                ))}
+                                              </Select>
+                                            </Box>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
 
-                              if (key === "tokenId") {
-                                return (
-                                  <Tr key={index}>
-                                  <Td borderBottom="none">
-                                    <Flex direction="column">
-                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
-                                    </Flex>
-                                  </Td>
-                                  <Td borderBottom="none">
-                                    <Flex direction="row">
-                                      <Text style={{ marginRight: '5px' }}>
-                                        {typeof message[key] === "string" ? message[key] : message[key].filter((item:any) => item !== "" && item !== "[]").toString()}
-                                      </Text>
-                                    </Flex>
-                                  </Td>
-                                </Tr>
-                                );
-                              }
+                                  if (key === "tokenId") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            <Text style={{ marginRight: '5px' }}>
+                                              {typeof message[key] === "string" ? message[key] : message[key].filter((item: any) => item !== "" && item !== "[]").toString()}
+                                            </Text>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
 
-                              if (key === "nftSchemaCode" || key === "nft_schema_code") {
-                                return (
-                                  <Tr key={index}>
-                                  <Td borderBottom="none">
-                                    <Flex direction="column">
-                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
-                                    </Flex>
-                                  </Td>
-                                  <Td borderBottom="none">
-                                    <Flex direction="row">
-                                      <LinkComponent marginRight="5px" _hover={{textDecoration: "none"}} href={`/schema/${message[key]}`}>
-                                          <Text
-                                            as={"span"}
-                                            decoration={"none"}
-                                            color="primary.500"
-                                          >
-                                            {message[key]}
-                                          </Text>
-                                        </LinkComponent>
-                                    </Flex>
-                                  </Td>
-                                </Tr>
-                                );
-                              }
+                                  if (key === "nftSchemaCode" || key === "nft_schema_code") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="row">
+                                            <LinkComponent marginRight="5px" _hover={{ textDecoration: "none" }} href={`/schema/${message[key]}`}>
+                                              <Text
+                                                as={"span"}
+                                                decoration={"none"}
+                                                color="primary.500"
+                                              >
+                                                {message[key]}
+                                              </Text>
+                                            </LinkComponent>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
 
-                              if (key === "parameters") {
-                                return (
-                                  <Tr key={index}>
-                                    <Td display={"flex"} borderBottom="none">
-                                      <Flex direction="column">
-                                        <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
-                                      </Flex>
-                                    </Td>
-                                    <Td borderBottom="none">
-                                      <Flex direction="column">
-                                        {isDecode === "Default" &&
+                                  if (key === "parameters") {
+                                    return (
+                                      <Tr key={index}>
+                                        <Td display={"flex"} borderBottom="none">
+                                          <Flex direction="column">
+                                            <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                          </Flex>
+                                        </Td>
+                                        <Td borderBottom="none">
+                                          <Flex direction="column">
+                                            {isDecode === "Default" &&
+                                              <Text style={{ marginRight: '5px' }}>
+                                                {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
+                                              </Text>
+                                            }
+                                            {isDecode === "Decode" &&
+                                              <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                                                <Flex p={3}>
+                                                  <DynamicReactJson src={message[key]} collapsed={1} displayDataTypes={false} />
+                                                </Flex>
+                                              </Box>
+                                            }
+                                            <Box width={"20%"} marginTop={"10px"}>
+                                              <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
+                                                {CType.map((option, index) => (
+                                                  <option key={index} value={option}>
+                                                    {option}
+                                                  </option>
+                                                ))}
+                                              </Select>
+                                            </Box>
+                                          </Flex>
+                                        </Td>
+                                      </Tr>
+                                    );
+                                  }
+
+                                  return (
+                                    <Tr key={index}>
+                                      <Td borderBottom="none">
+                                        <Flex direction="column">
+                                          <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                        </Flex>
+                                      </Td>
+                                      <Td borderBottom="none">
+                                        <Flex direction="row">
                                           <Text style={{ marginRight: '5px' }}>
                                             {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
                                           </Text>
-                                        }
-                                        {isDecode === "Decode" &&
-                                          <Box minHeight={"200px"} height={"300px"} width={"auto"} overflowY="auto" overflowX="hidden" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
-                                            <Flex p={3}>
-                                              <DynamicReactJson src={message[key]}  collapsed={1} displayDataTypes={false}/>
-                                            </Flex>
-                                          </Box>
-                                        }
-                                        <Box width={"20%"} marginTop={"10px"}>
-                                          <Select onChange={(e) => handleChange_verify(e)} backgroundColor={"#f4f4f4"}>
-                                            {CType.map((option, index) => (
-                                              <option key={index} value={option}>
-                                                {option}
-                                              </option>
-                                            ))}
-                                          </Select>
-                                        </Box>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                );
-                              }
+                                        </Flex>
+                                      </Td>
+                                    </Tr>
+                                  );
+                                })}
 
-                              return (
-                                <Tr key={index}>
+                                <Tr>
                                   <Td borderBottom="none">
                                     <Flex direction="column">
-                                      <Text>{typeof key === "string" ? formatEng(key) + ':' : key}</Text>
+                                      <Text>{`Gas:`}</Text>
+                                    </Flex>
+                                  </Td>
+                                  <Td borderBottom="none">
+                                    <Flex direction="row" alignItems={"center"}>
+                                      <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_used}</Text>
+                                      <Center height='23px' style={{ marginRight: '5px' }}>
+                                        |
+                                      </Center>
+                                      <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_wanted}</Text>
+                                      <Text>({((parseInt(tx.tx_result.gas_used) / parseInt(tx.tx_result.gas_wanted)) * 100).toFixed(2)}%)</Text>
+                                    </Flex>
+                                  </Td>
+                                </Tr>
+                                <Tr>
+                                  <Td borderBottom="none">
+                                    <Flex direction="column">
+                                      <Text>{`Fee:`}</Text>
                                     </Flex>
                                   </Td>
                                   <Td borderBottom="none">
                                     <Flex direction="row">
-                                      <Text style={{ marginRight: '5px' }}>
-                                        {typeof message[key] === "string" ? message[key] : JSON.stringify(message[key])}
-                                      </Text>
+                                      <Text style={{ marginRight: '5px' }}>{convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100)} SIX {price && price.usd ? `($${formatNumber(convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100) * price.usd)})` : `($999)`}</Text>
                                     </Flex>
                                   </Td>
                                 </Tr>
-                              );
-                            })}
+                              </Tbody>
+                            </Table>
+                          </TabPanel>
 
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Gas:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row" alignItems={"center"}>
-                                  <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_used}</Text>
-                                  <Center height='23px' style={{ marginRight: '5px' }}>
-                                    |
-                                  </Center>
-                                  <Text style={{ marginRight: '5px' }}>{tx.tx_result.gas_wanted}</Text>
-                                  <Text>({((parseInt(tx.tx_result.gas_used) / parseInt(tx.tx_result.gas_wanted)) * 100).toFixed(2)}%)</Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
-                            <Tr>
-                              <Td borderBottom="none">
-                                <Flex direction="column">
-                                  <Text>{`Fee:`}</Text>
-                                </Flex>
-                              </Td>
-                              <Td borderBottom="none">
-                                <Flex direction="row">
-                                  <Text style={{ marginRight: '5px' }}>{convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100)} SIX {price && price.usd ? `($${formatNumber(convertUsixToSix(parseInt(txs.tx_response.gas_wanted) * 125 / 100) * price.usd)})` : `($999)`}</Text>
-                                </Flex>
-                              </Td>
-                            </Tr>
-                          </Tbody>
-                        </Table>
-                      </TabPanel>
+                          {/* ##################### Logs  ##################### */}
+                          {txSuccess === true &&
+                            <TabPanel>
+                              <Table>
+                                <Tbody>
+                                  {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) => (
 
-                      {/* ##################### Logs  ##################### */}
-                      {txSuccess === true &&
-                        <TabPanel>
-                          <Table>
-                            <Tbody>
-                              {Array.isArray(_Logs) && _Logs[0].events !== undefined && _Logs[0].events.map((event: any, index: any) => (
-
-                                <Tr key={index}>
-                                  <Td>
-                                    <Badge>{event.type}</Badge>
-                                  </Td>
-                                  <Td>
-                                    {event.attributes.map((attr: any, index: any) => {
-                                      if (attr.key === "amount") {
-                                        const sixAmount = convertStringAmountToCoin(attr.value);
-                                        return (
-                                        <Flex
-                                          direction="row"
-                                          gap={2}
-                                          alignItems="center"
-                                          key={index}
-                                        >
-                                          {attr.key && (
-                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
-                                              {attr.key}
-                                            </Text>
-                                          )}
-                                          {attr.value && (
-                                            <Text style={{ marginBottom: '10px' }}>
-                                              <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
-                                            </Text>
-                                          )}
-
-                                        </Flex>
-                                        )
-                                      }
-                                      return (
-                                        <Flex
-                                          direction="row"
-                                          gap={2}
-                                          alignItems="center"
-                                          key={index}
-                                        >
-                                          {attr.key && (
-                                            <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
-                                              {attr.key}
-                                            </Text>
-                                          )}
-                                          {attr.value && (
-                                            <Text style={{ marginBottom: '10px' }}>
-                                              {attr.value.startsWith('6x') ? (
-                                                <Text>
-                                                  <Clickable href={`/address/${attr.value}`} underline>
-                                                    {attr.value}
-                                                  </Clickable>
-                                                </Text>
-                                              ) : attr.value.endsWith('usix') ? (
-                                                <Text style={{ display: 'flex' }}>
-                                                  {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                                  <Text style={{ marginLeft: '5px' }}> SIX</Text>
-                                                </Text>
-                                              ) : attr.value.endsWith('asix') ? (
-                                                <Text style={{ display: 'flex' }}>
-                                                  {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
-                                                  <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
-                                                </Text>
-                                              )
-                                                : (
-                                                  <Text>{attr.value}</Text>
+                                    <Tr key={index}>
+                                      <Td>
+                                        <Badge>{event.type}</Badge>
+                                      </Td>
+                                      <Td>
+                                        {event.attributes.map((attr: any, index: any) => {
+                                          if (attr.key === "amount") {
+                                            const sixAmount = convertStringAmountToCoin(attr.value);
+                                            return (
+                                              <Flex
+                                                direction="row"
+                                                gap={2}
+                                                alignItems="center"
+                                                key={index}
+                                              >
+                                                {attr.key && (
+                                                  <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                                    {attr.key}
+                                                  </Text>
                                                 )}
+                                                {attr.value && (
+                                                  <Text style={{ marginBottom: '10px' }}>
+                                                    <Text>{sixAmount.amount} {sixAmount.denom}{` (${attr.value}) `} </Text>
+                                                  </Text>
+                                                )}
+
+                                              </Flex>
+                                            )
+                                          }
+                                          return (
+                                            <Flex
+                                              direction="row"
+                                              gap={2}
+                                              alignItems="center"
+                                              key={index}
+                                            >
+                                              {attr.key && (
+                                                <Text style={{ marginBottom: '10px', color: '#4a4f55', fontWeight: 'bold' }}>
+                                                  {attr.key}
+                                                </Text>
+                                              )}
+                                              {attr.value && (
+                                                <Text style={{ marginBottom: '10px' }}>
+                                                  {attr.value.startsWith('6x') ? (
+                                                    <Text>
+                                                      <Clickable href={`/address/${attr.value}`} underline>
+                                                        {attr.value}
+                                                      </Clickable>
+                                                    </Text>
+                                                  ) : attr.value.endsWith('usix') ? (
+                                                    <Text style={{ display: 'flex' }}>
+                                                      {convertUsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                                      <Text style={{ marginLeft: '5px' }}> SIX</Text>
+                                                    </Text>
+                                                  ) : attr.value.endsWith('asix') ? (
+                                                    <Text style={{ display: 'flex' }}>
+                                                      {convertAsixToSix(parseInt(attr.value.split('usix')[0]))}
+                                                      <Text style={{ marginLeft: '5px' }}> WrapSIX</Text>
+                                                    </Text>
+                                                  )
+                                                    : (
+                                                      <Text>{attr.value}</Text>
+                                                    )}
+                                                </Text>
+                                              )}
+
+                                            </Flex>
+                                          )
+                                        })}
+                                      </Td>
+                                    </Tr>
+                                  ))}
+                                </Tbody>
+                              </Table>
+                            </TabPanel>
+                          }
+                          {/* ///// log fail //// */}
+                          {txSuccess === false &&
+                            <TabPanel>
+                              <Table>
+                                <Tbody>
+                                  <Tr>
+                                    <Td borderBottom="none">
+                                      <Badge colorScheme={"red"}>Fail</Badge>
+                                    </Td>
+                                    <Td borderBottom="none">
+                                      <Text> {_Logs} </Text>
+                                    </Td>
+                                  </Tr>
+                                </Tbody>
+                              </Table>
+                            </TabPanel>
+                          }
+
+                          {/* ##################### Events  ##################### */}
+                          <TabPanel>
+                            <Table>
+                              <Tbody>
+                                {Array.isArray(_Events) && _Events.map((event: any, index: any) => (
+                                  <Tr key={index}>
+                                    <Td>
+                                      <Badge>{event.type}</Badge>
+                                    </Td>
+                                    <Td>
+                                      {event.attributes.map((attr: any, index: any) => (
+                                        <Flex
+                                          direction="row"
+                                          gap={2}
+                                          alignItems="center"
+                                          key={index}
+                                        >
+                                          {attr.key && (
+                                            <Text style={{ fontWeight: 'bold', color: '#4a4f55' }}>
+                                              {Buffer.from(attr.key, "base64").toString()}
                                             </Text>
                                           )}
-
+                                          {attr.value && (
+                                            <Text>
+                                              {Buffer.from(attr.value, "base64").toString()}
+                                            </Text>
+                                          )}
                                         </Flex>
-                                      )
-                                    })}
-                                  </Td>
-                                </Tr>
-                              ))}
-                            </Tbody>
-                          </Table>
-                        </TabPanel>
-                      }
-                      {/* ///// log fail //// */}
-                      {txSuccess === false &&
-                        <TabPanel>
-                          <Table>
-                            <Tbody>
-                              <Tr>
-                                <Td borderBottom="none">
-                                  <Badge colorScheme={"red"}>Fail</Badge>
-                                </Td>
-                                <Td borderBottom="none">
-                                  <Text> {_Logs} </Text>
-                                </Td>
-                              </Tr>
-                            </Tbody>
-                          </Table>
-                        </TabPanel>
-                      }
+                                      ))}
+                                    </Td>
+                                  </Tr>
+                                ))}
+                              </Tbody>
+                            </Table>
+                          </TabPanel>
 
-                      {/* ##################### Events  ##################### */}
-                      <TabPanel>
-                        <Table>
-                          <Tbody>
-                            {Array.isArray(_Events) && _Events.map((event: any, index: any) => (
-                              <Tr key={index}>
-                                <Td>
-                                  <Badge>{event.type}</Badge>
-                                </Td>
-                                <Td>
-                                  {event.attributes.map((attr: any, index: any) => (
-                                    <Flex
-                                      direction="row"
-                                      gap={2}
-                                      alignItems="center"
-                                      key={index}
-                                    >
-                                      {attr.key && (
-                                        <Text style={{ fontWeight: 'bold', color: '#4a4f55' }}>
-                                          {Buffer.from(attr.key, "base64").toString()}
-                                        </Text>
-                                      )}
-                                      {attr.value && (
-                                        <Text>
-                                          {Buffer.from(attr.value, "base64").toString()}
-                                        </Text>
-                                      )}
-                                    </Flex>
-                                  ))}
-                                </Td>
-                              </Tr>
-                            ))}
-                          </Tbody>
-                        </Table>
-                      </TabPanel>
-
-                    </TabPanels>
-                  </Tabs>
-                </TableContainer>
-              </CustomCard>
+                        </TabPanels>
+                      </Tabs>
+                    </TableContainer>
+                  </CustomCard>
 
 
 
-            </Flex>
-          </Container>
-        </Box>
-        )
-      })}
+                </Flex>
+              </Container>
+            </Box>
+          )
+        })}
 
-      
-      <Spacer />
-    </Flex >
+
+        <Spacer />
+      </Flex >
     )
-  }else {
+  } else {
     return (
       <Flex minHeight={"100vh"} direction={"column"}>
         <Head>
@@ -1822,8 +1844,8 @@ export const getServerSideProps = async (context: {
   if (txhash.startsWith('0x')) {
     tx_evm = await getTxEVMFromHash(txhash);
   } else {
-    tx = await getTxFromHash(txhash);
-    txs = await getTxsFromHash(txhash);
+    tx = await getTxByHashFromRPC(txhash);
+    txs = await getTxsByHashFromAPI(txhash);
   }
   if (!tx) {
     tx = null;
