@@ -105,14 +105,14 @@ const maintain = false;
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
   // nftActionCount: DataNFTStat;
-  blockNFTStat: BlockNFTStat;
+  // blockNFTStat: BlockNFTStat;
   // latestAction: any;
 }
 
 export default function Data({
   modalstate,
   // nftActionCount,
-  blockNFTStat,
+  // blockNFTStat,
   // latestAction,
 }: Props) {
   // _LOG(nftActionCount)
@@ -600,7 +600,7 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  <Text
+                                  {/* <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
@@ -608,7 +608,7 @@ export default function Data({
                                     {blockNFTStat
                                       ? blockNFTStat.totalNFTS.total
                                       : 0}
-                                  </Text>
+                                  </Text> */}
                                 </Flex>
                               </Flex>
                             </Flex>
@@ -641,15 +641,14 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  <Text
+                                  {/* <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat
-                                      ? blockNFTStat.totalNFTCollection.total
+                                    {blockNFTStat ? blockNFTStat.totalNFTCollection.total
                                       : 0}
-                                  </Text>
+                                  </Text> */}
                                 </Flex>
                               </Flex>
                             </Flex>
@@ -682,7 +681,7 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  <Text
+                                  {/* <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
@@ -697,7 +696,7 @@ export default function Data({
                                         )
                                       )
                                       : 0}
-                                  </Text>
+                                  </Text> */}
                                   <Text fontSize="sm" color={"medium"}>
                                     SIX
                                   </Text>
@@ -733,13 +732,13 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  <Text
+                                  {/* <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
                                     {blockNFTStat ? blockNFTStat.action24h : 0}
-                                  </Text>
+                                  </Text> */}
                                   <Text fontSize="sm" color={"medium"}>
                                     (24h)
                                   </Text>
