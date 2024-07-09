@@ -71,6 +71,7 @@ import { getLatestAction } from "@/service/nftmngr/txs";
 import { DataNFTStat, DataNFTCollectionTrending, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
 import { _LOG } from "@/utils/log_helper";
 import { useState, useEffect, Suspense } from "react";
+import ENV from "@/utils/ENV";
 
 
 const data = [
@@ -105,14 +106,14 @@ const maintain = false;
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
   // nftActionCount: DataNFTStat;
-  // blockNFTStat: BlockNFTStat;
+  blockNFTStat: BlockNFTStat |  null;
   // latestAction: any;
 }
 
 export default function Data({
   modalstate,
   // nftActionCount,
-  // blockNFTStat,
+  blockNFTStat,
   // latestAction,
 }: Props) {
   // _LOG(nftActionCount)
@@ -600,7 +601,7 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  {/* <Text
+                                  <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
@@ -608,7 +609,7 @@ export default function Data({
                                     {blockNFTStat
                                       ? blockNFTStat.totalNFTS.total
                                       : 0}
-                                  </Text> */}
+                                  </Text>
                                 </Flex>
                               </Flex>
                             </Flex>
@@ -641,14 +642,15 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  {/* <Text
+                                  <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat ? blockNFTStat.totalNFTCollection.total
+                                    {blockNFTStat 
+                                    ? blockNFTStat.totalNFTCollection.total
                                       : 0}
-                                  </Text> */}
+                                  </Text>
                                 </Flex>
                               </Flex>
                             </Flex>
@@ -681,7 +683,7 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  {/* <Text
+                                  <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
@@ -696,7 +698,7 @@ export default function Data({
                                         )
                                       )
                                       : 0}
-                                  </Text> */}
+                                  </Text>
                                   <Text fontSize="sm" color={"medium"}>
                                     SIX
                                   </Text>
@@ -732,13 +734,13 @@ export default function Data({
                                   alignItems={"center"}
                                   gap={2}
                                 >
-                                  {/* <Text
+                                  <Text
                                     fontSize="xl"
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
                                     {blockNFTStat ? blockNFTStat.action24h : 0}
-                                  </Text> */}
+                                  </Text>
                                   <Text fontSize="sm" color={"medium"}>
                                     (24h)
                                   </Text>
@@ -796,25 +798,25 @@ export default function Data({
                               <Td>
                                 <Badge justifyContent={"center"} display={"flex"} width="100%">
                                   <Text style={{
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "10px",
-                                        textAlign: "center",
-                                      }}>
-                                        Action:
+                                    textDecoration: "none",
+                                    fontFamily:
+                                      "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "10px",
+                                    textAlign: "center",
+                                  }}>
+                                    Action:
                                   </Text>
                                   <Tooltip label={tx.decode_tx.action} aria-label='A tooltip'>
-                                  <Text marginLeft={"4px"} style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "10px",
-                                        textAlign: "center",
-                                      }}>
-                                        {formatSchemaAction(tx.decode_tx.action)}
-                                  </Text>
+                                    <Text marginLeft={"4px"} style={{
+                                      color: "#5C34A2",
+                                      textDecoration: "none",
+                                      fontFamily:
+                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                      fontSize: "10px",
+                                      textAlign: "center",
+                                    }}>
+                                      {formatSchemaAction(tx.decode_tx.action)}
+                                    </Text>
                                   </Tooltip>
                                 </Badge>
                               </Td>
@@ -1020,53 +1022,65 @@ export const getServerSideProps = async () => {
     end_time = `${day}/0${month}/${year}`;
   }
 
-  const [
-    // nftActionCount,
-    totalNFTCollection,
-    totalNFTS,
-    nftFee,
-    action24h,
-    // latestAction,
-  ] = await Promise.all([
-    // getNFTActionCountStat(
-    //   schemaCode,
-    //   page,
-    //   pageSize
-    // ),
-    getTotalNFTCollection(),
-    getTotalNFTS(),
-    getNFTFee(),
-    getNFTActionCountStatDaily(
-      schemaCode,
-      end_time
-    ),
-  ]);
+  let lower_chainName = process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase()
 
-  if (action24h) {
-    count24h += action24h.count;
+  if (lower_chainName === "mainnet" || lower_chainName === "sixnet") {
+    const [
+      // nftActionCount,
+      totalNFTCollection,
+      totalNFTS,
+      nftFee,
+      action24h,
+      // latestAction,
+    ] = await Promise.all([
+      // getNFTActionCountStat(
+      //   schemaCode,
+      //   page,
+      //   pageSize
+      // ),
+      getTotalNFTCollection(),
+      getTotalNFTS(),
+      getNFTFee(),
+      getNFTActionCountStatDaily(
+        schemaCode,
+        end_time
+      ),
+    ]);
+
+    if (action24h) {
+      count24h += action24h.count;
+    }
+
+    const blockNFTStat = {
+      totalNFTCollection: totalNFTCollection,
+      totalNFTS: totalNFTS,
+      nftFee: nftFee,
+      action24h: count24h,
+    };
+
+    // if (!latestAction) {
+    //   return {
+    //     props: {
+    //       nftActionCount: null,
+    //       blockNFTStat: null,
+    //       // latestAction: null,
+    //     },
+    //   };
+    // }
+
+    return {
+      props: {
+        // nftActionCount,
+        blockNFTStat,
+      },
+    };
+  } else {
+    return {
+      props: {
+        // nftActionCount,
+        blockNFTStat: null
+      },
+    };
   }
 
-  const blockNFTStat = {
-    totalNFTCollection: totalNFTCollection,
-    totalNFTS: totalNFTS,
-    nftFee: nftFee,
-    action24h: count24h,
-  };
-
-  // if (!latestAction) {
-  //   return {
-  //     props: {
-  //       nftActionCount: null,
-  //       blockNFTStat: null,
-  //       // latestAction: null,
-  //     },
-  //   };
-  // }
-
-  return {
-    props: {
-      // nftActionCount,
-      blockNFTStat,
-    },
-  };
 };
