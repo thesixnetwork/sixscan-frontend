@@ -8,9 +8,10 @@ import { _LOG } from "@/utils/log_helper";
 export const getSchema = async (
     schemaCode: string
   ): Promise<NFTSchema | null> => {
+    const encodedSchemaCode = encodeURIComponent(schemaCode);
     try {
       const res = await axios.get(
-        `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${schemaCode}`
+        `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${encodedSchemaCode}`
       );
       if (res.data.code && res.data.code !== 0) {
         return null;

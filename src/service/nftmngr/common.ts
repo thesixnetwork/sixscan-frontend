@@ -9,9 +9,10 @@ export const getMetadata = async (
     schemaCode: string,
     tokenid: string
   ): Promise<any | null> => {
+    const encodedSchemaCode = encodeURIComponent(schemaCode);
     try {
       const { data } = await axios.get(
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/${tokenid}`
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${tokenid}`
       );
       if (!data) {
         return null;

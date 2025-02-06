@@ -10,13 +10,16 @@ export const getNFTActionCountStat = async (
   page: string,
   pageSize: string
 ): Promise<any | null> => {
+
+  const encodedSchemaCode = encodeURIComponent(schemaCode);
+
   try {
     // const res = await axios.get(
     //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
     let res: any;
     res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${schemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${encodedSchemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -29,7 +32,7 @@ export const getNFTActionCountStat = async (
 
     if (res.data.data.length === 0) {
       res = await axios.get(
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
       );
       if (res.status !== 200) {
         _LOG("Error: Non-200 status code returned:", res.status);
@@ -84,13 +87,16 @@ export const getNFTCollectionTrending = async (
   page: string,
   pageSize: string
 ): Promise<any | null> => {
+
+  const encodedSchemaCode = encodeURIComponent(schemaCode);
+
   try {
     // const res = await axios.get(
     //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
     let res: any;
     res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getCollectionTrending?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getCollectionTrending?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -157,9 +163,12 @@ export const getNFTActionCountStatDaily = async (
   schemaCode: string,
   endTime: string
 ): Promise<any | null> => {
+
+  const encodedSchemaCode = encodeURIComponent(schemaCode);
+
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountDaily?schemaCode=${schemaCode}&endTime=${endTime}`
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountDaily?schemaCode=${encodedSchemaCode}&endTime=${endTime}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);

@@ -113,6 +113,8 @@ export default function Schema({
   metadataPageNumber,
   imgCollection,
 }: Props) {
+
+  const encodedSchemaCode = encodeURIComponent(schemacode);
   const perPage = 12;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -133,7 +135,7 @@ export default function Schema({
   const [isStop, setIsStop] = useState(false);
   const [metadataPage, setMetadataPage] = useState("1");
   const [isPageTxns, setIsPageTxns] = useState("1");
-  const [isSchemaCode, setIsSchemaCode] = useState(schemacode);
+  const [isSchemaCode, setIsSchemaCode] = useState(encodedSchemaCode);
   const router = useRouter();
   const chainConfig: {
     [key: string]: {
@@ -204,7 +206,7 @@ export default function Schema({
       setItems([]);
       setNftCollection([]);
       // const resMetadata = await getNftCollectionByClient(schemacode, metadataPage);
-      const response = await fetch(`/api/getNftCollection?schemaCode=${schemacode}&metadataPage=${metadataPage}&perPage=${perPage}`);
+      const response = await fetch(`/api/getNftCollection?schemaCode=${encodedSchemaCode}&metadataPage=${metadataPage}&perPage=${perPage}`);
       const resMetadata = await response.json();
       setNftCollection(resMetadata);
       setIsMetadataLoaded(true);
@@ -229,7 +231,7 @@ export default function Schema({
       setIsLoadedTxns(false)
       setTxns(null);
       // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
-      const response = await fetch(`/api/getTxsFromSchema?schemaCode=${schemacode}&metadataPage=${isPageTxns}&isPageSize=15`);
+      const response = await fetch(`/api/getTxsFromSchema?schemaCode=${encodedSchemaCode}&metadataPage=${isPageTxns}&isPageSize=15`);
       const resTxns = await response.json();
       // console.log("resTxns",resTxns)
       // console.log("schemacode",schemacode)
