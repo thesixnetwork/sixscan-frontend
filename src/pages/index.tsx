@@ -217,7 +217,7 @@ export default function Home({
       <Box marginTop={-10}>
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
-            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet" || process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "mainnet") && (
+            {("mainnet" == "mainnet") && (
               <Box style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
                 <Flex
                   style={{
@@ -238,13 +238,14 @@ export default function Home({
                   <Box
                     style={{
                       color: "rgba(204, 227, 255, 1)",
-                      fontFamily: "SF Compact, Nunito, Helvetica Neue, Arial, sans-serif",
+                      fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                       fontWeight: 457,
                       fontSize: "22px",
                       lineHeight: "100%",
                       letterSpacing: "0%",
                       fontVariant: "small-caps",
                       textAlign: "center",
+                      marginBottom: "10px"
                     }}
                   >
                     TOTAL ASSET VALUE ON SIX PROTOCOL
@@ -259,13 +260,13 @@ export default function Home({
                       marginTop: "10px",
                     }}
                   >
-                    <Image src="/up2.png" alt="coin" height={56} width={54} style={{ marginRight: "10px" }} />
+                    <Image src="/up2.png" alt="coin" height={56} width={54} style={{ marginRight: "15px" }} />
                     <Box
                       style={{
                         color: "rgba(255, 255, 255, 1)",
-                        fontFamily: "SF Compact Display, Nunito, Helvetica Neue, Arial, sans-serif",
+                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                         fontWeight: 700,
-                        fontSize: "72px",
+                        fontSize: "64px",
                         lineHeight: "100%",
                         letterSpacing: "0%",
                         fontVariant: "small-caps",
