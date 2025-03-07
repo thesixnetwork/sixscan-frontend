@@ -87,3 +87,19 @@ export const getSupply = async (denom: string): Promise<any> => {
     return null;
   }
 };
+
+export const getSupplySixNet = async (): Promise<any> => {
+  try {
+    const res = await axios.get(
+      `https://sixnet-api.sixprotocol.net/cosmos/bank/v1beta1/supply/usix`
+    );
+    const amount = res.data.amount.amount;
+    if (!amount) {
+      return null;
+    }
+    return amount;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};

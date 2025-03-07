@@ -1,5 +1,6 @@
 // ------------------------- Chakra UI -------------------------
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import {
   Box,
   Flex,
@@ -37,6 +38,7 @@ import {
 import SearchBar from "@/components/SearchBar";
 import CustomCard from "@/components/CustomCard";
 import { getPool, getValidator, getValidators } from "@/service/staking";
+import { getTHB } from "@/service/priceUSD";
 import { Pool, Validator } from "@/types/Staking";
 import {
   convertDecimalToPercent,
@@ -44,7 +46,7 @@ import {
   formatNumberAndRoundUp,
 } from "@/utils/format";
 import { getInflation } from "@/service/mint";
-import { getSupply } from "@/service/bank";
+import { getSupply, getSupplySixNet } from "@/service/bank";
 import { Balance } from "@/types/Bank";
 import {
   getBlocksResult,
@@ -67,6 +69,8 @@ interface Props {
   latestBlocks: BlockchainResult;
   blocksResult: BlockResult[];
   validators: Validator[];
+  priceTHB: number;
+  supplySixNet: string
 }
 
 export default function Home({
@@ -78,8 +82,11 @@ export default function Home({
   latestBlocks,
   blocksResult,
   validators,
+  priceTHB,
+  supplySixNet
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
+  const [priceSIXUSD, setPriceSIXUSD] = useState<number | null>(null);
 
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
   const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
@@ -137,7 +144,10 @@ export default function Home({
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      setPrice(await getPriceFromCoingecko("six-network"));
+      const priceGecko: CoinGeckoPrice | null = await getPriceFromCoingecko("six-network");
+      const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
+      setPrice(priceGecko);
+      setPriceSIXUSD(Number(priceGecko?.usd) * Number(suppySixTotal) + 400000000 / Number(priceTHB))
     };
 
     fetchPrice();
@@ -207,6 +217,67 @@ export default function Home({
       <Box marginTop={-10}>
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
+            {process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet" && (
+              <Box style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+                <Flex
+                  style={{
+                    background: "linear-gradient(90deg, #538CEE 0%, #8B60EE 100%)",
+                    width: "635px",
+                    height: "196px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "white",
+                    fontSize: "24px",
+                    borderRadius: "20px",
+                    padding: "20px",
+                  }}
+                >
+                  {/* Top row: Title */}
+                  <Box
+                    style={{
+                      color: "rgba(204, 227, 255, 1)",
+                      fontFamily: "SF Compact, Nunito, Helvetica Neue, Arial, sans-serif",
+                      fontWeight: 457,
+                      fontSize: "22px",
+                      lineHeight: "100%",
+                      letterSpacing: "0%",
+                      fontVariant: "small-caps",
+                      textAlign: "center",
+                    }}
+                  >
+                    TOTAL ASSET VALUE ON SIX PROTOCOL
+                  </Box>
+
+                  {/* Bottom row: Image + Value */}
+                  <Flex
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginTop: "10px",
+                    }}
+                  >
+                    <Image src="/up2.png" alt="coin" height={56} width={54} style={{ marginRight: "10px" }} />
+                    <Box
+                      style={{
+                        color: "rgba(255, 255, 255, 1)",
+                        fontFamily: "SF Compact Display, Nunito, Helvetica Neue, Arial, sans-serif",
+                        fontWeight: 700,
+                        fontSize: "72px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        fontVariant: "small-caps",
+                      }}
+                    >
+                      ${formatNumber(priceSIXUSD ? priceSIXUSD : 0, 2)}
+                    </Box>
+                  </Flex>
+                </Flex>
+              </Box>
+            )}
+
             <Card size="lg">
               <CardBody p={0}>
                 <Grid templateColumns="repeat(2, 1fr)">
@@ -366,12 +437,14 @@ export default function Home({
 }
 
 export const getServerSideProps = async () => {
-  const [pool, inflation, supply, latestBlock, validators] = await Promise.all([
+  const [pool, inflation, supply, latestBlock, validators, priceTHB, supplySixNet] = await Promise.all([
     getPool(),
     getInflation(),
     getSupply("usix"),
     getLatestBlock(),
     getValidators(),
+    getTHB(),
+    getSupplySixNet()
   ]);
 
   const latestBlockHeight = latestBlock
@@ -396,6 +469,8 @@ export const getServerSideProps = async () => {
       latestBlocks,
       blocksResult,
       validators,
+      priceTHB,
+      supplySixNet
     },
   };
 };
