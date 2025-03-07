@@ -1,0 +1,181 @@
+[
+    {
+        "events": [
+            {
+                "type": "burn",
+                "attributes": [
+                    {
+                        "key": "burner",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    }
+                ]
+            },
+            {
+                "type": "coin_received",
+                "attributes": [
+                    {
+                        "key": "receiver",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    },
+                    {
+                        "key": "receiver",
+                        "value": "6x1kch0sdjr5tuvjh0h3a55c6l5sr6m0phjeag9f2"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    },
+                    {
+                        "key": "receiver",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    }
+                ]
+            },
+            {
+                "type": "coin_spent",
+                "attributes": [
+                    {
+                        "key": "spender",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    },
+                    {
+                        "key": "spender",
+                        "value": "6x1mu46utlxmtnwt0z7xrgpda6w5swxf5g7de4fnh"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    },
+                    {
+                        "key": "spender",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    }
+                ]
+            },
+            {
+                "type": "coinbase",
+                "attributes": [
+                    {
+                        "key": "minter",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    }
+                ]
+            },
+            {
+                "type": "ethereum_tx",
+                "attributes": [
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000"
+                    },
+                    {
+                        "key": "ethereumTxHash",
+                        "value": "0x0e4c544a2d30a78b0f9ff2a69f50b0efcc1b9c5ef6de7b534213ee6bafc716b9"
+                    },
+                    {
+                        "key": "txIndex",
+                        "value": "0"
+                    },
+                    {
+                        "key": "txGasUsed",
+                        "value": "21000"
+                    },
+                    {
+                        "key": "txHash",
+                        "value": "3796FDC5619CF1A666579FBDFAECA2A7B823D0A2755C40BC6CD2431C2B612FC9"
+                    },
+                    {
+                        "key": "recipient",
+                        "value": "0xB62ef83643A2F8c95dF78F694C6Bf480f5b786f2"
+                    }
+                ]
+            },
+            {
+                "type": "message",
+                "attributes": [
+                    {
+                        "key": "action",
+                        "value": "/ethermint.evm.v1.MsgEthereumTx"
+                    },
+                    {
+                        "key": "sender",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "sender",
+                        "value": "6x1mu46utlxmtnwt0z7xrgpda6w5swxf5g7de4fnh"
+                    },
+                    {
+                        "key": "module",
+                        "value": "evm"
+                    },
+                    {
+                        "key": "sender",
+                        "value": "0xDf2Bae2fe6dAE6E5Bc5E30d016F74Ea41c64D11e"
+                    },
+                    {
+                        "key": "txType",
+                        "value": "2"
+                    }
+                ]
+            },
+            {
+                "type": "transfer",
+                "attributes": [
+                    {
+                        "key": "recipient",
+                        "value": "6x1kch0sdjr5tuvjh0h3a55c6l5sr6m0phjeag9f2"
+                    },
+                    {
+                        "key": "sender",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    },
+                    {
+                        "key": "recipient",
+                        "value": "6x1vqu8rska6swzdmnhf90zuv0xmelej4lqzujpq6"
+                    },
+                    {
+                        "key": "sender",
+                        "value": "6x1mu46utlxmtnwt0z7xrgpda6w5swxf5g7de4fnh"
+                    },
+                    {
+                        "key": "amount",
+                        "value": "5000000000000000000asix"
+                    }
+                ]
+            },
+            {
+                "type": "tx_log",
+                "attributes": null
+            }
+        ]
+    }
+]
