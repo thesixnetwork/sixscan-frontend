@@ -217,7 +217,7 @@ export default function Home({
       <Box marginTop={-10}>
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
-            {process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet" && (
+            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet" || process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "mainnet") && (
               <Box style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
                 <Flex
                   style={{
