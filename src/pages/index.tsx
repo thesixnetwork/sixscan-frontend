@@ -70,7 +70,7 @@ interface Props {
   blocksResult: BlockResult[];
   validators: Validator[];
   priceTHB: number;
-  supplySixNet: string
+  supplySixNet: string;
 }
 
 export default function Home({
@@ -86,7 +86,7 @@ export default function Home({
   supplySixNet
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
-  const [priceSIXUSD, setPriceSIXUSD] = useState<number | null>(null);
+  const [priceSIXUSD, setPriceSIXUSD] = useState<number>(12673103.29);
 
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
   const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
@@ -145,9 +145,10 @@ export default function Home({
     // async function fetchPrice() {
     const fetchPrice = async () => {
       const priceGecko: CoinGeckoPrice | null = await getPriceFromCoingecko("six-network");
-      const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
+      // const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
       setPrice(priceGecko);
-      setPriceSIXUSD(Number(priceGecko?.usd) * Number(suppySixTotal) + 400000000 / Number(priceTHB))
+      const isSupplySixNet = Number(supplySixNet).toFixed(2)
+      setPriceSIXUSD(Number(isSupplySixNet))
     };
 
     fetchPrice();
@@ -217,7 +218,7 @@ export default function Home({
       <Box marginTop={-10}>
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
-            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "666" || process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "666") && (
+            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "mainnet" || process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet") && (
               <Box style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
                 <Flex
                   style={{
