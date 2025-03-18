@@ -30,7 +30,7 @@ export const formatCoinNumber = (
   // if input is not array
   const isArray = Array.isArray(num);
 
-  if(!isArray) {    
+  if (!isArray) {
     const amount = convertAmountToSix({
       denom: num.denom,
       amount: Number(num.amount),
@@ -40,7 +40,9 @@ export const formatCoinNumber = (
       /(\d)(?=(\d{3})+(?!\d))/g,
       "$1,"
     );
-    return decimalPoints > 0 ? `${formattedIntegerPart}.${decimalPart}`: formattedIntegerPart;
+    return decimalPoints > 0
+      ? `${formattedIntegerPart}.${decimalPart}`
+      : formattedIntegerPart;
   }
 
   if (num.length > 1) {
@@ -285,7 +287,10 @@ export const formatMethod = (
             textAlign: "center",
           }}
         >
-          {method.split(".")[method.split(".").length - 1].slice(3).toUpperCase()}
+          {method
+            .split(".")
+            [method.split(".").length - 1].slice(3)
+            .toUpperCase()}
         </Text>
       </Badge>
     );
@@ -323,7 +328,7 @@ export const convertTXAmountToSix = (amount: TXCoin): number => {
 };
 
 export const convertAmountToSix = (amount: Coin): number => {
-  // if (amount?.amount == undefined || Number.isNaN(amount.amount)) return 0;
+  if (amount?.amount == undefined || Number.isNaN(amount.amount)) return 0;
   if (amount.denom === "usix") {
     return convertUsixToSix(amount.amount);
   } else if (amount.denom === "asix") {
