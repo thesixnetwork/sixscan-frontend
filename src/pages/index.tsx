@@ -23,6 +23,7 @@ import {
   Badge,
   useDisclosure,
   Skeleton,
+  useMediaQuery
 } from "@chakra-ui/react";
 import { Clickable } from "@/components/Clickable";
 // ------------------------- NextJS -------------------------
@@ -87,6 +88,7 @@ export default function Home({
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
   const [priceSIXUSD, setPriceSIXUSD] = useState<number>(12673103.29);
+  const [isMobile] = useMediaQuery("(max-width: 768px)");
 
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
   const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
@@ -223,8 +225,8 @@ export default function Home({
                 <Flex
                   style={{
                     background: "linear-gradient(90deg, #538CEE 0%, #8B60EE 100%)",
-                    width: "635px",
-                    height: "196px",
+                    // width: {isMobile ? "90%" : "635px"},
+                    // height: {isMobile ? "auto" : "196px"},
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
@@ -234,6 +236,8 @@ export default function Home({
                     borderRadius: "20px",
                     padding: "20px",
                   }}
+                  w={isMobile ? "100%" : "635px"}
+                  h={isMobile ? "auto" : "196px"}
                 >
                   {/* Top row: Title */}
                   <Box
@@ -241,13 +245,14 @@ export default function Home({
                       color: "rgba(204, 227, 255, 1)",
                       fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                       fontWeight: 457,
-                      fontSize: "22px",
+                      // fontSize: "22px",
                       lineHeight: "100%",
                       letterSpacing: "0%",
                       fontVariant: "small-caps",
                       textAlign: "center",
                       marginBottom: "10px"
                     }}
+                    fontSize={isMobile ? "16px" : "22px"}
                   >
                     TOTAL ASSET VALUE ON SIX PROTOCOL
                   </Box>
@@ -260,18 +265,22 @@ export default function Home({
                       justifyContent: "center",
                       marginTop: "10px",
                     }}
+                    // flexDirection={isMobile ? "column" : "row"}
                   >
-                    <Image src="/up2.png" alt="coin" height={56} width={54} style={{ marginRight: "15px" }} />
+                    <Image src="/up2.png" alt="coin" height={isMobile ? 36 : 56} width={isMobile ? 34 : 54}
+                      style={{ marginRight: isMobile ? "6px" : "15px" }}
+                      />
                     <Box
                       style={{
                         color: "rgba(255, 255, 255, 1)",
                         fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                         fontWeight: 700,
-                        fontSize: "64px",
+                        // fontSize: "64px",
                         lineHeight: "100%",
                         letterSpacing: "0%",
                         fontVariant: "small-caps",
                       }}
+                      fontSize={isMobile ? "40px" : "64px"}
                     >
                       ${formatNumber(priceSIXUSD ? priceSIXUSD : 0, 2)}
                     </Box>
