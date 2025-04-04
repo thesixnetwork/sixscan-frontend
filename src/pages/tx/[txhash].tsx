@@ -491,14 +491,16 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             {convertAmountToSix(
                                               message[key][0]
                                             )}{" "}
-                                            {message[key][0].denom === "usix"
+                                            {message[key][0].denom === "usix" ||
+                                            "asix"
                                               ? "SIX"
                                               : message[key][0].denom}
                                           </Text>
                                         ) : (
                                           <Text style={{ marginRight: "5px" }}>
                                             {convertAmountToSix(message[key])}{" "}
-                                            {message[key].denom === "usix"
+                                            {message[key].denom === "usix" ||
+                                            "asix"
                                               ? "SIX"
                                               : message[key].denom}
                                           </Text>
@@ -506,7 +508,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         {/* <Text style={{ marginRight: '5px' }}>{ message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key])} SIX</Text> */}
                                         <Text style={{ color: "#6c757d" }}>
                                           {(message[key].denom ||
-                                            message[key][0].denom == "usix") &&
+                                            message[key][0].denom == "usix" ||
+                                            "asix") &&
                                           price &&
                                           price.usd
                                             ? `($${formatNumber(
@@ -1322,7 +1325,6 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
         </Box>
 
         {allMultimessage.map((message: any, index: any) => {
-
           return (
             <Box p={6} key={index}>
               <Container maxW="container.xl">
@@ -1534,7 +1536,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                               style={{ marginRight: "5px" }}
                                             >
                                               {convertAmountToSix(
-                                                message[key][0]? message[key][0]: message[key]
+                                                message[key][0]
+                                                  ? message[key][0]
+                                                  : message[key]
                                               )}{" "}
                                               SIX{" "}
                                             </Text>
