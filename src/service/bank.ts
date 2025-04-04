@@ -91,9 +91,9 @@ export const getSupply = async (denom: string): Promise<any> => {
 export const getSupplySixNet = async (): Promise<any> => {
   try {
     const res = await axios.get(
-      `https://sixnet-api.sixprotocol.net/cosmos/bank/v1beta1/supply/usix`
+      `https://suppy-sixscan-backend-api-workers-273189981420.asia-southeast1.run.app/cache/get`
     );
-    const amount = res.data.amount.amount;
+    const amount = res.data;
     if (!amount) {
       return null;
     }
