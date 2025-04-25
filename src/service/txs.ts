@@ -24,7 +24,6 @@ export const getTxsFromSchema = async (
       return null;
     }
     return accountTxs;
-
   } catch (error) {
     console.error("Error: ", error);
     return null;
@@ -53,7 +52,6 @@ export const getTxsFromSchemaSixNet = async (
       return null;
     }
     return accountTxs;
-
   } catch (error) {
     console.error("Error: ", error);
     return null;
@@ -73,7 +71,7 @@ export const getTxsFromAddress = async (
     if (!accountTxs) {
       return null;
     }
-    return accountTxs
+    return accountTxs;
   } catch (error) {
     console.error(error);
     return null;
@@ -107,9 +105,10 @@ export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
     }
     return blockTxs;
   } catch (error) {
-    const res = await axios.get(`${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${txhash}`);
+    const res = await axios.get(
+      `${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${txhash}`
+    );
 
-    
     return res.data;
   }
 };
@@ -123,8 +122,10 @@ export const getTxByHashFromRPC = async (hash: string): Promise<any> => {
     }
     return tx;
   } catch (error) {
-    const res = await axios.get(`${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${hash}`);
-    
+    const res = await axios.get(
+      `${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${hash}`
+    );
+
     return res.data;
   }
 };
@@ -148,5 +149,3 @@ export const getTxEVMFromHash = async (hash: string): Promise<any> => {
     return null;
   }
 };
-
-

@@ -154,10 +154,16 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const allMultimessage = txs.tx && txs.tx.body.messages;
 
   // get object keys from txs.tx.body.messages[0]
-  const KeyMsg = txs.tx
+  let KeyMsg: any;
+  KeyMsg = txs.tx
     ? Object.keys(txs.tx.body.messages[0])
-    : Object.keys(txs.messages[0]);
-  const message = txs.tx ? txs.tx.body.messages[0] : txs.messages[0];
+    : Object.keys(txs.messages ? txs.messages[0] : txs.decode_tx);
+
+  const message = txs.tx
+    ? txs.tx.body.messages[0]
+    : txs.messages
+    ? txs.messages[0]
+    : txs.decode_tx;
 
   // const txSuccess = txs.tx_response.code == 0 ? true : false;
   let txSuccess = false;
@@ -390,7 +396,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               </Td>
                             </Tr>
 
-                            {KeyMsg.map((key: any, index) => {
+                            {KeyMsg.map((key: any, index: any) => {
                               // {console.log(key)}
                               if (
                                 typeof message[key] === "string" &&
@@ -1432,11 +1438,9 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     </Flex>
                                   </Td>
                                 </Tr>
-
-                                {KeyMsg.map((key: any, index) => {
+                                {KeyMsg.map((key: any, index: any) => {
                                   // {console.log(key)}
-                                  if (
-                                    typeof message[key] === "string" &&
+                                  if ( typeof message[key] === "string" &&
                                     message[key].startsWith("6x")
                                   ) {
                                     if (key === "from_address") {
