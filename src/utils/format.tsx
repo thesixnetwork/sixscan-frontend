@@ -238,11 +238,7 @@ export const formatMethod = (
         </Text>
       </Badge>
     );
-  } else if (
-    method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() ===
-    "SEND"
-  ) {
-    if (decodeTxAddress === inputAddress) {
+  } else if ( method.split(".")[method.split(".").length - 1].slice(3).toUpperCase() === "SEND") { if (decodeTxAddress === inputAddress) {
       return (
         <Badge justifyContent={"center"} display={"flex"} width="100%">
           <Text
