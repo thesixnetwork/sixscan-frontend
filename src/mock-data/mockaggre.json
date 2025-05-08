@@ -1,57 +1,28 @@
 {
-    "_id": {
-      "$oid": "6435417efb2f2f1e171f0660"
-    },
-    "txhash": "8AB18986F8FF763260F08E351",
-    "block_height": "2312285",
-    "gas_wanted": "104547",
-    "gas_used": "83751",
-    "fee_amount": "130684",
-    "granter": "",
-    "time_stamp": "2022-11-15T09:50:23Z",
-    "code": 0,
-    "memo": "",
-    "related_addrs": [
-      "6x1urghn50kk0xav4f06u2"
-    ],
-    "messages": [
-      {
-        "@type": "/thesixnetwork.MsgPerformActionByAdmin",
-        "creator": "6x1urghn50kk024nzp6u2",
-        "nft_schema_code": "watermelon.testing-1",
-        "tokenId": "0",
-        "action": "check_in",
-        "ref_id": "",
-        "parameters": []
-      }
-    ]
-  }
-
-
-
-
-  {
-    _id:"watermelon.testing-1",
-    value: [
-        {action:"check_in",count:1},
-        {action:"check_in",count:1},
-        {action:"check_out",count:1},
-        {action:"check_out",count:1},
-    ]
-  }
-
-  to
-
-  {
-    _id:"watermelon.testing-1",
-    value: [
-        {action:"check_in",count:1},
-        {action:"check_in",count:1},
-        {action:"check_out",count:1},
-        {action:"check_out",count:1},
-    ]
-    actions: [
-        {name:"check_in",count:2},
-        {name:"check_out",count:2},
-    ]
-  }
+  "_id": {
+    "$oid": "6435417efb2f2f1e171f0660"
+  },
+  "txhash": "8AB18986F8FF763260F08E351",
+  "block_height": "2312285",
+  "gas_wanted": "104547",
+  "gas_used": "83751",
+  "fee_amount": "130684",
+  "granter": "",
+  "time_stamp": "2022-11-15T09:50:23Z",
+  "code": 0,
+  "memo": "",
+  "related_addrs": [
+    "6x1urghn50kk0xav4f06u2"
+  ],
+  "messages": [
+    {
+      "@type": "/thesixnetwork.MsgPerformActionByAdmin",
+      "creator": "6x1urghn50kk024nzp6u2",
+      "nft_schema_code": "watermelon.testing-1",
+      "tokenId": "0",
+      "action": "check_in",
+      "ref_id": "",
+      "parameters": []
+    }
+  ]
+}
