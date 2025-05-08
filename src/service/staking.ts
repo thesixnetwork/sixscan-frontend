@@ -81,17 +81,15 @@ export const getDelegationsFromValidator = async (
   }
 };
 
-export const uptime = async (req: any, res: any) => {
+export const uptime = async () => {
   try {
     const validators = await axios.get(
-      `${process.env.API_URL}/cosmos/staking/v1beta1/validators`
+      `${ENV.API_URL}/cosmos/staking/v1beta1/validators`
     );
-    const latestBlock = await axios.get(`${process.env.API_URL}/blocks/latest`);
-    // Process and return uptime data
-    res
-      .status(200)
-      .json({ validators: validators.data, latestBlock: latestBlock.data });
+    const latestBlock = await axios.get(`${ENV.API_URL}/blocks/latest`);
+    return { validators, latestBlock }
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    return null;
   }
 };
