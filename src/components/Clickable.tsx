@@ -1,7 +1,6 @@
 import { Link as ChakraLink, Text } from "@chakra-ui/react";
 import { LinkComponent } from "@/components/Chakralink";
 
-
 export const Clickable = ({
   children,
   href,
@@ -12,7 +11,7 @@ export const Clickable = ({
   underline?: boolean;
 }) => {
   return underline ? (
-    <LinkComponent href={href? href:"#"}>
+    <LinkComponent href={href ? href : "#"}>
       <Text
         as={"span"}
         decoration={underline ? "underline" : "none"}
@@ -22,9 +21,12 @@ export const Clickable = ({
       </Text>
     </LinkComponent>
   ) : (
-    <LinkComponent href={href? href:"#"} _hover={{
-      textDecoration: "none",
-    }}>
+    <LinkComponent
+      href={href ? href : "#"}
+      _hover={{
+        textDecoration: "none",
+      }}
+    >
       <Text
         as={"span"}
         decoration={underline ? "underline" : "none"}

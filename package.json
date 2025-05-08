@@ -7,7 +7,8 @@
     "build": "next build",
     "prod": "next build && next start",
     "start": "next start -p $PORT",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format": "npx prettier . --write"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.0.17",

@@ -1,7 +1,6 @@
 import axios from "axios";
-import ENV from "../utils/ENV";
+import ENV from "../libs/utils/ENV";
 import { Account } from "../types/Auth";
-
 
 export const getAccounts = async (): Promise<Account[]> => {
   try {
@@ -51,12 +50,11 @@ export const getIsContract = async (address: string): Promise<any> => {
     console.error(error);
     return null;
   }
-
 };
 
 export const getIsETHAddress = async (address: string): Promise<any> => {
   try {
-    if (address.startsWith('0x')) {
+    if (address.startsWith("0x")) {
       return true;
     } else {
       return false;
@@ -65,5 +63,4 @@ export const getIsETHAddress = async (address: string): Promise<any> => {
     console.error(error);
     return null;
   }
-
 };

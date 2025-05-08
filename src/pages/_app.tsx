@@ -4,9 +4,9 @@ import { ChakraProvider, useDisclosure } from "@chakra-ui/react";
 import theme from "@/styles/theme";
 import Layout from "@/components/Layout";
 import FloatingButton from "@/components/Floating";
-import { useState ,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Router from "next/router";
-import NextNProgress from 'nextjs-progressbar';
+import NextNProgress from "nextjs-progressbar";
 import { truncate } from "lodash";
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -26,12 +26,16 @@ export default function App({ Component, pageProps }: AppProps) {
   }, [modalState.onOpen, modalState]);
   return (
     <>
-    <ChakraProvider theme={theme}>
-      <Layout modalstate={modalState}>
-      <NextNProgress  options={{ showSpinner: false }} height={8} color="#209cee" /> 
-      <Component modalstate={modalState} {...pageProps} />
-      </Layout>
-    </ChakraProvider>
+      <ChakraProvider theme={theme}>
+        <Layout modalstate={modalState}>
+          <NextNProgress
+            options={{ showSpinner: false }}
+            height={8}
+            color="#209cee"
+          />
+          <Component modalstate={modalState} {...pageProps} />
+        </Layout>
+      </ChakraProvider>
     </>
   );
 }

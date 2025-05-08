@@ -55,7 +55,7 @@ import {
   formatSchema,
   formatSchemaAction,
   convertUsixToSix,
-} from "@/utils/format";
+} from "@/libs/utils/format";
 
 // -------- service ----------
 import {
@@ -68,11 +68,15 @@ import {
 import { getLatestAction } from "@/service/nftmngr/txs";
 // import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 
-import { DataNFTStat, DataNFTCollectionTrending, BlockNFTStat, LatestAction } from "@/types/Nftmngr";
-import { _LOG } from "@/utils/log_helper";
+import {
+  DataNFTStat,
+  DataNFTCollectionTrending,
+  BlockNFTStat,
+  LatestAction,
+} from "@/types/Nftmngr";
+import { _LOG } from "@/libs/utils/log_helper";
 import { useState, useEffect, Suspense } from "react";
-import ENV from "@/utils/ENV";
-
+import ENV from "@/libs/utils/ENV";
 
 const data = [
   {
@@ -106,7 +110,7 @@ const maintain = false;
 interface Props {
   modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
   // nftActionCount: DataNFTStat;
-  blockNFTStat: BlockNFTStat |  null;
+  blockNFTStat: BlockNFTStat | null;
   // latestAction: any;
 }
 
@@ -114,8 +118,8 @@ export default function Data({
   modalstate,
   // nftActionCount,
   blockNFTStat,
-  // latestAction,
-}: Props) {
+}: // latestAction,
+Props) {
   // _LOG(nftActionCount)
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -124,60 +128,69 @@ export default function Data({
   const [isStop, setIsStop] = useState(false);
   const [isPage, setIsPage] = useState("1");
   const [latestAction, setLatestAction] = useState<LatestAction | null>(null);
-  const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(null);
-  const [nftCollectionTrending, setNftCollectionTrending] = useState<DataNFTCollectionTrending | null>(null);
+  const [nftActionCount, setNftActionCount] = useState<DataNFTStat | null>(
+    null
+  );
+  const [nftCollectionTrending, setNftCollectionTrending] =
+    useState<DataNFTCollectionTrending | null>(null);
 
   ///////  get Latest Action /////////
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoaded(false)
+        setIsLoaded(false);
         setLatestAction(null);
         // const resLatestAction = await getLatestAction("1", "20");
-        const response = await fetch(`/api/nftLatestAction?isPage=1&isPageSize=15`);
+        const response = await fetch(
+          `/api/nftLatestAction?isPage=1&isPageSize=15`
+        );
         const resLatestAction = await response.json();
         setLatestAction(resLatestAction);
         setIsLoaded(true);
       } catch (error) {
-        _LOG(error)
+        _LOG(error);
       }
     };
     fetchData();
-  }, [isPage, isStop])
+  }, [isPage, isStop]);
 
   ////////// get stat /////////
   useEffect(() => {
     const fetchDataStat = async () => {
       try {
-        setIsLoadedStat(false)
+        setIsLoadedStat(false);
         setNftActionCount(null);
-        const response = await fetch(`/api/nftstat?schemaCode=&endTime=&pageNumber=1&limit=5`);
+        const response = await fetch(
+          `/api/nftstat?schemaCode=&endTime=&pageNumber=1&limit=5`
+        );
         const resActionStat = await response.json();
         setNftActionCount(resActionStat);
         setIsLoadedStat(true);
       } catch (error) {
-        _LOG(error)
+        _LOG(error);
       }
     };
     fetchDataStat();
-  }, [isStop])
+  }, [isStop]);
 
   ///// colletion trending ////
   useEffect(() => {
     const fetchDataStat = async () => {
       try {
-        setIsLoadedCollection(false)
+        setIsLoadedCollection(false);
         setNftCollectionTrending(null);
-        const response = await fetch(`/api/nftCollectionTrending?schemaCode=&endTime=&pageNumber=1&limit=5`);
+        const response = await fetch(
+          `/api/nftCollectionTrending?schemaCode=&endTime=&pageNumber=1&limit=5`
+        );
         const resCollection = await response.json();
         setNftCollectionTrending(resCollection);
         setIsLoadedCollection(true);
       } catch (error) {
-        _LOG(error)
+        _LOG(error);
       }
     };
     fetchDataStat();
-  }, [isStop])
+  }, [isStop]);
 
   // const ssf = nftActionCount.data.map((x:any) => { x.schema_code })
   // const ssf = nftActionCount.data[0].schema_code
@@ -207,7 +220,9 @@ export default function Data({
             </Text>
             <SearchBar
               hasButton
-              placeHolder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
+              placeHolder={
+                "Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"
+              }
               modalstate={modalstate}
             />
           </Flex>
@@ -327,87 +342,111 @@ export default function Data({
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
-                      <Tab fontSize={"18px"} p={4}>Collection Trending</Tab>
-                      <Tab fontSize={"18px"} p={4}>Actions Trending</Tab>
+                      <Tab fontSize={"18px"} p={4}>
+                        Collection Trending
+                      </Tab>
+                      <Tab fontSize={"18px"} p={4}>
+                        Actions Trending
+                      </Tab>
                     </TabList>
                     <TabPanels>
                       <TabPanel>
                         <TableContainer>
                           <Table>
                             <Thead>
-                              <Tr >
+                              <Tr>
                                 <Td>
-                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                  <Text
+                                    textAlign={"center"}
+                                    fontSize="sm"
+                                    color={"medium"}
+                                  >
                                     Collection
                                   </Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                  <Text
+                                    textAlign={"center"}
+                                    fontSize="sm"
+                                    color={"medium"}
+                                  >
                                     Action Count
                                   </Text>
                                 </Td>
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoadedCollection ? Array.isArray(nftCollectionTrending) &&
-                                nftCollectionTrending.map((item, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap={3}
-                                      >
-                                        <Text fontWeight={"bold"}>{index + 1}</Text>
-                                        <Image
-                                          src={item.image}
-                                          alt="gen2"
-                                          width={"40px"}
-                                          height={"40px"}
-                                        />
-                                        <Link
-                                          href={`/schema/${item.schema_code}`}
-                                          target="_blank"
-                                          _hover={{ textDecoration: "none" }}
+                              {isLoadedCollection
+                                ? Array.isArray(nftCollectionTrending) &&
+                                  nftCollectionTrending.map((item, index) => (
+                                    <Tr key={index}>
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          alignItems="center"
+                                          gap={3}
                                         >
-                                          <Tooltip label={item.schema_code} aria-label='A tooltip'>
-                                            <Text fontWeight={"bold"}
-                                              style={{
-                                                color: "#5C34A2",
-                                                textDecoration: "none",
-                                                fontFamily:
-                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                fontSize: "14px",
-                                                textAlign: "center",
-                                              }}>
-                                              {/* {formatSchema(item.schema_code)} */}
-                                              {item.schema_code}
-                                            </Text>
-                                          </Tooltip>
-                                        </Link>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap={3}
-                                      >
-                                        <Text>{item.count}</Text>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                )) :
-                                Array.from({ length: 5 }).map((_, index) => (
-                                  <Tr key={index}>
-                                    {Array.from({ length: 2 }).map((_, index) => (
-                                      <Td key={index}>
-                                        <Skeleton width={"auto"} height={"15px"} />
+                                          <Text fontWeight={"bold"}>
+                                            {index + 1}
+                                          </Text>
+                                          <Image
+                                            src={item.image}
+                                            alt="gen2"
+                                            width={"40px"}
+                                            height={"40px"}
+                                          />
+                                          <Link
+                                            href={`/schema/${item.schema_code}`}
+                                            target="_blank"
+                                            _hover={{ textDecoration: "none" }}
+                                          >
+                                            <Tooltip
+                                              label={item.schema_code}
+                                              aria-label="A tooltip"
+                                            >
+                                              <Text
+                                                fontWeight={"bold"}
+                                                style={{
+                                                  color: "#5C34A2",
+                                                  textDecoration: "none",
+                                                  fontFamily:
+                                                    "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                  fontSize: "14px",
+                                                  textAlign: "center",
+                                                }}
+                                              >
+                                                {/* {formatSchema(item.schema_code)} */}
+                                                {item.schema_code}
+                                              </Text>
+                                            </Tooltip>
+                                          </Link>
+                                        </Flex>
                                       </Td>
-                                    ))}
-                                  </Tr>
-                                ))
-                              }
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          alignItems="center"
+                                          gap={3}
+                                        >
+                                          <Text>{item.count}</Text>
+                                        </Flex>
+                                      </Td>
+                                    </Tr>
+                                  ))
+                                : Array.from({ length: 5 }).map((_, index) => (
+                                    <Tr key={index}>
+                                      {Array.from({ length: 2 }).map(
+                                        (_, index) => (
+                                          <Td key={index}>
+                                            <Skeleton
+                                              width={"auto"}
+                                              height={"15px"}
+                                            />
+                                          </Td>
+                                        )
+                                      )}
+                                    </Tr>
+                                  ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -417,96 +456,123 @@ export default function Data({
                         <TableContainer>
                           <Table>
                             <Thead>
-                              <Tr >
+                              <Tr>
                                 <Td>
-                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                  <Text
+                                    textAlign={"center"}
+                                    fontSize="sm"
+                                    color={"medium"}
+                                  >
                                     Collection
                                   </Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                  <Text
+                                    textAlign={"center"}
+                                    fontSize="sm"
+                                    color={"medium"}
+                                  >
                                     Action
                                   </Text>
                                 </Td>
                                 <Td>
-                                  <Text textAlign={"center"} fontSize="sm" color={"medium"}>
+                                  <Text
+                                    textAlign={"center"}
+                                    fontSize="sm"
+                                    color={"medium"}
+                                  >
                                     Action Count
                                   </Text>
                                 </Td>
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoadedStat ? Array.isArray(nftActionCount) &&
-                                nftActionCount.map((item, index) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap={3}
-                                      >
-                                        <Text fontWeight={"bold"}>{index + 1}</Text>
-                                        <Image
-                                          src={item.image}
-                                          alt="gen2"
-                                          width={"40px"}
-                                          height={"40px"}
-                                        />
-                                        <Link
-                                          href={`/schema/${item.schema_code}`}
-                                          target="_blank"
-                                          _hover={{ textDecoration: "none" }}
+                              {isLoadedStat
+                                ? Array.isArray(nftActionCount) &&
+                                  nftActionCount.map((item, index) => (
+                                    <Tr key={index}>
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          alignItems="center"
+                                          gap={3}
                                         >
-                                          <Tooltip label={item.schema_code} aria-label='A tooltip'>
-                                            <Text fontWeight={"bold"}
-                                              style={{
-                                                color: "#5C34A2",
-                                                textDecoration: "none",
-                                                fontFamily:
-                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                                fontSize: "14px",
-                                                textAlign: "center",
-                                              }}>
-                                              {formatSchema(item.schema_code)}
+                                          <Text fontWeight={"bold"}>
+                                            {index + 1}
+                                          </Text>
+                                          <Image
+                                            src={item.image}
+                                            alt="gen2"
+                                            width={"40px"}
+                                            height={"40px"}
+                                          />
+                                          <Link
+                                            href={`/schema/${item.schema_code}`}
+                                            target="_blank"
+                                            _hover={{ textDecoration: "none" }}
+                                          >
+                                            <Tooltip
+                                              label={item.schema_code}
+                                              aria-label="A tooltip"
+                                            >
+                                              <Text
+                                                fontWeight={"bold"}
+                                                style={{
+                                                  color: "#5C34A2",
+                                                  textDecoration: "none",
+                                                  fontFamily:
+                                                    "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                  fontSize: "14px",
+                                                  textAlign: "center",
+                                                }}
+                                              >
+                                                {formatSchema(item.schema_code)}
+                                              </Text>
+                                            </Tooltip>
+                                          </Link>
+                                        </Flex>
+                                      </Td>
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          alignItems="center"
+                                          gap={3}
+                                        >
+                                          <Tooltip
+                                            label={item.action}
+                                            aria-label="A tooltip"
+                                          >
+                                            <Text>
+                                              {formatSchemaAction(item.action)}
                                             </Text>
                                           </Tooltip>
-                                        </Link>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap={3}
-                                      >
-                                        <Tooltip label={item.action} aria-label='A tooltip'>
-                                          <Text>
-                                            {formatSchemaAction(item.action)}
-                                          </Text>
-                                        </Tooltip>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        alignItems="center"
-                                        gap={3}
-                                      >
-                                        <Text>{item.count}</Text>
-                                      </Flex>
-                                    </Td>
-                                  </Tr>
-                                )) :
-                                Array.from({ length: 5 }).map((_, index) => (
-                                  <Tr key={index}>
-                                    {Array.from({ length: 3 }).map((_, index) => (
-                                      <Td key={index}>
-                                        <Skeleton width={"auto"} height={"15px"} />
+                                        </Flex>
                                       </Td>
-                                    ))}
-                                  </Tr>
-                                ))
-                              }
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          alignItems="center"
+                                          gap={3}
+                                        >
+                                          <Text>{item.count}</Text>
+                                        </Flex>
+                                      </Td>
+                                    </Tr>
+                                  ))
+                                : Array.from({ length: 5 }).map((_, index) => (
+                                    <Tr key={index}>
+                                      {Array.from({ length: 3 }).map(
+                                        (_, index) => (
+                                          <Td key={index}>
+                                            <Skeleton
+                                              width={"auto"}
+                                              height={"15px"}
+                                            />
+                                          </Td>
+                                        )
+                                      )}
+                                    </Tr>
+                                  ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -553,7 +619,8 @@ export default function Data({
                               WebkitTextFillColor: "transparent",
                             }}
                           >
-                            Developed to optimize NFT capabilities and seamlessly integrate with the business model.
+                            Developed to optimize NFT capabilities and
+                            seamlessly integrate with the business model.
                           </Text>
                         </Flex>
                         <Text
@@ -647,8 +714,8 @@ export default function Data({
                                     fontWeight="bold"
                                     color={"darkest"}
                                   >
-                                    {blockNFTStat 
-                                    ? blockNFTStat.totalNFTCollection.total
+                                    {blockNFTStat
+                                      ? blockNFTStat.totalNFTCollection.total
                                       : 0}
                                   </Text>
                                 </Flex>
@@ -690,13 +757,13 @@ export default function Data({
                                   >
                                     {blockNFTStat
                                       ? convertUsixToSix(
-                                        parseInt(
-                                          blockNFTStat.nftFee.replace(
-                                            "usix",
-                                            ""
+                                          parseInt(
+                                            blockNFTStat.nftFee.replace(
+                                              "usix",
+                                              ""
+                                            )
                                           )
                                         )
-                                      )
                                       : 0}
                                   </Text>
                                   <Text fontSize="sm" color={"medium"}>
@@ -774,182 +841,209 @@ export default function Data({
                         </Tr>
                       </Thead>
                       <Tbody>
-                        {isLoaded ? latestAction &&
-                          latestAction.txs.map((tx: any, index: number) => (
-                            <Tr key={index}>
-                              <Td>
-                                <Flex direction="column">
-                                  <Clickable href={`/tx/${tx.txhash}`}>
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(tx.txhash)}
-                                    </Text>
-                                  </Clickable>
-                                </Flex>
-                              </Td>
-                              <Td>
-                                <Badge justifyContent={"center"} display={"flex"} width="100%">
-                                  <Text style={{
-                                    textDecoration: "none",
-                                    fontFamily:
-                                      "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                    fontSize: "10px",
-                                    textAlign: "center",
-                                  }}>
-                                    Action:
-                                  </Text>
-                                  <Tooltip label={tx.decode_tx.action} aria-label='A tooltip'>
-                                    <Text marginLeft={"4px"} style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "10px",
-                                      textAlign: "center",
-                                    }}>
-                                      {formatSchemaAction(tx.decode_tx.action)}
-                                    </Text>
-                                  </Tooltip>
-                                </Badge>
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.tokenId ? (
-                                  <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {tx.decode_tx.tokenId}
-                                    </Text>
-                                  </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                              <Td>
-                                <Text>{moment(tx.time_stamp).fromNow()}</Text>
-                              </Td>
-                              <Td>
-                                <Clickable href={`/block/${tx.block_height}`}>
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {tx.block_height}
-                                  </Text>
-                                </Clickable>
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.creator ? (
-                                  <Clickable
-                                    href={`/address/${tx.decode_tx.creator}`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(tx.decode_tx.creator)}
-                                    </Text>
-                                  </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.nftSchemaCode || tx.decode_tx.nft_schema_code ? (
-                                  <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code)}
-                                    </Text>
-                                  </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                            </Tr>
-                          )) :
-                          Array.from({ length: 10 }).map((_, index) => (
-                            <Tr key={index}>
-                              {Array.from({ length: 7 }).map((_, index) => (
-                                <Td key={index}>
-                                  <Skeleton width={"auto"} height={"15px"} />
+                        {isLoaded
+                          ? latestAction &&
+                            latestAction.txs.map((tx: any, index: number) => (
+                              <Tr key={index}>
+                                <Td>
+                                  <Flex direction="column">
+                                    <Clickable href={`/tx/${tx.txhash}`}>
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(tx.txhash)}
+                                      </Text>
+                                    </Clickable>
+                                  </Flex>
                                 </Td>
-                              ))}
-                            </Tr>
-                          ))
-                        }
+                                <Td>
+                                  <Badge
+                                    justifyContent={"center"}
+                                    display={"flex"}
+                                    width="100%"
+                                  >
+                                    <Text
+                                      style={{
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "10px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      Action:
+                                    </Text>
+                                    <Tooltip
+                                      label={tx.decode_tx.action}
+                                      aria-label="A tooltip"
+                                    >
+                                      <Text
+                                        marginLeft={"4px"}
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "10px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatSchemaAction(
+                                          tx.decode_tx.action
+                                        )}
+                                      </Text>
+                                    </Tooltip>
+                                  </Badge>
+                                </Td>
+                                <Td>
+                                  {tx.decode_tx.tokenId ? (
+                                    <Clickable
+                                      href={`/schema/${
+                                        tx.decode_tx.nftSchemaCode
+                                          ? tx.decode_tx.nftSchemaCode
+                                          : tx.decode_tx.nft_schema_code
+                                      }/${tx.decode_tx.tokenId}`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {tx.decode_tx.tokenId}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                                <Td>
+                                  <Text>{moment(tx.time_stamp).fromNow()}</Text>
+                                </Td>
+                                <Td>
+                                  <Clickable href={`/block/${tx.block_height}`}>
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {tx.block_height}
+                                    </Text>
+                                  </Clickable>
+                                </Td>
+                                <Td>
+                                  {tx.decode_tx.creator ? (
+                                    <Clickable
+                                      href={`/address/${tx.decode_tx.creator}`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(tx.decode_tx.creator)}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                                <Td>
+                                  {tx.decode_tx.nftSchemaCode ||
+                                  tx.decode_tx.nft_schema_code ? (
+                                    <Clickable
+                                      href={`/schema/${
+                                        tx.decode_tx.nftSchemaCode
+                                          ? tx.decode_tx.nftSchemaCode
+                                          : tx.decode_tx.nft_schema_code
+                                      }`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(
+                                          tx.decode_tx.nftSchemaCode
+                                            ? tx.decode_tx.nftSchemaCode
+                                            : tx.decode_tx.nft_schema_code
+                                        )}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                              </Tr>
+                            ))
+                          : Array.from({ length: 10 }).map((_, index) => (
+                              <Tr key={index}>
+                                {Array.from({ length: 7 }).map((_, index) => (
+                                  <Td key={index}>
+                                    <Skeleton width={"auto"} height={"15px"} />
+                                  </Td>
+                                ))}
+                              </Tr>
+                            ))}
                       </Tbody>
                     </Table>
                   </TableContainer>
@@ -958,7 +1052,6 @@ export default function Data({
             </Grid>
           </Flex>
         </Container>
-
       </Box>
       <Spacer />
     </Flex>
@@ -1012,7 +1105,7 @@ export const getServerSideProps = async () => {
   end24h.setSeconds(0);
   end24h.setMilliseconds(0);
   let count24h = 0;
-  let end_time
+  let end_time;
   const day = start24h.getDate();
   const month = start24h.getMonth() + 1;
   const year = start24h.getFullYear();
@@ -1022,7 +1115,7 @@ export const getServerSideProps = async () => {
     end_time = `${day}/0${month}/${year}`;
   }
 
-  let lower_chainName = process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase()
+  let lower_chainName = process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase();
 
   if (lower_chainName === "mainnet" || lower_chainName === "sixnet") {
     const [
@@ -1041,10 +1134,7 @@ export const getServerSideProps = async () => {
       getTotalNFTCollection(),
       getTotalNFTS(),
       getNFTFee(),
-      getNFTActionCountStatDaily(
-        schemaCode,
-        end_time
-      ),
+      getNFTActionCountStatDaily(schemaCode, end_time),
     ]);
 
     if (action24h) {
@@ -1078,9 +1168,8 @@ export const getServerSideProps = async () => {
     return {
       props: {
         // nftActionCount,
-        blockNFTStat: null
+        blockNFTStat: null,
       },
     };
   }
-
 };

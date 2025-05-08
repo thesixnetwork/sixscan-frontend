@@ -25,8 +25,9 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
   const buttonSize = `${Math.max(56, labelLength * 10)}px`; // Minimum size of 56px
 
   // split button color and background color with comma
-  let [labelColor, backgroundColor] = button_color? button_color.split(",") : ["", ""];
-
+  let [labelColor, backgroundColor] = button_color
+    ? button_color.split(",")
+    : ["", ""];
 
   return (
     <Button
@@ -36,7 +37,7 @@ const FloatingButton: React.FC<FloatingButtonProps> = ({
       borderRadius="50"
       //   width={buttonSize}
       //   height={buttonSize}
-      backgroundColor={backgroundColor ?  backgroundColor : "#464B92"}
+      backgroundColor={backgroundColor ? backgroundColor : "#464B92"}
       color={labelColor ? labelColor : "white"}
       boxShadow="md"
       onClick={handleButtonClick}

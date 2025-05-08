@@ -176,51 +176,51 @@ export enum URIRetrievalMethod {
 }
 
 export interface DataNFTStat {
-  schema_code: string,
-  action: string,
-  count: number,
-  image: string,
+  schema_code: string;
+  action: string;
+  count: number;
+  image: string;
 }
 
 export interface DataNFTCollectionTrending {
-  schema_code: string,
-  action: string,
-  count: number,
-  image: string,
+  schema_code: string;
+  action: string;
+  count: number;
+  image: string;
 }
 
 export interface DataActionCount {
-  _id: string,
-  period: string,
-  schema_code: string,
-  action: string,
-  count: number
+  _id: string;
+  period: string;
+  schema_code: string;
+  action: string;
+  count: number;
 }
 
 export interface BlockNFTStat {
   totalNFTCollection: {
-    total: string,
-  },
+    total: string;
+  };
   totalNFTS: {
-    total: string,
-  },
-  nftFee: string,
-  action24h: number,
+    total: string;
+  };
+  nftFee: string;
+  action24h: number;
 }
 
 export interface LatestAction {
-  txs: DataLatestAction[],
-  totalPage: number,
-  totalCount: number,
+  txs: DataLatestAction[];
+  totalPage: number;
+  totalCount: number;
 }
 
 export interface DataLatestAction {
-  _id: string,
-  type: string,
-  hash: string,
-  block_height: string,
-  raw_tx: string,
-  decode_tx: any,
-  code: number,
-  memo: string
+  _id: string;
+  type: string;
+  hash: string;
+  block_height: string;
+  raw_tx: string;
+  decode_tx: any;
+  code: number;
+  memo: string;
 }

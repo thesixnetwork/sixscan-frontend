@@ -40,9 +40,9 @@ import { Clickable } from "@/components/Clickable";
 import { useRouter } from "next/router";
 
 import axios from "axios";
-import ENV from "../../utils/ENV";
-import { formatHex } from "@/utils/format";
-import { _LOG } from "@/utils/log_helper";
+import ENV from "../../libs/utils/ENV";
+import { formatHex } from "@/libs/utils/format";
+import { _LOG } from "@/libs/utils/log_helper";
 
 interface Props {
   block: Block;
@@ -76,7 +76,9 @@ export default function BlockPage({
     ],
   };
 
-  _LOG(mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth")));
+  _LOG(
+    mockdata.txs.filter((tx) => !tx.event.find((event) => event.type === "eth"))
+  );
 
   if (!block) {
     return (
@@ -274,8 +276,11 @@ export default function BlockPage({
                                           underline
                                         >
                                           {tx.hash}
-                                        </Clickable>) : (
-                                        <Link href={`${ENV.BLOCK_SCOUT_API_URL}/tx/${tx.hashEVM}`}>
+                                        </Clickable>
+                                      ) : (
+                                        <Link
+                                          href={`${ENV.BLOCK_SCOUT_API_URL}/tx/${tx.hashEVM}`}
+                                        >
                                           <Text
                                             as={"span"}
                                             decoration={"none"}
@@ -283,8 +288,8 @@ export default function BlockPage({
                                           >
                                             {tx.hashEVM}
                                           </Text>
-                                        </Link>)
-                                      }
+                                        </Link>
+                                      )}
                                     </Text>
                                   </Flex>
                                 </Td>
@@ -416,8 +421,8 @@ export const getServerSideProps = async (context: {
         (x: any) => x.type === "ethereum_tx"
       )
         ? JSON.parse(x.tx_result.log)[0]
-          .events.find((x: any) => x.type === "ethereum_tx")
-          ?.attributes.find((x: any) => x.key === "ethereumTxHash").value
+            .events.find((x: any) => x.type === "ethereum_tx")
+            ?.attributes.find((x: any) => x.key === "ethereumTxHash").value
         : null,
     }));
     TxsEVM = blockTxs.txs

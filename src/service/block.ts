@@ -5,7 +5,7 @@ import {
   BlockResponse,
 } from "@/types/Block";
 import axios from "axios";
-import ENV from "../utils/ENV";
+import ENV from "../libs/utils/ENV";
 
 export const getLatestBlock = async (): Promise<Block | null> => {
   try {
@@ -97,5 +97,4 @@ export const getBlockEVM = async (height: string): Promise<any> => {
     console.error(error);
     return null;
   }
-
 };

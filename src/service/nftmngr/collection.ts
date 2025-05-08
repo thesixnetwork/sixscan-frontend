@@ -1,39 +1,48 @@
 import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
-import ENV from "../../utils/ENV";
-import filter from 'lodash';
-import { _LOG } from "@/utils/log_helper";
+import ENV from "../../libs/utils/ENV";
+import filter from "lodash";
+import { _LOG } from "@/libs/utils/log_helper";
 
 export const getNftCollection = async (
   schemaCode: string,
   metadataPage: string,
-  numberPerPage: string,
+  numberPerPage: string
 ): Promise<any | null> => {
   try {
-
     const encodedSchemaCode = encodeURIComponent(schemaCode);
 
     ///// Check Token ID 0 ////////
-    let tokenPerPage = parseInt(numberPerPage)
+    let tokenPerPage = parseInt(numberPerPage);
     const res = await axios.get(
       `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/0`
     );
     const hasTokenZero = res.data.statusCode;
     if (hasTokenZero) {
-      tokenPerPage = parseInt(numberPerPage) + 1
+      tokenPerPage = parseInt(numberPerPage) + 1;
     }
 
-    const { data: { nftCollection, pagination: { total } } } = await axios.get(
+    const {
+      data: {
+        nftCollection,
+        pagination: { total },
+      },
+    } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     _LOG(total);
-    const lastToken = parseInt(total)
+    const lastToken = parseInt(total);
     if (lastToken < 12) {
-      tokenPerPage = lastToken
+      tokenPerPage = lastToken;
     }
-    let startingTokenId = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
+    let startingTokenId =
+      (parseInt(metadataPage) - 1) * tokenPerPage +
+      parseInt(nftCollection[0].token_id);
     if (hasTokenZero && metadataPage !== "1" && metadataPage !== "2") {
-      startingTokenId = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id) - 1;
+      startingTokenId =
+        (parseInt(metadataPage) - 1) * tokenPerPage +
+        parseInt(nftCollection[0].token_id) -
+        1;
     }
     const promises: Promise<any>[] = [];
 
@@ -49,34 +58,80 @@ export const getNftCollection = async (
 
     let urls = [
       `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 1}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 2}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 3}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 4}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 5}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 6}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 7}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 8}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 9}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 10}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 11}`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 1
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 2
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 3
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 4
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 5
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 6
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 7
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 8
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 9
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 10
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 11
+      }`,
     ];
 
     if (hasTokenZero) {
       urls = [
         `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 1}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 2}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 3}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 4}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 5}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 6}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 7}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 8}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 9}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 10}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 11}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 12}`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 1
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 2
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 3
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 4
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 5
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 6
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 7
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 8
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 9
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 10
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 11
+        }`,
+        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+          startingTokenId + 12
+        }`,
       ];
     }
 
@@ -106,9 +161,8 @@ export const getNftCollection = async (
 
 export const getImgCollection = async (
   schemaCode: string,
-  tokenId: string,
+  tokenId: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {
@@ -126,13 +180,17 @@ export const getImgCollection = async (
 };
 
 export const getNftCollectionNoLoop = async (
-  schemaCode: string,
+  schemaCode: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {
-    const { data: { nftCollection, pagination: { total } } } = await axios.get(
+    const {
+      data: {
+        nftCollection,
+        pagination: { total },
+      },
+    } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     if (!total) {
@@ -148,65 +206,74 @@ export const getNftCollectionNoLoop = async (
 export const getNftCollectionByClient = async (
   schemaCode: string,
   metadataPage: string,
-  numberPerPage: string,
+  numberPerPage: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {
     // TOKEN PER PAGE CANNOT BE CHANGE
-    let tokenPerPage = parseInt(numberPerPage)
-    let FIRST_TOKEN_ID:number;
-    let LAST_TOKEN_ID:number;
+    let tokenPerPage = parseInt(numberPerPage);
+    let FIRST_TOKEN_ID: number;
+    let LAST_TOKEN_ID: number;
 
-    const { data: { nftCollection, pagination: { total } } } = await axios.get(
+    const {
+      data: {
+        nftCollection,
+        pagination: { total },
+      },
+    } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
 
     // IN CASE OF TOTAL COLLECTION IS LESS THAN TOKEN PER PAGE
-    const TOTAL_TOKEN = parseInt(total)
+    const TOTAL_TOKEN = parseInt(total);
     if (TOTAL_TOKEN < tokenPerPage) {
-      tokenPerPage = TOTAL_TOKEN
+      tokenPerPage = TOTAL_TOKEN;
     }
-  
+
     // // IF TOKEN 0 EXIST THEN WE WILL START FROM TOKEN 0
     // const hasTokenZero = res.data.statusCode;
     // if (hasTokenZero && parseInt(metadataPage) !== 1) {
     //   FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
     // }else{
     //   FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id)
-    // }    
+    // }
     // IF TOKEN 0 EXIST THEN WE WILL START FROM TOKEN 0
     const hasTokenZero = nftCollection[0].token_id;
-    
-    if (hasTokenZero === "0"){
+
+    if (hasTokenZero === "0") {
       if (parseInt(metadataPage) === 1) {
-        FIRST_TOKEN_ID = 0 // parseInt(nftCollection[0].token_id);
-      }else{
-        FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
+        FIRST_TOKEN_ID = 0; // parseInt(nftCollection[0].token_id);
+      } else {
+        FIRST_TOKEN_ID =
+          (parseInt(metadataPage) - 1) * tokenPerPage +
+          parseInt(nftCollection[0].token_id);
       }
-    }else{
+    } else {
       if (parseInt(metadataPage) === 1) {
         FIRST_TOKEN_ID = parseInt(nftCollection[0].token_id);
-      }else{
-        FIRST_TOKEN_ID = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
+      } else {
+        FIRST_TOKEN_ID =
+          (parseInt(metadataPage) - 1) * tokenPerPage +
+          parseInt(nftCollection[0].token_id);
       }
     }
 
     // LOOK STUPID BUT IT IS FOR REDUCING LINE OF CODE
     if (TOTAL_TOKEN < tokenPerPage) {
-      tokenPerPage = TOTAL_TOKEN // parseInt(metadataPage) * tokenPerPage // bc metadataPage will always be 1 in this case
+      tokenPerPage = TOTAL_TOKEN; // parseInt(metadataPage) * tokenPerPage // bc metadataPage will always be 1 in this case
     }
 
     const promises: Promise<any>[] = [];
-    
+
     const urls = [];
 
     for (let i = 0; i <= tokenPerPage; i++) {
-      const url = `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${FIRST_TOKEN_ID + i}`;
+      const url = `${
+        ENV.DATA_CHAIN_TXS_API_URL
+      }api/nft/metadata/${encodedSchemaCode}/${FIRST_TOKEN_ID + i}`;
       urls.push(url);
     }
-
 
     const requests = urls.map((url) => axios.get(url));
 
@@ -236,42 +303,70 @@ export const getNftCollectionV2 = async (
   schemaCode: string,
   metadataPage: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
   try {
-    let tokenPerPage = 12
+    let tokenPerPage = 12;
     const res = await axios.get(
       `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/1`
     );
     const hasTokenZero = res.data.statusCode;
     if (!hasTokenZero) {
-      tokenPerPage = 13
+      tokenPerPage = 13;
     }
 
-    const { data: { nftCollection, pagination: { total } } } = await axios.get(
+    const {
+      data: {
+        nftCollection,
+        pagination: { total },
+      },
+    } = await axios.get(
       `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     _LOG(total);
-    const lastToken = parseInt(total)
+    const lastToken = parseInt(total);
     if (lastToken < 12) {
-      tokenPerPage = lastToken
+      tokenPerPage = lastToken;
     }
-    const startingTokenId = (parseInt(metadataPage) - 1) * tokenPerPage + parseInt(nftCollection[0].token_id);
+    const startingTokenId =
+      (parseInt(metadataPage) - 1) * tokenPerPage +
+      parseInt(nftCollection[0].token_id);
     const promises = [];
 
     let urls = [
       `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 1}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 2}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 3}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 4}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 5}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 6}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 7}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 8}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 9}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 10}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId + 11}`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 1
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 2
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 3
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 4
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 5
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 6
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 7
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 8
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 9
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 10
+      }`,
+      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        startingTokenId + 11
+      }`,
     ];
 
     const requests = urls.map((url) => axios.get(url));

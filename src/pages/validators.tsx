@@ -29,7 +29,7 @@ import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
 import { getValidators, getPool } from "@/service/staking";
 import { Validator, Pool } from "@/types/Staking";
-import { formatNumber } from "@/utils/format";
+import { formatNumber } from "@/libs/utils/format";
 
 const getImageFromDetails = (details: string) => {
   const substrings = details.split("|"); // Split the string into substrings
@@ -171,8 +171,8 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                       validator.description.details
                                     ) !== ""
                                       ? getNameFromDetails(
-                                        validator.description.details
-                                      )
+                                          validator.description.details
+                                        )
                                       : ""}
                                   </Text>
                                 </Flex>
@@ -181,7 +181,12 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                             <Td>
                               <Flex direction="column">
                                 <Text>
-                                  {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
+                                  {parseFloat(
+                                    validator.commission.commission_rates
+                                      .rate as string
+                                  ) *
+                                    100 +
+                                    "%"}
                                 </Text>
                               </Flex>
                             </Td>
@@ -197,7 +202,9 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                             <Td>
                               <Text>
                                 {(
-                                  parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                  (parseInt(validator.tokens) /
+                                    parseInt(pool.bonded_tokens)) *
+                                  100
                                 ).toFixed(2) + " %"}
                               </Text>
                             </Td>
@@ -296,10 +303,10 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                         {index + 1 === 1
                                           ? `🥇 ${index + 1}`
                                           : index + 1 === 2
-                                            ? `🥈 ${index + 1}`
-                                            : index + 1 === 3
-                                              ? `🥉 ${index + 1}`
-                                              : index + 1}
+                                          ? `🥈 ${index + 1}`
+                                          : index + 1 === 3
+                                          ? `🥉 ${index + 1}`
+                                          : index + 1}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -339,8 +346,8 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                             validator.description.details
                                           ) !== ""
                                             ? getNameFromDetails(
-                                              validator.description.details
-                                            )
+                                                validator.description.details
+                                              )
                                             : ""}
                                         </Text>
                                       </Flex>
@@ -349,7 +356,12 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                   <Td>
                                     <Flex direction="column">
                                       <Text>
-                                        {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
+                                        {parseFloat(
+                                          validator.commission.commission_rates
+                                            .rate as string
+                                        ) *
+                                          100 +
+                                          "%"}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -365,14 +377,16 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                   <Td>
                                     <Text>
                                       {(
-                                        parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                        (parseInt(validator.tokens) /
+                                          parseInt(pool.bonded_tokens)) *
+                                        100
                                       ).toFixed(2) + " %"}
                                     </Text>
                                   </Td>
                                   <Td>
                                     {!validator.jailed ? (
                                       validator.status ===
-                                        "BOND_STATUS_BONDED" ? (
+                                      "BOND_STATUS_BONDED" ? (
                                         <Badge
                                           colorScheme={"green"}
                                           variant={"subtle"}
@@ -458,10 +472,10 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                         {index + 1 === 1
                                           ? `🥇 ${index + 1}`
                                           : index + 1 === 2
-                                            ? `🥈 ${index + 1}`
-                                            : index + 1 === 3
-                                              ? `🥉 ${index + 1}`
-                                              : index + 1}
+                                          ? `🥈 ${index + 1}`
+                                          : index + 1 === 3
+                                          ? `🥉 ${index + 1}`
+                                          : index + 1}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -501,8 +515,8 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                             validator.description.details
                                           ) !== ""
                                             ? getNameFromDetails(
-                                              validator.description.details
-                                            )
+                                                validator.description.details
+                                              )
                                             : ""}
                                         </Text>
                                       </Flex>
@@ -510,7 +524,12 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                   </Td>
                                   <Td>
                                     <Flex direction="column">
-                                      {(parseFloat(validator.commission.commission_rates.rate as string) * 100) + "%"}
+                                      {parseFloat(
+                                        validator.commission.commission_rates
+                                          .rate as string
+                                      ) *
+                                        100 +
+                                        "%"}
                                     </Flex>
                                   </Td>
                                   <Td>
@@ -525,14 +544,16 @@ export default function Validators({ validators, pool }: ValidatorProps) {
                                   <Td>
                                     <Text>
                                       {(
-                                        parseInt(validator.tokens) / parseInt(pool.bonded_tokens) * 100
+                                        (parseInt(validator.tokens) /
+                                          parseInt(pool.bonded_tokens)) *
+                                        100
                                       ).toFixed(2) + " %"}
                                     </Text>
                                   </Td>
                                   <Td>
                                     {!validator.jailed ? (
                                       validator.status ===
-                                        "BOND_STATUS_BONDED" ? (
+                                      "BOND_STATUS_BONDED" ? (
                                         <Badge
                                           colorScheme={"green"}
                                           variant={"subtle"}

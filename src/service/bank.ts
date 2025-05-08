@@ -1,10 +1,10 @@
 import axios from "axios";
-import ENV from "../utils/ENV";
+import ENV from "../libs/utils/ENV";
 import { Balance } from "../types/Bank";
 
 export const getBalances = async (address: string): Promise<Balance[]> => {
   try {
-    if (address.startsWith('0x')) {
+    if (address.startsWith("0x")) {
       const body = {
         jsonrpc: "2.0",
         method: "eth_getBalance",
@@ -14,10 +14,12 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
       const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
       // const balances = res.data;
 
-      const balances = [{
-        amount: (parseInt(res.data.result, 16)/ 1000000000000).toString(),
-        denom: 'asix',
-      }];
+      const balances = [
+        {
+          amount: (parseInt(res.data.result, 16) / 1000000000000).toString(),
+          denom: "asix",
+        },
+      ];
       if (!balances) {
         return [];
       }
@@ -33,7 +35,6 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
       }
       return balances;
     }
-    
   } catch (error) {
     // console.error(error);
     return [];

@@ -22,7 +22,9 @@ const ChakraBox = chakra(motion.div, {
 const NftCard = ({ metadata }: { metadata: NftData }) => {
   return (
     <CustomCard>
-      <LinkComponent href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}>
+      <LinkComponent
+        href={`/schema/${metadata.nft_schema_code}/${metadata.token_id}`}
+      >
         <Image
           src={
             metadata.onchain_image

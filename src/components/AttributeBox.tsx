@@ -1,5 +1,5 @@
 import { Flex, Text } from "@chakra-ui/react";
-import { formatTraitValue } from "@/utils/format";
+import { formatTraitValue } from "@/libs/utils/format";
 
 const AttributeBox = (attr: any) => {
   return (
@@ -8,7 +8,7 @@ const AttributeBox = (attr: any) => {
         {attr.trait_type}
       </Text>
       <Text fontSize={"sm"} color={"dark"}>
-        {formatTraitValue(attr.value === "" ? "No Value": attr.value )}
+        {formatTraitValue(attr.value === "" ? "No Value" : attr.value)}
       </Text>
     </Flex>
   );

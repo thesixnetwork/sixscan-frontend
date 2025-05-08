@@ -1,8 +1,8 @@
 import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
-import ENV from "../../utils/ENV";
+import ENV from "../../libs/utils/ENV";
 import filter from "lodash";
-import { _LOG } from "@/utils/log_helper";
+import { _LOG } from "@/libs/utils/log_helper";
 
 export const getNFTActionCountStat = async (
   schemaCode: string,
@@ -10,7 +10,6 @@ export const getNFTActionCountStat = async (
   page: string,
   pageSize: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {
@@ -87,7 +86,6 @@ export const getNFTCollectionTrending = async (
   page: string,
   pageSize: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {
@@ -163,7 +161,6 @@ export const getNFTActionCountStatDaily = async (
   schemaCode: string,
   endTime: string
 ): Promise<any | null> => {
-
   const encodedSchemaCode = encodeURIComponent(schemaCode);
 
   try {

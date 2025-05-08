@@ -44,30 +44,32 @@ import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import FloatingButton from "@/components/Floating";
 import { Clickable } from "@/components/Clickable";
-import { convertUsixToSix, formatHex, formatNumber } from "@/utils/format";
-import { formatTraitValue, formatMethod } from "@/utils/format";
+import { convertUsixToSix, formatHex, formatNumber } from "@/libs/utils/format";
+import { formatTraitValue, formatMethod } from "@/libs/utils/format";
 import AttributeBox from "@/components/AttributeBox";
 import { getMetadata } from "@/service/nftmngr/common";
 import { getSchema } from "@/service/nftmngr/schema";
-import { getAllTransactionByTokenID, getAllActionByTokenID } from "@/service/nftmngr/txs";
+import {
+  getAllTransactionByTokenID,
+  getAllActionByTokenID,
+} from "@/service/nftmngr/txs";
 import { Metadata } from "@/types/Opensea";
 import { NFTSchema, LatestAction } from "@/types/Nftmngr";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import moment from "moment";
-import styles from "@/styles/cardLatest.module.css"
+import styles from "@/styles/cardLatest.module.css";
 
-import dynamic from 'next/dynamic';
-import React from 'react';
+import dynamic from "next/dynamic";
+import React from "react";
 // const ReactJsonViewer = dynamic(
 //   () => import('react-json-viewer-cool'),
 //   { ssr: false }
 // );
 
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false }
-);
+const DynamicReactJson = dynamic(() => import("react-json-view"), {
+  ssr: false,
+});
 
 interface Props {
   metadata: Metadata;
@@ -78,7 +80,13 @@ interface Props {
   tokenId: string;
 }
 
-export default function Schema({ metadata, schema, schemacode, pageNumber, tokenId }: Props) {
+export default function Schema({
+  metadata,
+  schema,
+  schemacode,
+  pageNumber,
+  tokenId,
+}: Props) {
   const STATS = [
     {
       title: "Chain",
@@ -111,10 +119,12 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoaded(false)
+        setIsLoaded(false);
         setTxns(null);
         // const resTxns = await getAllTransactionByTokenID(schemacode, tokenId, isPage, "10");
-        const response = await fetch(`/api/getTxByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`);
+        const response = await fetch(
+          `/api/getTxByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`
+        );
         const resMetadata = await response.json();
         setTxns(resMetadata as LatestAction);
         setIsLoaded(true);
@@ -123,17 +133,18 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
       }
     };
     fetchData();
-  }, [isPage, isStop])
-
+  }, [isPage, isStop]);
 
   /////// get action ////////
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoadedAction(false)
+        setIsLoadedAction(false);
         setLatestAction(null);
         // const resLatestAction = await getAllActionByTokenID(schemacode, tokenId, isPageAction, "10");
-        const response = await fetch(`/api/getActionByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`);
+        const response = await fetch(
+          `/api/getActionByTokenID?schemaCode=${schemacode}&tokenID=${tokenId}&page=${isPage}&limit=10`
+        );
         const resMetadata = await response.json();
         setLatestAction(resMetadata as LatestAction);
         setIsLoadedAction(true);
@@ -142,15 +153,15 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
       }
     };
     fetchData();
-  }, [isPageAction, isStop])
+  }, [isPageAction, isStop]);
 
   const handlePageLatestAction = (isPage: string) => {
-    setIsLoadedAction(false)
+    setIsLoadedAction(false);
     setIsPageAction(isPage);
   };
 
   const handlePageLatestTxns = (isPage: string) => {
-    setIsLoaded(false)
+    setIsLoaded(false);
     setIsPage(isPage);
   };
 
@@ -161,7 +172,7 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
   };
 
   if (isPage) {
-    latestAction
+    latestAction;
   }
 
   if (!metadata) {
@@ -253,21 +264,39 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                     ))}
                   </Flex>
                   <Flex direction="column">
-                    {isExpanded && metadata?.description? (
-                      metadata?.description? metadata?.description : (metadata.description && metadata.description?.length>100)? metadata?.description?.substring(0, 100) : metadata?.description
-                    ): (
-                      schema?.description? schema?.description : (schema.description && schema.description?.length>100)? schema?.description?.substring(0, 100) : schema?.description
-                    )}
-                    <Flex align="center" direction="row" gap={1} onClick={toggleExpand}>
+                    {isExpanded && metadata?.description
+                      ? metadata?.description
+                        ? metadata?.description
+                        : metadata.description &&
+                          metadata.description?.length > 100
+                        ? metadata?.description?.substring(0, 100)
+                        : metadata?.description
+                      : schema?.description
+                      ? schema?.description
+                      : schema.description && schema.description?.length > 100
+                      ? schema?.description?.substring(0, 100)
+                      : schema?.description}
+                    <Flex
+                      align="center"
+                      direction="row"
+                      gap={1}
+                      onClick={toggleExpand}
+                    >
                       <Text fontSize={"sm"} fontWeight={"bold"}>
                         {isExpanded ? "SHOW LESS" : "SHOW MORE"}
                       </Text>
-                      {isExpanded ?  <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                      {isExpanded ? (
+                        <FaChevronUp fontSize={12} />
+                      ) : (
+                        <FaChevronDown fontSize={12} />
+                      )}
                     </Flex>
                   </Flex>
                   <Flex direction="row" gap={5}>
                     <Flex direction="column">
-                      <Text fontWeight={"bold"}>{latestAction?.totalCount}</Text>
+                      <Text fontWeight={"bold"}>
+                        {latestAction?.totalCount}
+                      </Text>
                       <Text color="medium">actions performed</Text>
                     </Flex>
                   </Flex>
@@ -297,9 +326,8 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                       {metadata.attributes?.map(
                         (attr, index) =>
                           !attr.is_origin &&
-                          !attr.display_type &&
-                          // attr.value && 
-                          (
+                          !attr.display_type && (
+                            // attr.value &&
                             <GridItem colSpan={{ base: 12, md: 6 }} key={index}>
                               <AttributeBox {...attr} />
                             </GridItem>
@@ -311,46 +339,46 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                 {metadata.attributes?.find(
                   (attr) => attr.display_type == "number"
                 ) && (
-                    <Box>
-                      <CustomCard title="Stats">
-                        <Grid
-                          templateColumns="repeat(12, 1fr)"
-                          gap={4}
-                          p={4}
-                          maxH={"230px"}
-                          overflow={"auto"}
-                        >
-                          {metadata.attributes?.map(
-                            (attr, index) =>
-                              !attr.is_origin &&
-                              attr.display_type && (
-                                <GridItem colSpan={12} key={index}>
-                                  {/* add space between */}
-                                  <Flex p={2} gap={3} align="center">
-                                    <Text color={"darkest"}>
-                                      {attr.trait_type}
+                  <Box>
+                    <CustomCard title="Stats">
+                      <Grid
+                        templateColumns="repeat(12, 1fr)"
+                        gap={4}
+                        p={4}
+                        maxH={"230px"}
+                        overflow={"auto"}
+                      >
+                        {metadata.attributes?.map(
+                          (attr, index) =>
+                            !attr.is_origin &&
+                            attr.display_type && (
+                              <GridItem colSpan={12} key={index}>
+                                {/* add space between */}
+                                <Flex p={2} gap={3} align="center">
+                                  <Text color={"darkest"}>
+                                    {attr.trait_type}
+                                  </Text>
+                                  <Spacer />
+                                  <Flex>
+                                    <Text color={"dark"}>
+                                      {formatTraitValue(attr.value)}
                                     </Text>
-                                    <Spacer />
-                                    <Flex>
-                                      <Text color={"dark"}>
-                                        {formatTraitValue(attr.value)}
-                                      </Text>
-                                      {attr.max_value && (
-                                        <Text
-                                          color={"dark"}
-                                        >{`/${formatTraitValue(
-                                          attr.max_value
-                                        )}`}</Text>
-                                      )}
-                                    </Flex>
+                                    {attr.max_value && (
+                                      <Text
+                                        color={"dark"}
+                                      >{`/${formatTraitValue(
+                                        attr.max_value
+                                      )}`}</Text>
+                                    )}
                                   </Flex>
-                                </GridItem>
-                              )
-                          )}
-                        </Grid>
-                      </CustomCard>
-                    </Box>
-                  )}
+                                </Flex>
+                              </GridItem>
+                            )
+                        )}
+                      </Grid>
+                    </CustomCard>
+                  </Box>
+                )}
               </GridItem>
               <GridItem colSpan={{ base: 12, lg: 8 }}>
                 <CustomCard>
@@ -370,154 +398,248 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           color={"dark"}
                           justify="space-between"
                         >
-                          {isLoaded ?
+                          {isLoaded ? (
                             <Flex direction="row" gap={2} align="center">
                               <FaSortAmountDown fontSize={12} />
                               <Text className={styles.Text2}>
                                 Latest {txns?.txs?.length} from a total of{" "}
                                 {/* <Clickable href="/"> */}
                                 {txns?.totalCount}
-                                {/* </Clickable> */}
-                                {" "}
-                                transaction
+                                {/* </Clickable> */} transaction
                               </Text>
                             </Flex>
-                            :
+                          ) : (
                             <Skeleton width={"200px"} height={"15px"} />
-                          }
+                          )}
 
-                          {isLoaded ? txns && (
-                            <Flex direction="row" gap={2} align="center" px="2">
-                              <Button
-                                variant={"solid"}
-                                size="xs"
-                                isDisabled={parseInt(isPage) === 1}
-                                onClick={() => handlePageLatestTxns("1")}
+                          {isLoaded ? (
+                            txns && (
+                              <Flex
+                                direction="row"
+                                gap={2}
+                                align="center"
+                                px="2"
                               >
-                                First
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={parseInt(isPage) === 1}
-                                onClick={() => handlePageLatestTxns((parseInt(isPage) - 1).toString())}
-                              >
-                                <FaArrowLeft fontSize={12} />
-                              </Button>
-                              <Text fontSize="xs">
-                                {`Page ${isPage} of ${txns?.totalPage}`}
-                              </Text>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPage) >= txns?.totalPage
-                                }
-                                onClick={() => handlePageLatestTxns((parseInt(isPage) + 1).toString())}
-                              >
-                                <FaArrowRight fontSize={12} />
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPage) >= txns?.totalPage
-                                }
-                                onClick={() => handlePageLatestTxns(txns?.totalPage.toString())}
-
-                              >
-                                Last
-                              </Button>
-                            </Flex>
-                          ) :
-                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
-                          }
-
+                                <Button
+                                  variant={"solid"}
+                                  size="xs"
+                                  isDisabled={parseInt(isPage) === 1}
+                                  onClick={() => handlePageLatestTxns("1")}
+                                >
+                                  First
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={parseInt(isPage) === 1}
+                                  onClick={() =>
+                                    handlePageLatestTxns(
+                                      (parseInt(isPage) - 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowLeft fontSize={12} />
+                                </Button>
+                                <Text fontSize="xs">
+                                  {`Page ${isPage} of ${txns?.totalPage}`}
+                                </Text>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPage) >= txns?.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageLatestTxns(
+                                      (parseInt(isPage) + 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowRight fontSize={12} />
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPage) >= txns?.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageLatestTxns(
+                                      txns?.totalPage.toString()
+                                    )
+                                  }
+                                >
+                                  Last
+                                </Button>
+                              </Flex>
+                            )
+                          ) : (
+                            <Skeleton
+                              marginRight={"10px"}
+                              width={"20%"}
+                              height={"15px"}
+                            />
+                          )}
                         </Flex>
                         <TableContainer>
                           <Table>
                             <Thead>
-                              <Tr >
+                              <Tr>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>Txhash</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Txhash
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>Method</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Method
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>Age</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Age
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>Block</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Block
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>By</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    By
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={"center"}>Gas Fee</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Gas Fee
+                                  </Text>
                                 </Td>
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoaded ? txns?.txs?.map((action: any, index: number) => (
-                                <Tr key={index}>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/tx/${action.txhash}`}>
-                                      <Text className={styles.Text}
-                                        style={{
-                                          color: "#5C34A2",
-                                          textDecoration: "none",
-                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                          // fontSize: "12px"
-                                        }}>
-                                        {formatHex(action.txhash)}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                        {formatMethod(action.type, action.decode_tx.toAddress? action.decode_tx.toAddress:action.decode_tx.to_address, action.decode_tx.fromAddress?action.decode_tx.fromAddress:action.decode_tx.from_address , action.decode_tx.action)}
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/block/${action.block_height}`} >
-                                      <Text className={styles.Text}
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "12px"
-                                      }}>
-                                        {action.block_height}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/address/${action.decode_tx.creator}`} >
-                                      <Text className={styles.Text}
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "12px"
-                                      }}>
-                                        {formatHex(action.decode_tx.creator)}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Text className={styles.Text}>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              )) :
-                                Array.from({ length: 10 }).map((_, index) => (
-                                  <Tr key={index}>
-                                    {Array.from({ length: 6 }).map((_, index) => (
-                                      <Td key={index}>
-                                        <Skeleton width={"auto"} height={"15px"} />
-                                      </Td>
-                                    ))}
-                                  </Tr>
-                                ))
-                              }
+                              {isLoaded
+                                ? txns?.txs?.map(
+                                    (action: any, index: number) => (
+                                      <Tr key={index}>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/tx/${action.txhash}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {formatHex(action.txhash)}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td>
+                                          {formatMethod(
+                                            action.type,
+                                            action.decode_tx.toAddress
+                                              ? action.decode_tx.toAddress
+                                              : action.decode_tx.to_address,
+                                            action.decode_tx.fromAddress
+                                              ? action.decode_tx.fromAddress
+                                              : action.decode_tx.from_address,
+                                            action.decode_tx.action
+                                          )}
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Text className={styles.Text}>
+                                            {moment(
+                                              action.time_stamp
+                                            ).fromNow()}
+                                          </Text>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/block/${action.block_height}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {action.block_height}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/address/${action.decode_tx.creator}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {formatHex(
+                                                action.decode_tx.creator
+                                              )}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Text
+                                            className={styles.Text}
+                                          >{`${formatNumber(
+                                            convertUsixToSix(
+                                              parseInt(
+                                                action.decode_tx.fee_amount
+                                              )
+                                            )
+                                          )} SIX`}</Text>
+                                        </Td>
+                                      </Tr>
+                                    )
+                                  )
+                                : Array.from({ length: 10 }).map((_, index) => (
+                                    <Tr key={index}>
+                                      {Array.from({ length: 6 }).map(
+                                        (_, index) => (
+                                          <Td key={index}>
+                                            <Skeleton
+                                              width={"auto"}
+                                              height={"15px"}
+                                            />
+                                          </Td>
+                                        )
+                                      )}
+                                    </Tr>
+                                  ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -532,69 +654,96 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           color={"dark"}
                           justify="space-between"
                         >
-                          {isLoadedAction ?
-                            <Flex className={styles.Flex} direction="row" gap={2} align="center">
+                          {isLoadedAction ? (
+                            <Flex
+                              className={styles.Flex}
+                              direction="row"
+                              gap={2}
+                              align="center"
+                            >
                               <FaSortAmountDown fontSize={12} />
                               <Text className={styles.Text2}>
-                                Latest {latestAction?.txs?.length} from a total of{" "}
-                                {/* <Clickable href="/"> */}
+                                Latest {latestAction?.txs?.length} from a total
+                                of {/* <Clickable href="/"> */}
                                 {latestAction?.totalCount}
-                                {/* </Clickable> */}
-                                {" "}
-                                actions
+                                {/* </Clickable> */} actions
                               </Text>
-                            </Flex> :
-                            <Skeleton width={"200px"} height={"15px"} />
-                          }
-                          {isLoadedAction ? latestAction && (
-                            <Flex direction="row" gap={2} align="center" px="2">
-                              <Button
-                                variant={"solid"}
-                                size="xs"
-                                isDisabled={parseInt(isPageAction) === 1}
-                                onClick={() => handlePageLatestAction("1")}
-                              >
-                                First
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={parseInt(isPageAction) === 1}
-                                onClick={() => handlePageLatestAction((parseInt(isPageAction) - 1).toString())}
-                              >
-                                <FaArrowLeft fontSize={12} />
-                              </Button>
-                              <Text fontSize="xs">
-                                {`Page ${isPageAction} of ${latestAction?.totalPage}`}
-                              </Text>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPageAction) >= latestAction?.totalPage
-                                }
-                                onClick={() => handlePageLatestAction((parseInt(isPageAction) + 1).toString())}
-                              >
-                                <FaArrowRight fontSize={12} />
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPageAction) >= latestAction?.totalPage
-                                }
-                                onClick={() => handlePageLatestAction(latestAction?.totalPage.toString())}
-
-                              >
-                                Last
-                              </Button>
                             </Flex>
-                          ) :
-                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
-                          }
-
+                          ) : (
+                            <Skeleton width={"200px"} height={"15px"} />
+                          )}
+                          {isLoadedAction ? (
+                            latestAction && (
+                              <Flex
+                                direction="row"
+                                gap={2}
+                                align="center"
+                                px="2"
+                              >
+                                <Button
+                                  variant={"solid"}
+                                  size="xs"
+                                  isDisabled={parseInt(isPageAction) === 1}
+                                  onClick={() => handlePageLatestAction("1")}
+                                >
+                                  First
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={parseInt(isPageAction) === 1}
+                                  onClick={() =>
+                                    handlePageLatestAction(
+                                      (parseInt(isPageAction) - 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowLeft fontSize={12} />
+                                </Button>
+                                <Text fontSize="xs">
+                                  {`Page ${isPageAction} of ${latestAction?.totalPage}`}
+                                </Text>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPageAction) >=
+                                    latestAction?.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageLatestAction(
+                                      (parseInt(isPageAction) + 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowRight fontSize={12} />
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPageAction) >=
+                                    latestAction?.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageLatestAction(
+                                      latestAction?.totalPage.toString()
+                                    )
+                                  }
+                                >
+                                  Last
+                                </Button>
+                              </Flex>
+                            )
+                          ) : (
+                            <Skeleton
+                              marginRight={"10px"}
+                              width={"20%"}
+                              height={"15px"}
+                            />
+                          )}
                         </Flex>
                         <TableContainer>
                           <Table>
                             <Thead>
-                              <Tr >
+                              <Tr>
                                 <Td textAlign={"center"}>
                                   <Text className={styles.Text}>Txhash</Text>
                                 </Td>
@@ -616,72 +765,113 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoaded ? latestAction?.txs?.map((action: any, index: number) => (
-                                <Tr key={index}>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/tx/${action.txhash}`}>
-                                      <Text 
-                                      className={styles.Text}
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "12px"
-                                      }}>
-                                        {formatHex(action.txhash)}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                      <Badge textAlign={"center"} width="100%">
-                                        <Text className={styles.Text}>
-                                        {action.decode_tx.action ? action.decode_tx.action : "unknow"}
-                                        </Text>
-                                      </Badge>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Text className={styles.Text}>{moment(action.time_stamp).fromNow()}</Text>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/block/${action.block_height}`} >
-                                      <Text className={styles.Text}
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "12px"
-                                      }}>
-                                        {action.block_height}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Clickable href={`/address/${action.decode_tx.creator}`} >
-                                      <Text className={styles.Text} style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "12px"
-                                      }}>
-                                        {formatHex(action.decode_tx.creator)}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td textAlign={"center"}>
-                                    <Text className={styles.Text}>{`${formatNumber(convertUsixToSix(parseInt(action.decode_tx.fee_amount)))} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              )) :
-                                Array.from({ length: 10 }).map((_, index) => (
-                                  <Tr key={index}>
-                                    {Array.from({ length: 6 }).map((_, index) => (
-                                      <Td key={index}>
-                                        <Skeleton width={"auto"} height={"15px"} />
-                                      </Td>
-                                    ))}
-                                  </Tr>
-                                ))
-                              }
+                              {isLoaded
+                                ? latestAction?.txs?.map(
+                                    (action: any, index: number) => (
+                                      <Tr key={index}>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/tx/${action.txhash}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {formatHex(action.txhash)}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td>
+                                          <Badge
+                                            textAlign={"center"}
+                                            width="100%"
+                                          >
+                                            <Text className={styles.Text}>
+                                              {action.decode_tx.action
+                                                ? action.decode_tx.action
+                                                : "unknow"}
+                                            </Text>
+                                          </Badge>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Text className={styles.Text}>
+                                            {moment(
+                                              action.time_stamp
+                                            ).fromNow()}
+                                          </Text>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/block/${action.block_height}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {action.block_height}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Clickable
+                                            href={`/address/${action.decode_tx.creator}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "12px"
+                                              }}
+                                            >
+                                              {formatHex(
+                                                action.decode_tx.creator
+                                              )}
+                                            </Text>
+                                          </Clickable>
+                                        </Td>
+                                        <Td textAlign={"center"}>
+                                          <Text
+                                            className={styles.Text}
+                                          >{`${formatNumber(
+                                            convertUsixToSix(
+                                              parseInt(
+                                                action.decode_tx.fee_amount
+                                              )
+                                            )
+                                          )} SIX`}</Text>
+                                        </Td>
+                                      </Tr>
+                                    )
+                                  )
+                                : Array.from({ length: 10 }).map((_, index) => (
+                                    <Tr key={index}>
+                                      {Array.from({ length: 6 }).map(
+                                        (_, index) => (
+                                          <Td key={index}>
+                                            <Skeleton
+                                              width={"auto"}
+                                              height={"15px"}
+                                            />
+                                          </Td>
+                                        )
+                                      )}
+                                    </Tr>
+                                  ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -720,9 +910,19 @@ export default function Schema({ metadata, schema, schemacode, pageNumber, token
                           readOnly
                           minH={500}
                         /> */}
-                        <Box height={"400px"} overflowY="auto" overflowX="scroll" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                        <Box
+                          height={"400px"}
+                          overflowY="auto"
+                          overflowX="scroll"
+                          backgroundColor={"#f4f4f4"}
+                          borderRadius={"10px"}
+                        >
                           <Flex p={3}>
-                            <DynamicReactJson src={metadata} collapsed={1} displayDataTypes={false} />
+                            <DynamicReactJson
+                              src={metadata}
+                              collapsed={1}
+                              displayDataTypes={false}
+                            />
                           </Flex>
                         </Box>
                       </TabPanel>
@@ -750,15 +950,15 @@ export const getServerSideProps = async ({
   params: { schemacode, tokenId },
   query: { page = "1" },
 }: {
-  params: { schemacode: any; tokenId: any; };
-  query: { page: string; },
+  params: { schemacode: any; tokenId: any };
+  query: { page: string };
 }) => {
   const [metadata, schema, latestAction] = await Promise.all([
     getMetadata(schemacode, tokenId),
     getSchema(schemacode),
-    getAllTransactionByTokenID(schemacode, tokenId, page, "10")
+    getAllTransactionByTokenID(schemacode, tokenId, page, "10"),
   ]);
-  const pageNumber = page
+  const pageNumber = page;
   if (!schema) {
     return { props: { metadata: null, schema: null } };
   }

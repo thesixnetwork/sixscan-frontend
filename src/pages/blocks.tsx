@@ -42,8 +42,11 @@ import {
 import { getValidators } from "@/service/staking";
 import { Block, BlockchainResult, BlockResult } from "@/types/Block";
 import { Validator } from "@/types/Staking";
-import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
-import { formatHex } from "@/utils/format";
+import {
+  getBlockRewardAmount,
+  getBlockRewardValidator,
+} from "@/libs/block/block";
+import { formatHex } from "@/libs/utils/format";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -59,14 +62,11 @@ export default function Blocks({
   blocksResult,
   validators,
 }: Props) {
-
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
-  const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
-    latestBlocks
-  );
-  const [blocksResultState, setBlocksResult] = useState<BlockResult[]>(
-    blocksResult
-  );
+  const [latestBlocksState, setLatestBlocks] =
+    useState<BlockchainResult>(latestBlocks);
+  const [blocksResultState, setBlocksResult] =
+    useState<BlockResult[]>(blocksResult);
   const [validatorsState, setValidators] = useState<Validator[]>(validators);
 
   // fetch last block interval
@@ -81,10 +81,9 @@ export default function Blocks({
     return () => clearInterval(intervalId);
   }, []);
 
-
   useEffect(() => {
     const fetchData = async () => {
-      const latestBlock = latestBlockState
+      const latestBlock = latestBlockState;
       const latestBlockHeight = latestBlockState
         ? parseInt(latestBlock?.block?.header?.height) ?? null
         : null;
@@ -99,9 +98,7 @@ export default function Blocks({
       setValidators(validators ? validators : validatorsState);
     };
     fetchData();
-
   }, [latestBlockState]);
-
 
   return (
     <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
@@ -142,15 +139,16 @@ export default function Blocks({
                       <Tr key={index}>
                         <Td textAlign={"center"}>
                           <Flex direction="column">
-                            <Clickable
-                              href={`/block/${block.header.height}`}
-                            >
-                              <Text style={{
-                                color: "#5C34A2",
-                                textDecoration: "none",
-                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                fontSize: "15px"
-                              }}>
+                            <Clickable href={`/block/${block.header.height}`}>
+                              <Text
+                                style={{
+                                  color: "#5C34A2",
+                                  textDecoration: "none",
+                                  fontFamily:
+                                    "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                  fontSize: "15px",
+                                }}
+                              >
                                 {block.header.height}
                               </Text>
                             </Clickable>
@@ -160,26 +158,30 @@ export default function Blocks({
                           </Flex>
                         </Td>
                         <Td textAlign={"center"}>
-                          <Clickable
-                            href={`/tx/${block.block_id.hash}`}
-                          >
-                            <Text style={{
-                              color: "#5C34A2",
-                              textDecoration: "none",
-                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                              fontSize: "15px"
-                            }}>
+                          <Clickable href={`/tx/${block.block_id.hash}`}>
+                            <Text
+                              style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily:
+                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "15px",
+                              }}
+                            >
                               {formatHex(block.block_id.hash)}
                             </Text>
                           </Clickable>
                         </Td>
                         <Td textAlign={"center"}>
-                          <Text style={{
-                            color: "#5C34A2",
-                            textDecoration: "none",
-                            fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                            fontSize: "15px"
-                          }}>
+                          <Text
+                            style={{
+                              color: "#5C34A2",
+                              textDecoration: "none",
+                              fontFamily:
+                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                              fontSize: "15px",
+                            }}
+                          >
                             {block.num_txs}
                           </Text>
                         </Td>
@@ -192,17 +194,23 @@ export default function Blocks({
                                 blocksResultState
                               )}`}
                             >
-                              <Text style={{
-                                color: "#5C34A2",
-                                textDecoration: "none",
-                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                fontSize: "14px",
-                                marginLeft: "6px",
-                              }}>
+                              <Text
+                                style={{
+                                  color: "#5C34A2",
+                                  textDecoration: "none",
+                                  fontFamily:
+                                    "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                  fontSize: "14px",
+                                  marginLeft: "6px",
+                                }}
+                              >
                                 {validatorsState.map((validator) => {
                                   if (
                                     validator.operator_address ===
-                                    getBlockRewardValidator(block, blocksResultState)
+                                    getBlockRewardValidator(
+                                      block,
+                                      blocksResultState
+                                    )
                                   ) {
                                     return validator.description.moniker;
                                   }
@@ -211,7 +219,7 @@ export default function Blocks({
                             </Clickable>
                           </Flex>
                         </Td>
-                        <Td textAlign={"center"} >
+                        <Td textAlign={"center"}>
                           <Badge>
                             Reward{" "}
                             <Clickable>

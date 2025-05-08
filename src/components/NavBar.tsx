@@ -27,7 +27,7 @@ import { FaChevronDown, FaChevronUp, FaCircle, FaWallet } from "react-icons/fa";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import SearchBar from "./SearchBar";
-import ENV from "@/utils/ENV";
+import ENV from "@/libs/utils/ENV";
 import { Block } from "@/types/Block";
 import { LinkComponent } from "@/components/Chakralink";
 
@@ -98,35 +98,63 @@ export default function WithSubnavigation({
           alignItems="center"
         >
           <Box style={{ display: "flex" }}>
-            <LinkComponent href="/" >
+            <LinkComponent href="/">
               <Flex alignItems="center" direction={"row"} gap={2}>
-                <Image style={{ marginTop: "6px", marginBottom: "6px" }} src="/sixscan-logo.png" alt="logo" height={6} />
+                <Image
+                  style={{ marginTop: "6px", marginBottom: "6px" }}
+                  src="/sixscan-logo.png"
+                  alt="logo"
+                  height={6}
+                />
               </Flex>
             </LinkComponent>
             <Flex direction="column">
-              <Box style={{ display: "flex", marginLeft: "10px", background: "#FFFFFF", border: "1px solid #DADEF2", borderRadius: "32px" }}>
+              <Box
+                style={{
+                  display: "flex",
+                  marginLeft: "10px",
+                  background: "#FFFFFF",
+                  border: "1px solid #DADEF2",
+                  borderRadius: "32px",
+                }}
+              >
                 <Box>
-                  <LinkComponent href={ENV.BLOCK_SCOUT_API_URL} _hover={{ textDecoration: "none" }}>
-                  <Text style={{
-                    marginLeft: "10px", marginRight: "10px", color: "#878CA8",
-                    fontStyle: "normal",fontWeight: "550",
-                    fontFamily: "Inter, sans-serif",
-                    marginTop: "6px", marginBottom: "6px"
-                  }}>
-                    EVM
-                  </Text>
+                  <LinkComponent
+                    href={ENV.BLOCK_SCOUT_API_URL}
+                    _hover={{ textDecoration: "none" }}
+                  >
+                    <Text
+                      style={{
+                        marginLeft: "10px",
+                        marginRight: "10px",
+                        color: "#878CA8",
+                        fontStyle: "normal",
+                        fontWeight: "550",
+                        fontFamily: "Inter, sans-serif",
+                        marginTop: "6px",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      EVM
+                    </Text>
                   </LinkComponent>
                 </Box>
                 <Box style={{ background: "#464B92", borderRadius: "32px" }}>
                   <LinkComponent href="/" _hover={{ textDecoration: "none" }}>
-                  <Text style={{
-                    marginLeft: "10px", marginRight: "10px", color: "#FFFFFF",
-                    fontStyle: "normal",fontWeight: "550",
-                    fontFamily: "Inter, sans-serif",
-                    marginTop: "6px", marginBottom: "6px"
-                  }}>
-                    Cosmos
-                  </Text>
+                    <Text
+                      style={{
+                        marginLeft: "10px",
+                        marginRight: "10px",
+                        color: "#FFFFFF",
+                        fontStyle: "normal",
+                        fontWeight: "550",
+                        fontFamily: "Inter, sans-serif",
+                        marginTop: "6px",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      Cosmos
+                    </Text>
                   </LinkComponent>
                 </Box>
               </Box>
@@ -298,7 +326,6 @@ const DesktopNav = () => {
       {NAV_ITEMS.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
-
             <PopoverTrigger>
               {navItem.children ? (
                 <Flex alignItems="center" direction={"row"} gap={1}>
@@ -320,7 +347,7 @@ const DesktopNav = () => {
                 <Flex alignItems="center" direction={"row"} gap={1}>
                   <LinkComponent
                     p={2}
-                    href={navItem.href? navItem.href : "#"}
+                    href={navItem.href ? navItem.href : "#"}
                     fontSize={"sm"}
                     fontWeight={500}
                     color={linkColor}
@@ -361,7 +388,7 @@ const DesktopNav = () => {
 const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   return (
     <LinkComponent
-      href={href? href : "#"}
+      href={href ? href : "#"}
       role={"group"}
       display={"block"}
       p={2}
@@ -408,7 +435,9 @@ const MobileNav = ({
     >
       <Box display={{ base: "block", lg: "none" }}>
         <SearchBar
-          placeHolder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
+          placeHolder={
+            "Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"
+          }
           hasButton
           modalstate={modalstate}
         />
@@ -466,7 +495,11 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
         >
           {children &&
             children.map((child) => (
-              <LinkComponent key={child.label} py={2} href={child.href? child.href:"#"}>
+              <LinkComponent
+                key={child.label}
+                py={2}
+                href={child.href ? child.href : "#"}
+              >
                 {child.label}
               </LinkComponent>
             ))}

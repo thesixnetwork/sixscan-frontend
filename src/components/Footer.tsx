@@ -37,10 +37,10 @@ const Footer = () => {
               >
                 {item.icon ? (
                   <Image
-                  src={item.icon}
-                  alt="gen2"
-                  width={"28px"}
-                  height={"28px"}
+                    src={item.icon}
+                    alt="gen2"
+                    width={"28px"}
+                    height={"28px"}
                   />
                 ) : (
                   <Text fontSize={"sm"} fontWeight={"bold"}>
@@ -51,7 +51,7 @@ const Footer = () => {
             </Flex>
           ))}
         </Flex>
-        <Divider size="xl" marginTop="15px" borderColor={'black'} />
+        <Divider size="xl" marginTop="15px" borderColor={"black"} />
         <Flex
           direction={{ base: "column", md: "row" }}
           justify="space-between"
@@ -77,7 +77,6 @@ const Footer = () => {
           >
             <Image src="/powered-by-black.png" alt="logo" height={8} />
           </Flex>
-
         </Flex>
       </Container>
     </Box>

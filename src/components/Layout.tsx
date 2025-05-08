@@ -23,7 +23,8 @@ export default function Layout({
     setStatus(data);
   }, [data]);
 
-  const isHome = router.pathname === "/" || router.pathname === "/data" ? true : false;
+  const isHome =
+    router.pathname === "/" || router.pathname === "/data" ? true : false;
   return (
     <>
       {isHome ? (

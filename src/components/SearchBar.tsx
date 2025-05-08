@@ -33,7 +33,7 @@ const SearchBar = ({
 }: {
   placeHolder?: string;
   hasButton?: boolean;
-  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void;};
+  modalstate: { isOpen: boolean; onOpen: () => void; onClose: () => void };
 }) => {
   return (
     <Box>

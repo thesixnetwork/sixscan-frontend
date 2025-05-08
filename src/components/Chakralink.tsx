@@ -2,18 +2,22 @@ import NextLink from "next/link";
 import { Link as ChakraLink } from "@chakra-ui/react";
 
 interface ChakraNextLinkProps {
-    href: string;
-    children: React.ReactNode;
-    [props: string]: any;
+  href: string;
+  children: React.ReactNode;
+  [props: string]: any;
 }
 
+export const LinkComponent =
+  typeof window !== "undefined" ? ChakraNextLink : ChakraNextLink;
 
-export const LinkComponent = typeof window !== 'undefined' ? ChakraNextLink : ChakraNextLink;
-
-export function ChakraNextLink({ href, children, ...props }: ChakraNextLinkProps) {
+export function ChakraNextLink({
+  href,
+  children,
+  ...props
+}: ChakraNextLinkProps) {
   return (
-    <ChakraLink {...props}  href={href} as={NextLink} >
-        {children}
+    <ChakraLink {...props} href={href} as={NextLink}>
+      {children}
     </ChakraLink>
   );
 }

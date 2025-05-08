@@ -82,7 +82,7 @@ import {
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
-import { formatHex, formatMethod } from "@/utils/format";
+import { formatHex, formatMethod } from "@/libs/utils/format";
 import { useEffect, useState } from "react";
 import {
   getDelegationsFromValidator,
@@ -104,14 +104,14 @@ import {
   convertAsixToSix,
   convertDecimalToPercent,
   formatCoinNumber,
-} from "@/utils/format";
+} from "@/libs/utils/format";
 
-import { validateAddress } from "@/utils/validate";
+import { validateAddress } from "@/libs/utils/validate";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
-import { _LOG } from "@/utils/log_helper";
+import { _LOG } from "@/libs/utils/log_helper";
 
 // create a tokens map
 

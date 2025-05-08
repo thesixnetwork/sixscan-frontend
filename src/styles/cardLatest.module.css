@@ -1,47 +1,44 @@
 /* Default styles for the text */
 .Text {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .Text2 {
-    
 }
 
 .Text3 {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .Tab {
-    
 }
 
 .Flex {
-    
 }
 
 /* Media query for mobile devices */
 @media (max-width: 767px) {
-    .Text {
-        font-size: 10px;
-        text-align: center;
-    }
+  .Text {
+    font-size: 10px;
+    text-align: center;
+  }
 
-    .Text2 {
-        font-size: 14px;
-        text-align: center;
-    }
+  .Text2 {
+    font-size: 14px;
+    text-align: center;
+  }
 
-    .Text3 {
-        font-size: 10px;
-        text-align: center;
-    }
+  .Text3 {
+    font-size: 10px;
+    text-align: center;
+  }
 
-    .Tab {
-        font-size: 40px;
-        text-align: center;
-    }
+  .Tab {
+    font-size: 40px;
+    text-align: center;
+  }
 
-    .Flex {
-        width: 100%;
-    }
+  .Flex {
+    width: 100%;
+  }
 }

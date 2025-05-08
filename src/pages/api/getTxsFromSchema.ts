@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getTxsFromSchema, getTxsFromSchemaSixNet } from "@/service/txs";
-import ENV from "@/utils/ENV";
+import ENV from "@/libs/utils/ENV";
 
 export default async function handler(
   req: NextApiRequest,

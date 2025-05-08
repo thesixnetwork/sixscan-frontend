@@ -39,8 +39,8 @@ import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
 import { LinkComponent } from "@/components/Chakralink";
 
-import { formatHex } from "@/utils/format";
-import { validateAddress } from "@/utils/validate";
+import { formatHex } from "@/libs/utils/format";
+import { validateAddress } from "@/libs/utils/validate";
 import { useEffect, useState } from "react";
 import { getValidator } from "@/service/staking";
 import { Validator } from "@/types/Staking";
@@ -57,13 +57,13 @@ import {
   convertDecimalToPercent,
   formatCoinNumber,
   formatMethod,
-} from "@/utils/format";
+} from "@/libs/utils/format";
 
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
-import { _LOG } from "@/utils/log_helper";
+import { _LOG } from "@/libs/utils/log_helper";
 
 interface Props {
   address: string;
@@ -349,7 +349,11 @@ export default function Address({
                                           </Clickable>
                                         ) : (
                                           <Clickable
-                                            href={`/address/${ tx.decode_tx.delegatorAddress ? tx.decode_tx.delegatorAddress : tx.decode_tx.delegator_address }`}
+                                            href={`/address/${
+                                              tx.decode_tx.delegatorAddress
+                                                ? tx.decode_tx.delegatorAddress
+                                                : tx.decode_tx.delegator_address
+                                            }`}
                                           >
                                             <Text
                                               style={{
@@ -360,7 +364,14 @@ export default function Address({
                                                 fontSize: "12px",
                                               }}
                                             >
-                                              {formatHex( tx.decode_tx ?.delegatorAddress ?? tx.decode_tx ?.delegator_address ?? tx.decode_tx?.fromAddress ?? tx.decode_tx?.from_address)}
+                                              {formatHex(
+                                                tx.decode_tx
+                                                  ?.delegatorAddress ??
+                                                  tx.decode_tx
+                                                    ?.delegator_address ??
+                                                  tx.decode_tx?.fromAddress ??
+                                                  tx.decode_tx?.from_address
+                                              )}
                                             </Text>
                                           </Clickable>
                                         )}
@@ -393,7 +404,11 @@ export default function Address({
                                           </Clickable>
                                         ) : (
                                           <Clickable
-                                            href={`/address/${ tx.decode_tx.validatorAddress ? tx.decode_tx.validatorAddress : tx.decode_tx.validator_address }`}
+                                            href={`/address/${
+                                              tx.decode_tx.validatorAddress
+                                                ? tx.decode_tx.validatorAddress
+                                                : tx.decode_tx.validator_address
+                                            }`}
                                           >
                                             <Text
                                               style={{
@@ -404,7 +419,14 @@ export default function Address({
                                                 fontSize: "12px",
                                               }}
                                             >
-                                              {formatHex( tx.decode_tx ?.validatorAddress ?? tx.decode_tx ?.validator_address ?? tx.decode_tx?.toAddress ?? tx.decode_tx?.to_address)}
+                                              {formatHex(
+                                                tx.decode_tx
+                                                  ?.validatorAddress ??
+                                                  tx.decode_tx
+                                                    ?.validator_address ??
+                                                  tx.decode_tx?.toAddress ??
+                                                  tx.decode_tx?.to_address
+                                              )}
                                             </Text>
                                           </Clickable>
                                         )}

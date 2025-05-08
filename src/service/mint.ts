@@ -1,5 +1,5 @@
 import axios from "axios";
-import ENV from "../utils/ENV";
+import ENV from "../libs/utils/ENV";
 
 export const getInflation = async (): Promise<string | null> => {
   try {

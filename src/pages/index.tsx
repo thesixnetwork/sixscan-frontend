@@ -23,7 +23,7 @@ import {
   Badge,
   useDisclosure,
   Skeleton,
-  useMediaQuery
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { Clickable } from "@/components/Clickable";
 // ------------------------- NextJS -------------------------
@@ -45,7 +45,7 @@ import {
   convertDecimalToPercent,
   convertUsixToSix,
   formatNumberAndRoundUp,
-} from "@/utils/format";
+} from "@/libs/utils/format";
 import { getInflation } from "@/service/mint";
 import { getSupply, getSupplySixNet } from "@/service/bank";
 import { Balance } from "@/types/Bank";
@@ -55,9 +55,12 @@ import {
   getLatestBlocks,
 } from "@/service/block";
 import { Block, BlockchainResult, BlockMeta, BlockResult } from "@/types/Block";
-import { getBlockRewardAmount, getBlockRewardValidator } from "@/utils/block";
+import {
+  getBlockRewardAmount,
+  getBlockRewardValidator,
+} from "@/libs/block/block";
 // ------------------------- Helper Libs -------------------------
-import { formatNumber } from "@/utils/format";
+import { formatNumber } from "@/libs/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
@@ -84,19 +87,17 @@ export default function Home({
   blocksResult,
   validators,
   priceTHB,
-  supplySixNet
+  supplySixNet,
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
   const [priceSIXUSD, setPriceSIXUSD] = useState<number>(12673103.29);
   const [isMobile] = useMediaQuery("(max-width: 768px)");
 
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);
-  const [latestBlocksState, setLatestBlocks] = useState<BlockchainResult>(
-    latestBlocks
-  );
-  const [blocksResultState, setBlocksResult] = useState<BlockResult[]>(
-    blocksResult
-  );
+  const [latestBlocksState, setLatestBlocks] =
+    useState<BlockchainResult>(latestBlocks);
+  const [blocksResultState, setBlocksResult] =
+    useState<BlockResult[]>(blocksResult);
   const [validatorsState, setValidators] = useState<Validator[]>(validators);
 
   // fetch last block interval
@@ -114,7 +115,7 @@ export default function Home({
 
   useEffect(() => {
     const fetchData = async () => {
-      const latestBlock = latestBlockState
+      const latestBlock = latestBlockState;
       const latestBlockHeight = latestBlockState
         ? parseInt(latestBlock?.block?.header?.height) ?? null
         : null;
@@ -125,32 +126,39 @@ export default function Home({
       //   getValidators(),
       // ]);
 
-      const latestBlocksResponse = fetch(`/api/rpcLatestBlocks?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`);
-      const blocksResultResponse = fetch(`/api/rpcBlocksResult?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`);
-      const validatorsResponse = fetch('/api/validators');
+      const latestBlocksResponse = fetch(
+        `/api/rpcLatestBlocks?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`
+      );
+      const blocksResultResponse = fetch(
+        `/api/rpcBlocksResult?minBlockHeight=${minBlockHeight}&maxBlockHeight=${latestBlockHeight}`
+      );
+      const validatorsResponse = fetch("/api/validators");
 
       const [latestBlocks, blocksResult, validators] = await Promise.all([
         latestBlocksResponse,
         blocksResultResponse,
-        validatorsResponse
-      ]).then(responses => Promise.all(responses.map(response => response.json())));
+        validatorsResponse,
+      ]).then((responses) =>
+        Promise.all(responses.map((response) => response.json()))
+      );
 
       setLatestBlocks(latestBlocks ? latestBlocks : latestBlocksState);
       setBlocksResult(blocksResult ? blocksResult : blocksResultState);
       setValidators(validators ? validators : validatorsState);
     };
     fetchData();
-
   }, [latestBlockState]);
 
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      const priceGecko: CoinGeckoPrice | null = await getPriceFromCoingecko("six-network");
+      const priceGecko: CoinGeckoPrice | null = await getPriceFromCoingecko(
+        "six-network"
+      );
       // const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
       setPrice(priceGecko);
-      const isSupplySixNet = Number(supplySixNet).toFixed(2)
-      setPriceSIXUSD(Number(isSupplySixNet))
+      const isSupplySixNet = Number(supplySixNet).toFixed(2);
+      setPriceSIXUSD(Number(isSupplySixNet));
     };
 
     fetchPrice();
@@ -211,7 +219,9 @@ export default function Home({
             </Text>
             <SearchBar
               hasButton
-              placeHolder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
+              placeHolder={
+                "Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"
+              }
               modalstate={modalstate}
             />
           </Flex>
@@ -220,11 +230,20 @@ export default function Home({
       <Box marginTop={-10}>
         <Container maxW="container.lg">
           <Flex direction="column" gap={3} p={3}>
-            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "mainnet" || process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "sixnet") && (
-              <Box style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+            {(process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() == "mainnet" ||
+              process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase() ==
+                "sixnet") && (
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "20px",
+                }}
+              >
                 <Flex
                   style={{
-                    background: "linear-gradient(90deg, #538CEE 0%, #8B60EE 100%)",
+                    background:
+                      "linear-gradient(90deg, #538CEE 0%, #8B60EE 100%)",
                     // width: {isMobile ? "90%" : "635px"},
                     // height: {isMobile ? "auto" : "196px"},
                     display: "flex",
@@ -243,14 +262,15 @@ export default function Home({
                   <Box
                     style={{
                       color: "rgba(204, 227, 255, 1)",
-                      fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                      fontFamily:
+                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                       fontWeight: 457,
                       // fontSize: "22px",
                       lineHeight: "100%",
                       letterSpacing: "0%",
                       fontVariant: "small-caps",
                       textAlign: "center",
-                      marginBottom: "10px"
+                      marginBottom: "10px",
                     }}
                     fontSize={isMobile ? "16px" : "22px"}
                   >
@@ -267,13 +287,18 @@ export default function Home({
                     }}
                     // flexDirection={isMobile ? "column" : "row"}
                   >
-                    <Image src="/up2.png" alt="coin" height={isMobile ? 36 : 56} width={isMobile ? 34 : 54}
+                    <Image
+                      src="/up2.png"
+                      alt="coin"
+                      height={isMobile ? 36 : 56}
+                      width={isMobile ? 34 : 54}
                       style={{ marginRight: isMobile ? "6px" : "15px" }}
-                      />
+                    />
                     <Box
                       style={{
                         color: "rgba(255, 255, 255, 1)",
-                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                        fontFamily:
+                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
                         fontWeight: 700,
                         // fontSize: "64px",
                         lineHeight: "100%",
@@ -359,15 +384,16 @@ export default function Home({
                       <Tr key={index}>
                         <Td>
                           <Flex direction="column">
-                            <Clickable
-                              href={`/block/${block.header.height}`}
-                            >
-                              <Text style={{
-                                color: "#5C34A2",
-                                textDecoration: "none",
-                                fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                fontSize: "15px"
-                              }}>
+                            <Clickable href={`/block/${block.header.height}`}>
+                              <Text
+                                style={{
+                                  color: "#5C34A2",
+                                  textDecoration: "none",
+                                  fontFamily:
+                                    "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                  fontSize: "15px",
+                                }}
+                              >
                                 {block.header.height}
                               </Text>
                             </Clickable>
@@ -381,29 +407,33 @@ export default function Home({
                             <Flex direction="row">
                               Proposer{` `}
                               <Clickable
-
                                 href={`/address/${getBlockRewardValidator(
                                   block,
                                   blocksResultState
                                 )}`}
                               >
-                                <Text style={{
-                                  color: "#5C34A2",
-                                  textDecoration: "none",
-                                  fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                  fontSize: "14px",
-                                  marginLeft: "6px",
-                                }}>
+                                <Text
+                                  style={{
+                                    color: "#5C34A2",
+                                    textDecoration: "none",
+                                    fontFamily:
+                                      "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                    fontSize: "14px",
+                                    marginLeft: "6px",
+                                  }}
+                                >
                                   {validatorsState.map((validator) => {
                                     if (
                                       validator.operator_address ===
-                                      getBlockRewardValidator(block, blocksResultState)
+                                      getBlockRewardValidator(
+                                        block,
+                                        blocksResultState
+                                      )
                                     ) {
                                       return validator.description.moniker;
                                     }
                                   })}
                                 </Text>
-
                               </Clickable>
                             </Flex>
                             <Text fontSize="xs" color="medium">
@@ -420,14 +450,17 @@ export default function Home({
                         <Td isNumeric>
                           <Badge display={"inline-flex"}>
                             Reward{" "}
-                            <Text style={{
-                              color: "#5C34A2",
-                              textDecoration: "none",
-                              fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                              fontSize: "14px",
-                              marginLeft: "6px",
-                              marginRight: "6px",
-                            }}>
+                            <Text
+                              style={{
+                                color: "#5C34A2",
+                                textDecoration: "none",
+                                fontFamily:
+                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                fontSize: "14px",
+                                marginLeft: "6px",
+                                marginRight: "6px",
+                              }}
+                            >
                               {getBlockRewardAmount(block, blocksResultState)}
                             </Text>{" "}
                             SIX
@@ -448,14 +481,22 @@ export default function Home({
 }
 
 export const getServerSideProps = async () => {
-  const [pool, inflation, supply, latestBlock, validators, priceTHB, supplySixNet] = await Promise.all([
+  const [
+    pool,
+    inflation,
+    supply,
+    latestBlock,
+    validators,
+    priceTHB,
+    supplySixNet,
+  ] = await Promise.all([
     getPool(),
     getInflation(),
     getSupply("usix"),
     getLatestBlock(),
     getValidators(),
     getTHB(),
-    getSupplySixNet()
+    getSupplySixNet(),
   ]);
 
   const latestBlockHeight = latestBlock
@@ -466,9 +507,9 @@ export const getServerSideProps = async () => {
   const [latestBlocks, blocksResult] =
     latestBlockHeight && minBlockHeight
       ? await Promise.all([
-        getLatestBlocks(minBlockHeight, latestBlockHeight),
-        getBlocksResult(minBlockHeight, latestBlockHeight),
-      ])
+          getLatestBlocks(minBlockHeight, latestBlockHeight),
+          getBlocksResult(minBlockHeight, latestBlockHeight),
+        ])
       : [null, null];
 
   return {
@@ -481,7 +522,7 @@ export const getServerSideProps = async () => {
       blocksResult,
       validators,
       priceTHB,
-      supplySixNet
+      supplySixNet,
     },
   };
 };

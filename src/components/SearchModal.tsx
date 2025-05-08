@@ -14,7 +14,7 @@ import {
   Text,
   Flex,
   // VStack,
-  Button
+  Button,
 } from "@chakra-ui/react";
 import {
   FaArrowRight,
@@ -31,12 +31,12 @@ import {
   validateBlock,
   validateTxHash,
   validateContract,
-} from "@/utils/validate";
+} from "@/libs/utils/validate";
 import { LinkComponent } from "@/components/Chakralink";
 
 // import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
 import { Clickable } from "./Clickable";
-import { _LOG } from "@/utils/log_helper";
+import { _LOG } from "@/libs/utils/log_helper";
 
 type SearchResult = {
   type: "address" | "tx" | "block" | "schema" | "contract";
@@ -53,7 +53,6 @@ type ResultSchema = {
   originContractAddress: string;
   schemaCodes: string;
 };
-
 
 const SearchModal = ({
   onOpen,
@@ -78,13 +77,13 @@ const SearchModal = ({
   const handleSearch = useCallback(async () => {
     const _searchResults: SearchResult[] = [];
     console.log(resultContract);
-    
+
     // Validate the input
     const isAddress = validateAddress(searchInput);
     const isTx = validateTxHash(searchInput);
     const isBlock = await validateBlock(searchInput);
     const isContractByAddress = await validateContract(searchInput);
-  
+
     if (isAddress) {
       setIsSchema(false);
       setIsContract(false);
@@ -112,17 +111,19 @@ const SearchModal = ({
     } else if (isContractByAddress) {
       setIsContract(true);
       setIsSchema(false);
-  
+
       // Fetch contract schema based on address
-      const _ContractSchema = await fetch(`/api/getSchemaCodebyContract?input=${searchInput}`);
+      const _ContractSchema = await fetch(
+        `/api/getSchemaCodebyContract?input=${searchInput}`
+      );
       const schemaByContract = await _ContractSchema.json();
-  
+
       setResultContract(schemaByContract);
     } else {
       // Fetch schema information
       const _Schema = await fetch(`/api/getSchemaCode?input=${searchInput}`);
       const schemaData = await _Schema.json();
-  
+
       setIsSchema(true);
       setIsContract(false);
       setResultSchema(schemaData);
@@ -132,20 +133,19 @@ const SearchModal = ({
     setSearchResults(_searchResults);
   }, [searchInput]);
 
-
   useEffect(() => {
     if (searchInput !== "") {
       setIsLoading(true); // Set loading state to true immediately
-  
+
       // Wait for 500ms before performing search
       const timeout = setTimeout(() => {
         handleSearch();
       }, 500);
-  
+
       return () => clearTimeout(timeout);
     }
   }, [searchInput]);
-  
+
   return (
     <Modal
       initialFocusRef={initialRef}
@@ -154,7 +154,7 @@ const SearchModal = ({
       onClose={onClose}
     >
       <ModalOverlay />
-      <ModalContent maxW={{ base: "sm", md: "lg", lg: "2xl" }} >
+      <ModalContent maxW={{ base: "sm", md: "lg", lg: "2xl" }}>
         <ModalHeader borderBottom={"1px solid"} borderColor={"blackAlpha.100"}>
           <InputGroup size="lg">
             <InputLeftElement>
@@ -164,7 +164,9 @@ const SearchModal = ({
             </InputLeftElement>
             <Input
               variant="ghost"
-              placeholder={"Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"}
+              placeholder={
+                "Search by Address(6x) / Txn Hash / Block / Schema / Contract(0x)"
+              }
               value={searchInput}
               onClick={onOpen}
               onChange={(e) => setSearchInput(e.target.value)}
@@ -172,14 +174,14 @@ const SearchModal = ({
             {searchInput && isLoading && (
               <ModalBody>
                 <Spinner
-                  thickness='4px'
-                  speed='0.65s'
-                  emptyColor='gray.200'
-                  color='blue.500'
-                  size='md'
+                  thickness="4px"
+                  speed="0.65s"
+                  emptyColor="gray.200"
+                  color="blue.500"
+                  size="md"
                 />
-              </ModalBody>)
-            }
+              </ModalBody>
+            )}
           </InputGroup>
         </ModalHeader>
         {searchInput && !isSchema && (
@@ -236,10 +238,16 @@ const SearchModal = ({
           </ModalBody>
         )}
         {searchInput && !isContract && isSchema && resultSchema && (
-          <ModalBody style={{ height: '20%', overflowY: 'scroll' }}>
-            <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-              <Text fontSize="xs" fontWeight="bold" color="dark">SCHEMA</Text>
-              <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
+          <ModalBody style={{ height: "20%", overflowY: "scroll" }}>
+            <Flex
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Text fontSize="xs" fontWeight="bold" color="dark">
+                SCHEMA
+              </Text>
+              <Button fontSize="sl" colorScheme="gray" onClick={onClose}>
                 <Clickable href="/schemas">
                   <Text fontSize="xs" fontWeight="bold" color="dark">
                     View More
@@ -261,7 +269,9 @@ const SearchModal = ({
                     alignItems="center"
                     onClick={onClose}
                   >
-                    <Box color="dark"><FaScroll /></Box>
+                    <Box color="dark">
+                      <FaScroll />
+                    </Box>
                     <Text
                       fontSize="md"
                       color="dark"
@@ -295,74 +305,90 @@ const SearchModal = ({
         )}
         {searchInput && isContract && resultContract && (
           <ModalBody>
-            {resultContract.length > 0? (
-                <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-                <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
-                <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
-                  <Clickable href={`/contract/${resultContract[0].originContractAddress}`}>
+            {resultContract.length > 0 ? (
+              <Flex
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Text fontSize="xs" fontWeight="bold" color="dark">
+                  CONTRACT ADDRESS
+                </Text>
+                <Button fontSize="sl" colorScheme="gray" onClick={onClose}>
+                  <Clickable
+                    href={`/contract/${resultContract[0].originContractAddress}`}
+                  >
                     <Text fontSize="xs" fontWeight="bold" color="dark">
                       View More
                     </Text>
                   </Clickable>
                 </Button>
               </Flex>
-            ):(
-          <Flex direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
-          <Text fontSize="xs" fontWeight="bold" color="dark">CONTRACT ADDRESS</Text>
-          <Button fontSize="sl" colorScheme='gray' onClick={onClose}>
-              <Text fontSize="xs" fontWeight="bold" color="red">
-                Close
-              </Text>
-          </Button>
-          </Flex>
-            )}
-            { resultContract.length > 0 && resultContract.map((x: any, index: number) => (
-              <Flex direction="column" key={index} gap={1} pt={1}>
-                <motion.div>
-                  <Flex
-                    bgColor={"lightest"}
-                    borderRadius={6}
-                    p={4}
-                    as={LinkComponent}
-                    href={`/schema/${x.schema_code}`}
-                    _hover={{ bgColor: "light" }}
-                    gap={2}
-                    alignItems="center"
-                    onClick={onClose}
-                  >
-                    <Box color="dark"><FaScroll /></Box>
-                    <Text
-                      fontSize="md"
-                      color="dark"
-                      _hover={{ color: "darkest" }}
-                    >
-                      {x.schema_code}
-                    </Text>
-                    <Spacer />
-                    <Box color="dark">
-                      <motion.div
-                        initial={{
-                          x: -10,
-                          opacity: 0,
-                        }}
-                        animate={{
-                          x: 0,
-                          opacity: 1,
-                        }}
-                        transition={{
-                          duration: 0.5,
-                        }}
-                      >
-                        <FaArrowRight />
-                      </motion.div>
-                    </Box>
-                  </Flex>
-                </motion.div>
+            ) : (
+              <Flex
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Text fontSize="xs" fontWeight="bold" color="dark">
+                  CONTRACT ADDRESS
+                </Text>
+                <Button fontSize="sl" colorScheme="gray" onClick={onClose}>
+                  <Text fontSize="xs" fontWeight="bold" color="red">
+                    Close
+                  </Text>
+                </Button>
               </Flex>
-            ))}
+            )}
+            {resultContract.length > 0 &&
+              resultContract.map((x: any, index: number) => (
+                <Flex direction="column" key={index} gap={1} pt={1}>
+                  <motion.div>
+                    <Flex
+                      bgColor={"lightest"}
+                      borderRadius={6}
+                      p={4}
+                      as={LinkComponent}
+                      href={`/schema/${x.schema_code}`}
+                      _hover={{ bgColor: "light" }}
+                      gap={2}
+                      alignItems="center"
+                      onClick={onClose}
+                    >
+                      <Box color="dark">
+                        <FaScroll />
+                      </Box>
+                      <Text
+                        fontSize="md"
+                        color="dark"
+                        _hover={{ color: "darkest" }}
+                      >
+                        {x.schema_code}
+                      </Text>
+                      <Spacer />
+                      <Box color="dark">
+                        <motion.div
+                          initial={{
+                            x: -10,
+                            opacity: 0,
+                          }}
+                          animate={{
+                            x: 0,
+                            opacity: 1,
+                          }}
+                          transition={{
+                            duration: 0.5,
+                          }}
+                        >
+                          <FaArrowRight />
+                        </motion.div>
+                      </Box>
+                    </Flex>
+                  </motion.div>
+                </Flex>
+              ))}
           </ModalBody>
         )}
-
       </ModalContent>
     </Modal>
   );

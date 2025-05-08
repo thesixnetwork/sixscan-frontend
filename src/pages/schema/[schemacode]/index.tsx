@@ -42,7 +42,7 @@ import {
   FaScroll,
   FaSortAmountDown,
 } from "react-icons/fa";
-import styles from "@/styles/cardLatest.module.css"
+import styles from "@/styles/cardLatest.module.css";
 
 // ------------- Components ----------------
 import CustomCard from "@/components/CustomCard";
@@ -51,7 +51,11 @@ import Pagination from "@/components/Pagination";
 
 import { Clickable } from "@/components/Clickable";
 import { useEffect, useState, Suspense } from "react";
-import { getNftCollection, getImgCollection, getNftCollectionNoLoop } from "@/service/nftmngr/collection";
+import {
+  getNftCollection,
+  getImgCollection,
+  getNftCollectionNoLoop,
+} from "@/service/nftmngr/collection";
 import { getMetadata } from "@/service/nftmngr/common";
 import { getSchema } from "@/service/nftmngr/schema";
 import { NftData, NFTSchema, NFTMetadata } from "@/types/Nftmngr";
@@ -60,13 +64,18 @@ import { getOpenseaCollectionByName } from "@/service/opensea";
 import { Collection } from "@/types/Opensea";
 import { useRouter } from "next/router";
 import { getTxsFromSchema } from "@/service/txs";
-import { convertUsixToSix, formatHex, formatNumber, formatMethod } from "@/utils/format";
+import {
+  convertUsixToSix,
+  formatHex,
+  formatNumber,
+  formatMethod,
+} from "@/libs/utils/format";
 import moment from "moment";
-import { _LOG } from "@/utils/log_helper";
+import { _LOG } from "@/libs/utils/log_helper";
 import { Metadata } from "@/types/Opensea";
 
-import dynamic from 'next/dynamic';
-import React from 'react';
+import dynamic from "next/dynamic";
+import React from "react";
 import LoadingMetadataBox from "@/components/LoadingMetadataBox";
 // import MetadataBox from "@/components/MetadataBox";
 // const MetadataBox = React.lazy(() => import('@/components/MetadataBox'));
@@ -76,10 +85,9 @@ import LoadingMetadataBox from "@/components/LoadingMetadataBox";
 //   { ssr: false }
 // );
 
-const DynamicReactJson = dynamic(
-  () => import('react-json-view'),
-  { ssr: false }
-);
+const DynamicReactJson = dynamic(() => import("react-json-view"), {
+  ssr: false,
+});
 
 type Txns = {
   txs: any[];
@@ -113,7 +121,6 @@ export default function Schema({
   metadataPageNumber,
   imgCollection,
 }: Props) {
-
   const encodedSchemaCode = encodeURIComponent(schemacode);
   const perPage = 12;
 
@@ -193,8 +200,8 @@ export default function Schema({
 
   const handleMetadaPageChange = (newPage: number) => {
     console.log("newPage", newPage);
-    
-    setIsMetadataLoaded(false)
+
+    setIsMetadataLoaded(false);
     setCurrentPage(newPage);
     setMetadataPage(newPage.toString());
   };
@@ -202,11 +209,13 @@ export default function Schema({
 
   const fetchData = async () => {
     try {
-      setIsMetadataLoaded(false)
+      setIsMetadataLoaded(false);
       setItems([]);
       setNftCollection([]);
       // const resMetadata = await getNftCollectionByClient(schemacode, metadataPage);
-      const response = await fetch(`/api/getNftCollection?schemaCode=${encodedSchemaCode}&metadataPage=${metadataPage}&perPage=${perPage}`);
+      const response = await fetch(
+        `/api/getNftCollection?schemaCode=${encodedSchemaCode}&metadataPage=${metadataPage}&perPage=${perPage}`
+      );
       const resMetadata = await response.json();
       setNftCollection(resMetadata);
       setIsMetadataLoaded(true);
@@ -217,21 +226,22 @@ export default function Schema({
 
   useEffect(() => {
     fetchData();
-  }, [schemacode, metadataPage, isStop])
-
+  }, [schemacode, metadataPage, isStop]);
 
   const handlePageMetaData = (metadataPage: string) => {
-    setIsMetadataLoaded(false)
+    setIsMetadataLoaded(false);
     setMetadataPage(metadataPage);
   };
 
   //////////// get Txns /////////
   const fetchDataTxs = async () => {
     try {
-      setIsLoadedTxns(false)
+      setIsLoadedTxns(false);
       setTxns(null);
       // const resTxns = await getTxsFromSchema(schemacode, isPageTxns, "15");
-      const response = await fetch(`/api/getTxsFromSchema?schemaCode=${encodedSchemaCode}&metadataPage=${isPageTxns}&isPageSize=15`);
+      const response = await fetch(
+        `/api/getTxsFromSchema?schemaCode=${encodedSchemaCode}&metadataPage=${isPageTxns}&isPageSize=15`
+      );
       const resTxns = await response.json();
       // console.log("resTxns",resTxns)
       // console.log("schemacode",schemacode)
@@ -245,10 +255,10 @@ export default function Schema({
 
   useEffect(() => {
     fetchDataTxs();
-  }, [schemacode, isPageTxns, isStop])
+  }, [schemacode, isPageTxns, isStop]);
 
   const handlePageTxns = (metadataPage: string) => {
-    setIsLoadedTxns(false)
+    setIsLoadedTxns(false);
     setIsPageTxns(metadataPage);
   };
 
@@ -289,14 +299,17 @@ export default function Schema({
       setIsCopied(false);
     }, 1000);
   };
-  const MetadataTotalPage = Math.ceil(totalMetaData.total / perPage)
+  const MetadataTotalPage = Math.ceil(totalMetaData.total / perPage);
   useEffect(() => {
     // sort by token_id
     if (!schema) {
       return;
     }
     if (nftCollection) {
-      nftCollection?.metadata?.sort((a: NFTMetadata, b: NFTMetadata) => parseInt(a.token_id) - parseInt(b.token_id));
+      nftCollection?.metadata?.sort(
+        (a: NFTMetadata, b: NFTMetadata) =>
+          parseInt(a.token_id) - parseInt(b.token_id)
+      );
 
       const newItems = nftCollection?.metadata?.slice(
         (page - 1) * perPage,
@@ -379,7 +392,11 @@ export default function Schema({
                 {openseaCollection && openseaCollection.image_url ? (
                   <Image
                     rounded={{ base: "sm", md: "md", lg: "lg" }}
-                    src={openseaCollection.image_url ? openseaCollection.image_url : "/logo-nftgen2-01.png"}
+                    src={
+                      openseaCollection.image_url
+                        ? openseaCollection.image_url
+                        : "/logo-nftgen2-01.png"
+                    }
                     alt={schema.name}
                     width="100%"
                   />
@@ -410,16 +427,28 @@ export default function Schema({
                         <Clickable
                           href={getExplorerLink(
                             schema.origin_data.origin_chain,
-                            schema.origin_data.origin_contract_address? schema.origin_data.origin_contract_address : ""
+                            schema.origin_data.origin_contract_address
+                              ? schema.origin_data.origin_contract_address
+                              : ""
                           )}
                           underline={
-                            getExplorerLink(schema.origin_data.origin_chain, schema.origin_data.origin_contract_address) === "" ? false : true}
+                            getExplorerLink(
+                              schema.origin_data.origin_chain,
+                              schema.origin_data.origin_contract_address
+                            ) === ""
+                              ? false
+                              : true
+                          }
                         >
                           {getExplorerLink(
                             schema.origin_data.origin_chain,
-                            schema.origin_data.origin_contract_address ? schema.origin_data.origin_contract_address : ""
+                            schema.origin_data.origin_contract_address
+                              ? schema.origin_data.origin_contract_address
+                              : ""
                           )
-                            ? schema.origin_data?.origin_contract_address ? schema.origin_data?.origin_contract_address : "N/A"
+                            ? schema.origin_data?.origin_contract_address
+                              ? schema.origin_data?.origin_contract_address
+                              : "N/A"
                             : "N/A"}
                         </Clickable>
                       </Text>
@@ -430,27 +459,27 @@ export default function Schema({
                       schema.origin_data.origin_chain,
                       schema.origin_data.origin_contract_address
                     ) && (
-                        <Flex direction="row" gap={1} alignItems="center">
-                          <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
+                      <Flex direction="row" gap={1} alignItems="center">
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                        >
+                          <Link
+                            href={getOpenseaLink(
+                              schema.origin_data.origin_chain,
+                              schema.origin_data.origin_contract_address
+                            )}
+                            target="_blank"
                           >
-                            <Link
-                              href={getOpenseaLink(
-                                schema.origin_data.origin_chain,
-                                schema.origin_data.origin_contract_address
-                              )}
-                              target="_blank"
-                            >
-                              <Image
-                                src="/opensea-logo.svg"
-                                alt="opensea"
-                                width={6}
-                              />
-                            </Link>
-                          </motion.div>
-                        </Flex>
-                      )}
+                            <Image
+                              src="/opensea-logo.svg"
+                              alt="opensea"
+                              width={6}
+                            />
+                          </Link>
+                        </motion.div>
+                      </Flex>
+                    )}
                     <Flex direction="row" gap={1} alignItems="center">
                       <motion.div
                         whileHover={{ scale: 1.1 }}
@@ -514,29 +543,55 @@ export default function Schema({
                       </Flex>
                     </Flex>
                   )}
-                  {(!openseaCollection && !metadata?.description)? 
-                  (
+                  {!openseaCollection && !metadata?.description ? (
                     <Flex direction="column">
-                      {isShowMore && schema?.description ? schema?.description : (schema?.description && schema?.description?.length>100)? `${schema?.description.substring(0, 100)}...`:schema?.description }
-                      <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
+                      {isShowMore && schema?.description
+                        ? schema?.description
+                        : schema?.description &&
+                          schema?.description?.length > 100
+                        ? `${schema?.description.substring(0, 100)}...`
+                        : schema?.description}
+                      <Flex
+                        align="center"
+                        direction="row"
+                        gap={1}
+                        onClick={() => setIsShowMore(!isShowMore)}
+                      >
                         <Text fontSize={"sm"} fontWeight={"bold"}>
                           {isShowMore ? "SHOW LESS" : "SHOW MORE"}
                         </Text>
-                        {isShowMore ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                        {isShowMore ? (
+                          <FaChevronUp fontSize={12} />
+                        ) : (
+                          <FaChevronDown fontSize={12} />
+                        )}
                       </Flex>
                     </Flex>
                   ) : (
                     <Flex direction="column">
-                      {isShowMore && metadata?.description ? metadata?.description : `${metadata?.description && metadata?.description.substring(0, 100)}...`}
-                      <Flex align="center" direction="row" gap={1} onClick={() => setIsShowMore(!isShowMore)}>
+                      {isShowMore && metadata?.description
+                        ? metadata?.description
+                        : `${
+                            metadata?.description &&
+                            metadata?.description.substring(0, 100)
+                          }...`}
+                      <Flex
+                        align="center"
+                        direction="row"
+                        gap={1}
+                        onClick={() => setIsShowMore(!isShowMore)}
+                      >
                         <Text fontSize={"sm"} fontWeight={"bold"}>
                           {isShowMore ? "SHOW LESS" : "SHOW MORE"}
                         </Text>
-                        {isShowMore ? <FaChevronUp fontSize={12} /> : <FaChevronDown fontSize={12} />}
+                        {isShowMore ? (
+                          <FaChevronUp fontSize={12} />
+                        ) : (
+                          <FaChevronDown fontSize={12} />
+                        )}
                       </Flex>
                     </Flex>
-                  )
-                  }
+                  )}
                   <Flex direction="row" gap={5} wrap={"wrap"}>
                     {CONFIG.map((config, index) => (
                       <Flex direction="column" key={index}>
@@ -570,200 +625,291 @@ export default function Schema({
                         >
                           <Flex direction="row" gap={2} align="center">
                             <FaSortAmountDown fontSize={12} />
-                            {isLoadedTxns ?
+                            {isLoadedTxns ? (
                               <Text className={styles.Text2}>
-                                {`Showing ${txns ? txns.txs.length : "0"
-                                  } txns from a total of `}
+                                {`Showing ${
+                                  txns ? txns.txs.length : "0"
+                                } txns from a total of `}
                                 <Clickable>
                                   {txns ? txns.totalCount : "0"}
                                 </Clickable>{" "}
                                 transactions
                               </Text>
-                              :
+                            ) : (
                               <Skeleton width={"200px"} height={"15px"} />
-                            }
+                            )}
                           </Flex>
-                          {isLoadedTxns ? txns && (
-                            <Flex
-                              direction="row"
-                              gap={2}
-                              align="center"
-                              py={4}
-                              justifyContent="right"
-                            >
-                              <Button
-                                variant={"solid"}
-                                size="xs"
-                                isDisabled={parseInt(isPageTxns) === 1}
-                                onClick={() => handlePageTxns("1")}
+                          {isLoadedTxns ? (
+                            txns && (
+                              <Flex
+                                direction="row"
+                                gap={2}
+                                align="center"
+                                py={4}
+                                justifyContent="right"
                               >
-                                First
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={parseInt(isPageTxns) === 1}
-                                onClick={() => handlePageTxns((parseInt(isPageTxns) - 1).toString())}
-                              >
-                                <FaArrowLeft fontSize={12} />
-                              </Button>
-                              <Text fontSize="xs">
-                                {`Page ${isPageTxns} of ${txns.totalPage}`}
-                              </Text>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPageTxns) >= txns.totalPage
-                                }
-                                onClick={() => handlePageTxns((parseInt(isPageTxns) + 1).toString())}
-                              >
-                                <FaArrowRight fontSize={12} />
-                              </Button>
-                              <Button
-                                size="xs"
-                                isDisabled={
-                                  parseInt(isPageTxns) >= txns.totalPage
-                                }
-                                onClick={() => handlePageTxns(txns.totalPage.toString())}
-                              >
-                                Last
-                              </Button>
-                            </Flex>
-                          ) :
-                            <Skeleton marginRight={"10px"} width={"20%"} height={"15px"} />
-                          }
+                                <Button
+                                  variant={"solid"}
+                                  size="xs"
+                                  isDisabled={parseInt(isPageTxns) === 1}
+                                  onClick={() => handlePageTxns("1")}
+                                >
+                                  First
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={parseInt(isPageTxns) === 1}
+                                  onClick={() =>
+                                    handlePageTxns(
+                                      (parseInt(isPageTxns) - 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowLeft fontSize={12} />
+                                </Button>
+                                <Text fontSize="xs">
+                                  {`Page ${isPageTxns} of ${txns.totalPage}`}
+                                </Text>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPageTxns) >= txns.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageTxns(
+                                      (parseInt(isPageTxns) + 1).toString()
+                                    )
+                                  }
+                                >
+                                  <FaArrowRight fontSize={12} />
+                                </Button>
+                                <Button
+                                  size="xs"
+                                  isDisabled={
+                                    parseInt(isPageTxns) >= txns.totalPage
+                                  }
+                                  onClick={() =>
+                                    handlePageTxns(txns.totalPage.toString())
+                                  }
+                                >
+                                  Last
+                                </Button>
+                              </Flex>
+                            )
+                          ) : (
+                            <Skeleton
+                              marginRight={"10px"}
+                              width={"20%"}
+                              height={"15px"}
+                            />
+                          )}
                         </Flex>
                         <TableContainer>
                           <Table>
                             <Thead>
                               <Tr>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Txhash</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Txhash
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Token ID</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Token ID
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Method</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Method
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Age</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Age
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Block</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Block
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>By</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    By
+                                  </Text>
                                 </Td>
                                 <Td>
-                                  <Text className={styles.Text} textAlign={'center'}>Gas Fee</Text>
+                                  <Text
+                                    className={styles.Text}
+                                    textAlign={"center"}
+                                  >
+                                    Gas Fee
+                                  </Text>
                                 </Td>
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {isLoadedTxns ? txns && txns.txs.map((tx, index) => (
-                                <Tr key={index}>
-                                  <Td>
-                                    <Flex
-                                      direction="row"
-                                      gap={1}
-                                      align="center"
-                                      justifyContent={"center"}
-                                    >
-                                      {tx.code !== 0 && (
-                                        <FaRegWindowClose
-                                          color="red"
-                                          fontSize={12}
-                                        />
-                                      )}
-                                      <Clickable
-                                        href={`/tx/${tx.txhash}`}
-                                      >
-                                        <Text className={styles.Text} style={{
-                                          color: "#5C34A2",
-                                          textDecoration: "none",
-                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                          // fontSize: "14px",
-                                          textAlign: "center",
-                                        }}>
-                                          {formatHex(tx.txhash)}
-                                        </Text>
-                                      </Clickable>
-                                    </Flex>
-                                  </Td>
-                                  <Td>
-                                    <Clickable
-                                      href={`/schema/${tx.decode_tx.nftSchemaCode ? tx.decode_tx.nftSchemaCode : tx.decode_tx.nft_schema_code}/${tx.decode_tx.tokenId}`}
-                                    >
-                                      <Text className={styles.Text} style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "14px",
-                                        textAlign: "center",
-                                      }}>
-                                        {tx.decode_tx.tokenId}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                  {formatMethod(tx.type, tx.decode_tx.toAddress? tx.decode_tx.toAddress: tx.decode_tx.to_address, tx.decode_tx.fromAddress? tx.decode_tx.fromAddress: tx.decode_tx.from_address, tx.decode_tx.action)}
-                                  </Td>
-                                  <Td>
-                                    <Text className={styles.Text} textAlign={'center'}>
-                                      {moment(tx.time_stamp).fromNow()}
-                                    </Text>
-                                  </Td>
-                                  <Td>
-                                    <Clickable
-                                      href={`/block/${tx.block_height}`}
-                                    >
-                                      <Text className={styles.Text} style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        // fontSize: "14px",
-                                        textAlign: "center"
-                                      }}>
-                                        {tx.block_height}
-                                      </Text>
-                                    </Clickable>
-                                  </Td>
-                                  <Td>
-                                    {tx.decode_tx.creator && (
-                                      <Clickable
-                                        href={`/address/${tx.decode_tx.creator}`}
-                                      >
-                                        <Text className={styles.Text} style={{
-                                          color: "#5C34A2",
-                                          textDecoration: "none",
-                                          fontFamily: "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                          // fontSize: "14px",
-                                          textAlign: "center"
-                                        }}>
-                                          {formatHex(tx.decode_tx.creator)}
-                                        </Text>
-                                      </Clickable>
-                                    )}
-                                  </Td>
-                                  <Td>
-                                    <Text className={styles.Text} textAlign={'center'}>{`${formatNumber(
-                                      convertUsixToSix(
-                                        parseInt(tx.decode_tx.fee_amount)
-                                      )
-                                    )} SIX`}</Text>
-                                  </Td>
-                                </Tr>
-                              )) :
-                                Array.from({ length: 10 }).map((_, index) => (
-                                  <Tr key={index}>
-                                    {Array.from({ length: 7 }).map((_, index) => (
-                                      <Td key={index}>
-                                        <Skeleton width={"auto"} height={"15px"} />
+                              {isLoadedTxns
+                                ? txns &&
+                                  txns.txs.map((tx, index) => (
+                                    <Tr key={index}>
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          gap={1}
+                                          align="center"
+                                          justifyContent={"center"}
+                                        >
+                                          {tx.code !== 0 && (
+                                            <FaRegWindowClose
+                                              color="red"
+                                              fontSize={12}
+                                            />
+                                          )}
+                                          <Clickable href={`/tx/${tx.txhash}`}>
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "14px",
+                                                textAlign: "center",
+                                              }}
+                                            >
+                                              {formatHex(tx.txhash)}
+                                            </Text>
+                                          </Clickable>
+                                        </Flex>
                                       </Td>
-                                    ))}
-                                  </Tr>
-                                ))
-                              }
+                                      <Td>
+                                        <Clickable
+                                          href={`/schema/${
+                                            tx.decode_tx.nftSchemaCode
+                                              ? tx.decode_tx.nftSchemaCode
+                                              : tx.decode_tx.nft_schema_code
+                                          }/${tx.decode_tx.tokenId}`}
+                                        >
+                                          <Text
+                                            className={styles.Text}
+                                            style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily:
+                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              // fontSize: "14px",
+                                              textAlign: "center",
+                                            }}
+                                          >
+                                            {tx.decode_tx.tokenId}
+                                          </Text>
+                                        </Clickable>
+                                      </Td>
+                                      <Td>
+                                        {formatMethod(
+                                          tx.type,
+                                          tx.decode_tx.toAddress
+                                            ? tx.decode_tx.toAddress
+                                            : tx.decode_tx.to_address,
+                                          tx.decode_tx.fromAddress
+                                            ? tx.decode_tx.fromAddress
+                                            : tx.decode_tx.from_address,
+                                          tx.decode_tx.action
+                                        )}
+                                      </Td>
+                                      <Td>
+                                        <Text
+                                          className={styles.Text}
+                                          textAlign={"center"}
+                                        >
+                                          {moment(tx.time_stamp).fromNow()}
+                                        </Text>
+                                      </Td>
+                                      <Td>
+                                        <Clickable
+                                          href={`/block/${tx.block_height}`}
+                                        >
+                                          <Text
+                                            className={styles.Text}
+                                            style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily:
+                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              // fontSize: "14px",
+                                              textAlign: "center",
+                                            }}
+                                          >
+                                            {tx.block_height}
+                                          </Text>
+                                        </Clickable>
+                                      </Td>
+                                      <Td>
+                                        {tx.decode_tx.creator && (
+                                          <Clickable
+                                            href={`/address/${tx.decode_tx.creator}`}
+                                          >
+                                            <Text
+                                              className={styles.Text}
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                // fontSize: "14px",
+                                                textAlign: "center",
+                                              }}
+                                            >
+                                              {formatHex(tx.decode_tx.creator)}
+                                            </Text>
+                                          </Clickable>
+                                        )}
+                                      </Td>
+                                      <Td>
+                                        <Text
+                                          className={styles.Text}
+                                          textAlign={"center"}
+                                        >{`${formatNumber(
+                                          convertUsixToSix(
+                                            parseInt(tx.decode_tx.fee_amount)
+                                          )
+                                        )} SIX`}</Text>
+                                      </Td>
+                                    </Tr>
+                                  ))
+                                : Array.from({ length: 10 }).map((_, index) => (
+                                    <Tr key={index}>
+                                      {Array.from({ length: 7 }).map(
+                                        (_, index) => (
+                                          <Td key={index}>
+                                            <Skeleton
+                                              width={"auto"}
+                                              height={"15px"}
+                                            />
+                                          </Td>
+                                        )
+                                      )}
+                                    </Tr>
+                                  ))}
                             </Tbody>
                           </Table>
                         </TableContainer>
@@ -801,9 +947,21 @@ export default function Schema({
                           readOnly
                           minH={500}
                         /> */}
-                        <Box minHeight={"200px"} height={"400px"} width={"auto"} overflowY="auto" overflowX="scroll" backgroundColor={"#f4f4f4"} borderRadius={"10px"} >
+                        <Box
+                          minHeight={"200px"}
+                          height={"400px"}
+                          width={"auto"}
+                          overflowY="auto"
+                          overflowX="scroll"
+                          backgroundColor={"#f4f4f4"}
+                          borderRadius={"10px"}
+                        >
                           <Flex p={3}>
-                            <DynamicReactJson src={schema} collapsed={1} displayDataTypes={false} />
+                            <DynamicReactJson
+                              src={schema}
+                              collapsed={1}
+                              displayDataTypes={false}
+                            />
                           </Flex>
                         </Box>
                       </TabPanel>
@@ -814,22 +972,22 @@ export default function Schema({
                           onPageChange={handleMetadaPageChange}
                         />
                         <Grid templateColumns="repeat(12, 1fr)" gap={6}>
-                          {isMetadataLoaded && items?.map((metadata, index) => (
-                            <GridItem
-                              colSpan={{ base: 6, md: 4, lg: 2 }}
-                              key={index}
-                            >
-                              <CustomCard>
-                                <Link
-                                  href={`/schema/${schema.code}/${metadata.token_id}`}
-                                  _hover={{
-                                    textDecoration: "none",
-                                  }}
-                                  as={LinkComponent}
-                                >
-                                  <motion.div whileHover={{ scale: 1.05 }}>
-                                    {
-                                      imageError ? (
+                          {isMetadataLoaded &&
+                            items?.map((metadata, index) => (
+                              <GridItem
+                                colSpan={{ base: 6, md: 4, lg: 2 }}
+                                key={index}
+                              >
+                                <CustomCard>
+                                  <Link
+                                    href={`/schema/${schema.code}/${metadata.token_id}`}
+                                    _hover={{
+                                      textDecoration: "none",
+                                    }}
+                                    as={LinkComponent}
+                                  >
+                                    <motion.div whileHover={{ scale: 1.05 }}>
+                                      {imageError ? (
                                         <Image
                                           src={"/logo-nftgen2-01.png"}
                                           alt="mfer"
@@ -837,49 +995,54 @@ export default function Schema({
                                         />
                                       ) : (
                                         <Image
-                                          src={metadata.image ? metadata.image : "/logo-nftgen2-01.png"}
+                                          src={
+                                            metadata.image
+                                              ? metadata.image
+                                              : "/logo-nftgen2-01.png"
+                                          }
                                           onError={checkImage}
                                           alt="mfer"
                                           width="100%"
                                         />
-                                      )
-                                    }
-                                  </motion.div>
-                                  <Flex direction="column" p={2}>
-                                    <Flex
-                                      direction="row"
-                                      gap={2}
-                                      align="center"
-                                    >
-                                      <Text
-                                        fontSize="sm"
-                                        fontWeight="bold"
-                                        color="dark"
+                                      )}
+                                    </motion.div>
+                                    <Flex direction="column" p={2}>
+                                      <Flex
+                                        direction="row"
+                                        gap={2}
+                                        align="center"
                                       >
-                                        #
-                                      </Text>
-                                      <Text fontSize="sm" color={"primary.500"}>
-                                        {metadata.token_id}
-                                      </Text>
+                                        <Text
+                                          fontSize="sm"
+                                          fontWeight="bold"
+                                          color="dark"
+                                        >
+                                          #
+                                        </Text>
+                                        <Text
+                                          fontSize="sm"
+                                          color={"primary.500"}
+                                        >
+                                          {metadata.token_id}
+                                        </Text>
+                                      </Flex>
                                     </Flex>
-                                  </Flex>
-                                </Link>
-                              </CustomCard>
-                            </GridItem>
-                          ))}
-                          {!isMetadataLoaded && !items && Array.from({ length: 12 }).map((_, index) => (
-                            <GridItem
-                              colSpan={{ base: 6, md: 4, lg: 2 }}
-                              key={index}
-                            >
-                              <CustomCard>
-                                <Skeleton
-                                  height="228px"
-                                  width="auto"
-                                />
-                              </CustomCard>
-                            </GridItem>
-                          ))}
+                                  </Link>
+                                </CustomCard>
+                              </GridItem>
+                            ))}
+                          {!isMetadataLoaded &&
+                            !items &&
+                            Array.from({ length: 12 }).map((_, index) => (
+                              <GridItem
+                                colSpan={{ base: 6, md: 4, lg: 2 }}
+                                key={index}
+                              >
+                                <CustomCard>
+                                  <Skeleton height="228px" width="auto" />
+                                </CustomCard>
+                              </GridItem>
+                            ))}
                         </Grid>
                         {/* <Suspense fallback={<LoadingMetadataBox />}>
                           <MetadataBox schema={schemacode} metadataPage={metadataPage}/>
@@ -898,12 +1061,10 @@ export default function Schema({
   );
 }
 
-
-
 export const getServerSideProps = async ({
   params: { schemacode },
-  // query: { page = "1", metadata_page = "1" },
-}: {
+}: // query: { page = "1", metadata_page = "1" },
+{
   params: { schemacode: string };
   // query: { page: string; metadata_page: string };
 }) => {
@@ -924,13 +1085,14 @@ export const getServerSideProps = async ({
   }
   const [organization = "", code = schema?.code ?? ""] =
     schema.code?.split(".") ?? [];
-  const [openseaCollection, totalMetaData, imgCollection, metadata] = await Promise.all([
-    code ? await getOpenseaCollectionByName(code) : null,
-    getNftCollectionNoLoop(schemacode),
-    getImgCollection(schemacode, "1"),
-    getMetadata(schemacode, "1"),
-    // getTxsFromSchema(schemacode, page ? page : "1", "20"),
-  ]);
+  const [openseaCollection, totalMetaData, imgCollection, metadata] =
+    await Promise.all([
+      code ? await getOpenseaCollectionByName(code) : null,
+      getNftCollectionNoLoop(schemacode),
+      getImgCollection(schemacode, "1"),
+      getMetadata(schemacode, "1"),
+      // getTxsFromSchema(schemacode, page ? page : "1", "20"),
+    ]);
 
   return {
     props: {

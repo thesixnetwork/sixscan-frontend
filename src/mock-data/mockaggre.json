@@ -11,9 +11,7 @@
   "time_stamp": "2022-11-15T09:50:23Z",
   "code": 0,
   "memo": "",
-  "related_addrs": [
-    "6x1urghn50kk0xav4f06u2"
-  ],
+  "related_addrs": ["6x1urghn50kk0xav4f06u2"],
   "messages": [
     {
       "@type": "/thesixnetwork.MsgPerformActionByAdmin",

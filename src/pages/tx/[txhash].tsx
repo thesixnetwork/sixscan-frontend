@@ -79,12 +79,12 @@ import {
   formatBank,
   convertAmountToSix,
   convertStringAmountToCoin,
-} from "@/utils/format";
+} from "@/libs/utils/format";
 import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
-import ENV from "@/utils/ENV";
-import { _LOG } from "@/utils/log_helper";
+import ENV from "@/libs/utils/ENV";
+import { _LOG } from "@/libs/utils/log_helper";
 import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";
@@ -1440,7 +1440,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 </Tr>
                                 {KeyMsg.map((key: any, index: any) => {
                                   // {console.log(key)}
-                                  if ( typeof message[key] === "string" &&
+                                  if (
+                                    typeof message[key] === "string" &&
                                     message[key].startsWith("6x")
                                   ) {
                                     if (key === "from_address") {

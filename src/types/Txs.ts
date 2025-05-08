@@ -63,7 +63,7 @@ export interface Transactions {
           amount: string;
         };
         gas_limit: string;
-        granter: string ;
+        granter: string;
         payer: string;
       };
     };

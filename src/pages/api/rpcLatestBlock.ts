@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import ENV from "@/utils/ENV";
-import {
-  getLatestBlock,
-} from "@/service/block";
+import ENV from "@/libs/utils/ENV";
+import { getLatestBlock } from "@/service/block";
 
 export default async function handler(
   req: NextApiRequest,
@@ -12,6 +10,6 @@ export default async function handler(
     const latestBlock = await getLatestBlock();
     res.status(200).json(latestBlock);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching metadata' });
+    res.status(500).json({ message: "Error fetching metadata" });
   }
 }

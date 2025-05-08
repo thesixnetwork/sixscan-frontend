@@ -1,5 +1,5 @@
 import axios from "axios";
-import ENV from "../utils/ENV";
+import ENV from "../libs/utils/ENV";
 import { Delegation, Pool, Validator } from "../types/Staking";
 // -------- CosmJS --------
 import { fromBech32, toBech32, toHex } from "@cosmjs/encoding";
@@ -23,7 +23,7 @@ export const getValidator = async (
   address: string
 ): Promise<Validator | null> => {
   if (!address.startsWith("6xvaloper")) {
-    return null
+    return null;
   }
   try {
     const res = await axios.get(
@@ -61,7 +61,7 @@ export const getDelegationsFromValidator = async (
   address: string
 ): Promise<Delegation[] | null> => {
   if (!address.startsWith("6xvaloper")) {
-    return null
+    return null;
   }
   try {
     const res = await axios.get(
@@ -78,5 +78,20 @@ export const getDelegationsFromValidator = async (
   } catch (error) {
     console.error(error);
     return null;
+  }
+};
+
+export const uptime = async (req: any, res: any) => {
+  try {
+    const validators = await axios.get(
+      `${process.env.API_URL}/cosmos/staking/v1beta1/validators`
+    );
+    const latestBlock = await axios.get(`${process.env.API_URL}/blocks/latest`);
+    // Process and return uptime data
+    res
+      .status(200)
+      .json({ validators: validators.data, latestBlock: latestBlock.data });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };
