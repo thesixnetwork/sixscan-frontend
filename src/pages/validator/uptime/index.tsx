@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {
+  Flex,
   Box,
   Container,
   Heading,
@@ -9,6 +10,7 @@ import {
   InputGroup,
   InputLeftElement,
 } from "@chakra-ui/react";
+import Head from "next/head";
 import { SearchIcon } from "@chakra-ui/icons";
 import UptimeGrid from "@/components/UptimeGrid";
 import { sha256 } from "@cosmjs/crypto";
@@ -122,32 +124,42 @@ export default function UptimePage() {
   );
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <Box mb={8}>
-        <Heading size="lg" mb={2}>
-          Validator Uptime
-        </Heading>
-        <Text color="gray.500">
-          Last 50 blocks signing activity for active validators
-        </Text>
-      </Box>
+    <Flex minHeight={"100vh"} direction={"column"} bgColor="lightest">
+      {/* testing eslint */}
+      <Head>
+        <title>SIXSCAN</title>
+        <meta name="description" content="SIXSCAN" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-      <InputGroup mb={6}>
-        <InputLeftElement pointerEvents="none">
-          <SearchIcon color="gray.300" />
-        </InputLeftElement>
-        <Input
-          placeholder="Search validators..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+      <Container maxW="container.xl" py={8}>
+        <Box mb={8}>
+          <Heading size="lg" mb={2}>
+            Validator Uptime
+          </Heading>
+          <Text color="gray.500">
+            Last 50 blocks signing activity for active validators
+          </Text>
+        </Box>
+
+        <InputGroup mb={6}>
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon color="gray.300" />
+          </InputLeftElement>
+          <Input
+            placeholder="Search validators..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </InputGroup>
+
+        <UptimeGrid
+          validators={filteredValidators}
+          isLoading={isLoading}
+          maxBlocks={50}
         />
-      </InputGroup>
-
-      <UptimeGrid
-        validators={filteredValidators}
-        isLoading={isLoading}
-        maxBlocks={50}
-      />
-    </Container>
+      </Container>
+    </Flex>
   );
 }
