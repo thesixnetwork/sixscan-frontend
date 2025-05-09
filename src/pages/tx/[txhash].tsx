@@ -84,7 +84,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/libs/utils/ENV";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 import axios from "axios";
 import { parse } from "path";
 import { DateTime } from "@cosmjs/tendermint-rpc";

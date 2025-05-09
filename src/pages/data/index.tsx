@@ -74,7 +74,7 @@ import {
   BlockNFTStat,
   LatestAction,
 } from "@/types/Nftmngr";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 import { useState, useEffect, Suspense } from "react";
 import ENV from "@/libs/utils/ENV";
 

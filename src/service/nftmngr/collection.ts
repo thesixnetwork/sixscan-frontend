@@ -2,7 +2,7 @@ import { NFTSchema } from "@/types/Nftmngr";
 import axios from "axios";
 import ENV from "../../libs/utils/ENV";
 import filter from "lodash";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 export const getNftCollection = async (
   schemaCode: string,

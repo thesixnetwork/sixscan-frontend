@@ -1,6 +1,6 @@
 import { getValidator } from "@/service/staking";
 import { BlockMeta, BlockResult } from "@/types/Block";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 export const getBlockRewardAmount = (
   block: BlockMeta,

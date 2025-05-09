@@ -36,7 +36,7 @@ import { LinkComponent } from "@/components/Chakralink";
 
 // import { getSchemaByAddress, getSchemaByCodeAddr, getSchemaByCodeAddr2 } from "@/service/nftmngr";
 import { Clickable } from "./Clickable";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 type SearchResult = {
   type: "address" | "tx" | "block" | "schema" | "contract";

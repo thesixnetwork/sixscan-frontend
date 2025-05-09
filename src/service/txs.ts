@@ -1,6 +1,6 @@
 import ENV from "@/libs/utils/ENV";
 import axios from "axios";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 export const getTxsFromSchema = async (
   schemaCode: string,

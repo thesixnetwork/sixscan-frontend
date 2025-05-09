@@ -42,7 +42,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import ENV from "../../libs/utils/ENV";
 import { formatHex } from "@/libs/utils/format";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 interface Props {
   block: Block;

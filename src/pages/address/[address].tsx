@@ -111,7 +111,7 @@ import { getPriceFromCoingecko } from "@/service/coingecko";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
-import { _LOG } from "@/libs/utils/log_helper";
+import { _LOG } from "@/libs/utils/logHelper";
 
 // create a tokens map
 
