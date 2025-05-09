@@ -11,27 +11,36 @@ import {
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 import UptimeGrid from "@/components/UptimeGrid";
-import { consensusPubkeyToHexAddress } from "@/libs/address/address";
+import { sha256 } from "@cosmjs/crypto";
+import { fromBase64, toHex } from "@cosmjs/encoding";
+import axios from "axios";
+import ENV from "@/libs/utils/ENV";
 
-interface ValidatorData {
-  operator_address: string;
-  consensus_pubkey: {
-    "@type": string;
-    key: string;
-  };
-  description: {
-    moniker: string;
-  };
-  status: string;
-  tokens: string;
+// Move types to types/Uptime.ts
+interface ValidatorUptime {
+  consensusAddress: string;
+  operatorAddress: string;
+  moniker: string;
+  votingPower: string;
+  blocks: {
+    height: number;
+    signed: boolean;
+  }[];
 }
 
-interface BlockSignature {
-  validator_address: string;
-}
+const consensusPubkeyToHexAddress = (pubkey: {
+  type: string;
+  value: string;
+}) => {
+  if (pubkey.type === "tendermint/PubKeyEd25519") {
+    const raw = sha256(fromBase64(pubkey.value));
+    return toHex(raw).slice(0, 40).toUpperCase();
+  }
+  throw new Error("Unsupported key type");
+};
 
 export default function UptimePage() {
-  const [validators, setValidators] = useState([]);
+  const [validators, setValidators] = useState<ValidatorUptime[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const toast = useToast();
@@ -39,36 +48,31 @@ export default function UptimePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch validators
-        const [validatorsRes, latestBlockRes] = await Promise.all([
-          fetch(
-            "https://api1.fivenet.sixprotocol.net/cosmos/staking/v1beta1/validators"
-          ),
-          fetch("https://rpc1.fivenet.sixprotocol.net/block"),
-        ]);
+        // Use your API endpoint instead of direct calls
+        const response = await fetch("/api/uptime");
+        const data = await response.json();
 
-        const validatorsData = await validatorsRes.json();
-        const latestBlock = await latestBlockRes.json();
+        if (!data.validators?.validators || !data.latestBlockRes) {
+          throw new Error("Invalid data received from API");
+        }
 
-        const latestHeight = parseInt(latestBlock.result.block.header.height);
+        const latestHeight = parseInt(data.latestBlockRes.block.header.height);
 
         // Get last 50 blocks
         const blockPromises = [];
         for (let i = 0; i < 50; i++) {
           if (latestHeight - i <= 0) break;
           blockPromises.push(
-            fetch(
-              `https://rpc1.fivenet.sixprotocol.net/block?height=${
-                latestHeight - i
-              }`
-            ).then((res) => res.json())
+            axios
+              .get(`${ENV.RPC_URL}/block?height=${latestHeight - i}`)
+              .then((res) => res.data)
           );
         }
 
         const blocks = await Promise.all(blockPromises);
 
         // Process validators and their signing history
-        const processedValidators = validatorsData.validators
+        const processedValidators = data.validators.validators
           .filter((v: any) => v.status === "BOND_STATUS_BONDED")
           .map((validator: any) => {
             const consensusPubkey = {
@@ -81,7 +85,8 @@ export default function UptimePage() {
             const signingHistory = blocks.map((block) => ({
               height: parseInt(block.result.block.header.height),
               signed: block.result.block.last_commit.signatures.some(
-                (sig: BlockSignature) => sig.validator_address === consensusAddr
+                (sig: { validator_address: string }) =>
+                  sig.validator_address === consensusAddr
               ),
             }));
 
@@ -108,12 +113,11 @@ export default function UptimePage() {
     };
 
     fetchData();
-    // Set up polling every 6 seconds
     const interval = setInterval(fetchData, 6000);
     return () => clearInterval(interval);
   }, [toast]);
 
-  const filteredValidators = validators.filter((v: any) =>
+  const filteredValidators = validators.filter((v) =>
     v.moniker.toLowerCase().includes(searchQuery.toLowerCase())
   );
 

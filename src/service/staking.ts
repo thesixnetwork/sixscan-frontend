@@ -81,15 +81,39 @@ export const getDelegationsFromValidator = async (
   }
 };
 
+export const getBlockByHeight = async (height: number) => {
+  try {
+    const res = await axios.get(`${ENV.RPC_URL}/block?height=${height}`);
+    return res.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
 export const uptime = async () => {
   try {
-    const validators = await axios.get(
-      `${ENV.API_URL}/cosmos/staking/v1beta1/validators`
-    );
-    const latestBlock = await axios.get(`${ENV.API_URL}/blocks/latest`);
-    return { validators, latestBlock }
-  } catch (error: any) {
-    console.error(error);
+    const [validators, latestBlock] = await Promise.all([
+      axios.get(`${ENV.API_URL}/cosmos/staking/v1beta1/validators`),
+      axios.get(`${ENV.API_URL}/blocks/latest`),
+    ]);
+
+    const latestHeight = parseInt(latestBlock.data.block.header.height);
+
+    // Get last 50 blocks
+    const blockPromises = Array.from({ length: 50 }, (_, i) => {
+      const height = latestHeight - i;
+      return height > 0 ? getBlockByHeight(height) : null;
+    }).filter(Boolean);
+
+    const blocks = await Promise.all(blockPromises);
+
+    return {
+      validators,
+      latestBlock,
+      blocks: blocks.filter(Boolean),
+    };
+  } catch (error) {
     return null;
   }
 };
