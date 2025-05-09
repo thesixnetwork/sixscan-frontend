@@ -1,5 +1,5 @@
 # base image
-FROM node:16.0.0-alpine
+FROM node:18.0.0-alpine
 
 # Set environment variables.
 
