@@ -2,18 +2,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 let dufaultScanUrl;
+let rpcURL;
+let apiURL;
 
 let lower_chainName = process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase();
 
 if (lower_chainName === "mainnet" || lower_chainName === "sixnet") {
   dufaultScanUrl = "https://evm.sixscan.io";
+  rpcURL = "https://sixnet-rpc.sixprotocol.net";
+  apiURL = "https://sixnet-api.sixprotocol.net";
 } else {
+  rpcURL = "https://rpc1.fivenet.sixprotocol.net";
+  apiURL = "https://api1.fivenet.sixprotocol.net";
   dufaultScanUrl = "https://fivenet.evm.sixscan.io";
 }
 
 const ENV = {
-  API_URL: process.env.API_URL || "https://api1.fivenet.sixprotocol.net",
-  RPC_URL: process.env.RPC_URL || "https://rpc2.fivenet.sixprotocol.net",
+  API_URL: process.env.API_URL || apiURL,
+  RPC_URL: process.env.RPC_URL || rpcURL,
   ARCH_API_URL:
     process.env.ARCH_API_URL ||
     process.env.API_URL ||
@@ -21,7 +27,7 @@ const ENV = {
   ARCH_RPC_URL:
     process.env.ARCH_RPC_URL ||
     process.env.RPC_URL ||
-    "https://rpc2.fivenet.sixprotocol.net",
+    "https://rpc1.fivenet.sixprotocol.net",
   NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
   TXS_API_URL:
     process.env.TXS_API_URL ||
