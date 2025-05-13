@@ -538,6 +538,11 @@ const NAV_ITEMS: Array<NavItem> = [
         subLabel: "Leaderboard of validators",
         href: "/validators",
       },
+      {
+        label: "Uptime",
+        subLabel: "Validator uptime",
+        href: "/validators/uptime",
+      },
     ],
   },
 ];
