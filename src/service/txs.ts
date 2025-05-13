@@ -149,3 +149,19 @@ export const getTxEVMFromHash = async (hash: string): Promise<any> => {
     return null;
   }
 };
+
+export const getLastNTransactions = async (limit: number): Promise<any> => {
+  try {
+    const res = await axios.get(
+      `${ENV.TXS_API_URL}/api/last-n-transactions?limit=${limit}`
+    );
+    const accountTxs = res.data;
+    if (!accountTxs) {
+      return null;
+    }
+    return accountTxs;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
