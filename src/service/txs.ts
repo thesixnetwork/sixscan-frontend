@@ -150,10 +150,10 @@ export const getTxEVMFromHash = async (hash: string): Promise<any> => {
   }
 };
 
-export const getLastNTransactions = async (limit: number): Promise<any> => {
+export const getLastNTransactions = async (limit: string, page:string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.TXS_API_URL}/api/last-n-transactions?limit=${limit}`
+      `${ENV.TXS_API_URL}/api/last-n-transactions?limit=${limit}&page=${page}`
     );
     const accountTxs = res.data;
     if (!accountTxs) {

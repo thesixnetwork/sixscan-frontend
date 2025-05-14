@@ -347,13 +347,10 @@ export default function Address({ allTxs }: Props) {
 export const getServerSideProps = async (context: {
   query: { page: string };
 }) => {
-  const page = parseInt(context.query.page || "1", 10);
+  const page = context.query.page || "1";
   const pageLimit = 20;
 
-  const allTxs = await getLastNTransactions(
-    pageLimit.toString(),
-    page.toString()
-  );
+  const allTxs = await getLastNTransactions(String(pageLimit), page);
 
   return {
     props: { allTxs },
