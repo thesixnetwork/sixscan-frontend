@@ -22,6 +22,7 @@ env:
   CONSOLE_LOG_ENABLE: ${{ vars.CONSOLE_LOG_ENABLE }}
   CONSOLE_TIME_ENABLE: ${{ vars.CONSOLE_TIME_ENABLE }}
   NEXT_PUBLIC_CHAIN_NAME: ${{ vars.NEXT_PUBLIC_CHAIN_NAME }}
+  CONTAINER_REGISTRY: asia-southeast1-docker.pkg.dev
 
 jobs:
   build-and-deploy:
@@ -46,14 +47,14 @@ jobs:
           gcloud --quiet auth configure-docker
       - name: Build and tag image
         run: |-
-          docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag "asia-southeast1-docker.pkg.dev/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA"
+          docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag "$CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA"
       - name: Push image to GCR
         run: |-
-          docker push asia-southeast1-docker.pkg.dev/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA
+          docker push $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA
       - name: Deploy
         run: |-
           gcloud components install beta --quiet
-          gcloud beta run deploy $REPO_NAME --image gcr.io/$CLOUD_RUN_PROJECT_ID/$REPO_NAME:$GITHUB_SHA \
+          gcloud beta run deploy $REPO_NAME --image $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA \
             --project $CLOUD_RUN_PROJECT_ID \
             --platform managed \
             --region $CLOUD_RUN_REGION \
