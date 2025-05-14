@@ -529,6 +529,11 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Blockchain",
     children: [
       {
+        label: "All Transactions",
+        subLabel: "Latest transactions from the network",
+        href: "/txs",
+      },
+      {
         label: "Blocks",
         subLabel: "Latest Blocks from the network",
         href: "/blocks",
