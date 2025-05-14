@@ -6,63 +6,40 @@ import {
   Container,
   Grid,
   GridItem,
-  Divider,
   Table,
   TableContainer,
   Tbody,
   Tr,
   Td,
-  Badge,
   Thead,
   Tabs,
   TabList,
   TabPanels,
   Tab,
   TabPanel,
-  Button,
   Spacer,
-  Tooltip,
 } from "@chakra-ui/react";
 // ------------------------- NextJS -------------------------
 import Head from "next/head";
 // ------------------------- Styles -------------------------
-import {
-  FaArrowRight,
-  FaCopy,
-  FaSortAmountDown,
-  FaRegWindowClose,
-  FaArrowLeft,
-} from "react-icons/fa";
+import { FaSortAmountDown, FaRegWindowClose } from "react-icons/fa";
 // ------------- Components ----------------
-import NavBar from "@/components/NavBar";
 import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
-import { LinkComponent } from "@/components/Chakralink";
 
 import { formatHex } from "@/libs/utils/format";
-import { validateAddress } from "@/libs/utils/validate";
 import { useEffect, useState } from "react";
-import { getValidator } from "@/service/staking";
-import { Validator } from "@/types/Staking";
-import { Balance } from "@/types/Bank";
 // ------------------------- Helper Libs -------------------------
 import moment from "moment";
-import { getAccount } from "@/service/auth";
-import { Account } from "@/types/Auth";
-import { getBalance, getBalances } from "@/service/bank";
 import {
   formatNumber,
   convertUsixToSix,
   convertAsixToSix,
-  convertDecimalToPercent,
   formatCoinNumber,
   formatMethod,
 } from "@/libs/utils/format";
 
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
-import { getLastNTransactions, getTxsFromAddress } from "@/service/txs";
-import { AccountTxs } from "@/types/Txs";
+import { getLastNTransactions } from "@/service/txs";
 import { _LOG } from "@/libs/utils/logHelper";
 
 interface Props {
@@ -70,7 +47,6 @@ interface Props {
 }
 
 export default function Address({ allTxs }: Props) {
-  const [isCopied, setIsCopied] = useState(false);
   const [totalValue, setTotalValue] = useState(0);
   let totalValueTmp = 0;
 
@@ -145,8 +121,8 @@ export default function Address({ allTxs }: Props) {
                               </Tr>
                             </Thead>
                             <Tbody>
-                              {allTxs &&
-                                allTxs.map((tx: any, index: any) => (
+                              {allTxs.txs &&
+                                allTxs.txs.map((tx: any, index: any) => (
                                   <Tr key={index}>
                                     <Td>
                                       <Flex
@@ -369,14 +345,17 @@ export default function Address({ allTxs }: Props) {
 }
 
 export const getServerSideProps = async (context: {
-  params: { address: string };
   query: { page: string };
 }) => {
-  const allTxs = await getLastNTransactions(20);
+  const page = parseInt(context.query.page || "1", 10);
+  const pageLimit = 20;
+
+  const allTxs = await getLastNTransactions(
+    pageLimit.toString(),
+    page.toString()
+  );
 
   return {
-    props: {
-      allTxs,
-    },
+    props: { allTxs },
   };
 };
