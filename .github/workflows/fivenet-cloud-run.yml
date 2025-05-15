@@ -42,7 +42,7 @@ jobs:
         run: |-
           gcloud services enable containerregistry.googleapis.com
           gcloud services enable run.googleapis.com
-          gcloud --quiet auth configure-docker
+          gcloud --quiet auth configure-docker $CONTAINER_REGISTRY
       - name: Build and tag image
         run: |-
           docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA
