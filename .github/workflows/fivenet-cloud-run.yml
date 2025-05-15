@@ -45,7 +45,7 @@ jobs:
           gcloud --quiet auth configure-docker
       - name: Build and tag image
         run: |-
-          docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag "$CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA"
+          docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA
       - name: Push image to GCR
         run: |-
           docker push $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA
