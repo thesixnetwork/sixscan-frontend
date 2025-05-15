@@ -52,7 +52,7 @@ jobs:
       - name: Deploy
         run: |-
           gcloud components install beta --quiet
-          gcloud beta run deploy $REPO_NAME --image $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME$IMAGE_NAME:$GITHUB_SHA \
+          gcloud beta run deploy $REPO_NAME --image $CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA \
             --project $CLOUD_RUN_PROJECT_ID \
             --platform managed \
             --region $CLOUD_RUN_REGION \
