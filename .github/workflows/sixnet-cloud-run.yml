@@ -44,7 +44,7 @@ jobs:
         run: |-
           gcloud services enable containerregistry.googleapis.com
           gcloud services enable run.googleapis.com
-          gcloud --quiet auth configure-docker
+          gcloud --quiet auth configure-docker $CONTAINER_REGISTRY
       - name: Build and tag image
         run: |-
           docker build . --build-arg NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME --tag "$CONTAINER_REGISTRY/$CLOUD_RUN_PROJECT_ID/$REPO_NAME/$IMAGE_NAME:$GITHUB_SHA"
@@ -61,5 +61,4 @@ jobs:
             --allow-unauthenticated \
             --set-env-vars API_URL=$API_URL,RPC_URL=$RPC_URL,TXS_API_URL=$TXS_API_URL,DATA_CHAIN_TXS_API_URL=$DATA_CHAIN_TXS_API_URL,ARCH_API_URL=$ARCH_API_URL,ARCH_RPC_URL=$ARCH_RPC_URL \
             --set-env-vars EVM_RPC_URL=$EVM_RPC_URL,BLOCK_SCOUT_API_URL=$BLOCK_SCOUT_API_URL,CONSOLE_LOG_ENABLE=$CONSOLE_LOG_ENABLE,CONSOLE_TIME_ENABLE=$CONSOLE_TIME_ENABLE,NEXT_PUBLIC_CHAIN_NAME=$NEXT_PUBLIC_CHAIN_NAME \
-            --set-env-vars PORT=3000 \
             --quiet
