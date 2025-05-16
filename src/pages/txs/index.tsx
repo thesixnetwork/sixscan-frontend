@@ -41,6 +41,7 @@ import {
 
 import { getLastNTransactions } from "@/service/txs";
 import { _LOG } from "@/libs/utils/logHelper";
+import { isArray } from "lodash";
 
 interface Props {
   allTxs: any;
@@ -122,211 +123,193 @@ export default function Address({ allTxs }: Props) {
                             </Thead>
                             <Tbody>
                               {allTxs.txs &&
-                                allTxs.txs.map((tx: any, index: any) => (
-                                  <Tr key={index}>
-                                    <Td>
-                                      <Flex
-                                        direction="row"
-                                        gap={1}
-                                        align="center"
-                                        justifyContent={"center"}
-                                      >
-                                        {tx.code !== 0 && (
-                                          <FaRegWindowClose
-                                            color="red"
-                                            fontSize={12}
-                                          />
+                                allTxs.txs.map((tx: any, index: any) => {
+                                  const decode_tx = tx.decode_tx || {};
+                                  // fallback values
+                                  const toAddress =
+                                    decode_tx.toAddress ??
+                                    decode_tx.to_address ??
+                                    "";
+                                  const fromAddress =
+                                    decode_tx.fromAddress ??
+                                    decode_tx.from_address ??
+                                    "";
+                                  const delegatorAddress =
+                                    decode_tx.delegatorAddress ??
+                                    decode_tx.delegator_address ??
+                                    "";
+                                  const validatorAddress =
+                                    decode_tx.validatorAddress ??
+                                    decode_tx.validator_address ??
+                                    "";
+                                  const action = decode_tx.action ?? "";
+                                  const amount = isArray(decode_tx.amount)? decode_tx.amount[0] : decode_tx.amount;
+                                  const feeAmount = decode_tx.fee_amount ?? "0";
+                                  return (
+                                    <Tr key={index}>
+                                      <Td>
+                                        <Flex
+                                          direction="row"
+                                          gap={1}
+                                          align="center"
+                                          justifyContent={"center"}
+                                        >
+                                          {tx.code !== 0 && (
+                                            <FaRegWindowClose
+                                              color="red"
+                                              fontSize={12}
+                                            />
+                                          )}
+                                          <Clickable href={`/tx/${tx.txhash}`}>
+                                            <Text
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {formatHex(tx.txhash)}
+                                            </Text>
+                                          </Clickable>
+                                        </Flex>
+                                      </Td>
+                                      <Td>
+                                        {formatMethod(
+                                          tx.type,
+                                          toAddress,
+                                          fromAddress,
+                                          action
                                         )}
-                                        <Clickable href={`/tx/${tx.txhash}`}>
-                                          <Text
-                                            style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily:
-                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {formatHex(tx.txhash)}
-                                          </Text>
-                                        </Clickable>
-                                      </Flex>
-                                    </Td>
-                                    <Td>
-                                      {formatMethod(
-                                        tx.type,
-                                        tx.decode_tx.toAddress
-                                          ? tx.decode_tx.toAddress
-                                          : tx.decode_tx.to_address,
-                                        tx.decode_tx.fromAddress
-                                          ? tx.decode_tx.fromAddress
-                                          : tx.decode_tx.from_address,
-                                        tx.decode_tx.action
-                                      )}
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      <Text>
-                                        {moment(tx.time_stamp).fromNow()}
-                                      </Text>
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      <Clickable
-                                        href={`/block/${tx.block_height}`}
-                                      >
-                                        <Text
-                                          style={{
-                                            color: "#5C34A2",
-                                            textDecoration: "none",
-                                            fontFamily:
-                                              "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                            fontSize: "12px",
-                                          }}
-                                        >
-                                          {tx.block_height}
-                                        </Text>
-                                      </Clickable>
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      {" "}
-                                      {tx.decode_tx.toAddress ||
-                                      tx.decode_tx.to_address ? (
-                                        <Clickable
-                                          href={`/address/${
-                                            tx.decode_tx.fromAddress
-                                              ? tx.decode_tx.fromAddress
-                                              : tx.decode_tx.from_address
-                                          }`}
-                                        >
-                                          <Text
-                                            style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily:
-                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {formatHex(
-                                              tx.decode_tx.fromAddress
-                                                ? tx.decode_tx.fromAddress
-                                                : tx.decode_tx.from_address
-                                            )}
-                                          </Text>
-                                        </Clickable>
-                                      ) : (
-                                        <Clickable
-                                          href={`/address/${
-                                            tx.decode_tx.delegatorAddress
-                                              ? tx.decode_tx.delegatorAddress
-                                              : tx.decode_tx.delegator_address
-                                          }`}
-                                        >
-                                          <Text
-                                            style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily:
-                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {formatHex(
-                                              tx.decode_tx?.delegatorAddress ??
-                                                tx.decode_tx
-                                                  ?.delegator_address ??
-                                                tx.decode_tx?.fromAddress ??
-                                                tx.decode_tx?.from_address
-                                            )}
-                                          </Text>
-                                        </Clickable>
-                                      )}
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      {tx.decode_tx.toAddress ||
-                                      tx.decode_tx.to_address ? (
-                                        <Clickable
-                                          href={`/address/${
-                                            tx.decode_tx.toAddress
-                                              ? tx.decode_tx.toAddress
-                                              : tx.decode_tx.to_address
-                                          }`}
-                                        >
-                                          <Text
-                                            style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily:
-                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {formatHex(
-                                              tx.decode_tx.toAddress
-                                                ? tx.decode_tx.toAddress
-                                                : tx.decode_tx.to_address
-                                            )}
-                                          </Text>
-                                        </Clickable>
-                                      ) : (
-                                        <Clickable
-                                          href={`/address/${
-                                            tx.decode_tx.validatorAddress
-                                              ? tx.decode_tx.validatorAddress
-                                              : tx.decode_tx.validator_address
-                                          }`}
-                                        >
-                                          <Text
-                                            style={{
-                                              color: "#5C34A2",
-                                              textDecoration: "none",
-                                              fontFamily:
-                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                              fontSize: "12px",
-                                            }}
-                                          >
-                                            {formatHex(
-                                              tx.decode_tx?.validatorAddress ??
-                                                tx.decode_tx
-                                                  ?.validator_address ??
-                                                tx.decode_tx?.toAddress ??
-                                                tx.decode_tx?.to_address
-                                            )}
-                                          </Text>
-                                        </Clickable>
-                                      )}
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      {tx.decode_tx.amount && (
+                                      </Td>
+                                      <Td textAlign={"center"}>
                                         <Text>
-                                          {`${formatCoinNumber(
-                                            tx.decode_tx.amount
-                                          )} ${
-                                            (tx.decode_tx.amount.denom ||
-                                              tx.decode_tx.amount[0].denom) ==
-                                            "usix"
-                                              ? "SIX"
-                                              : tx.decode_tx.amount.denom
-                                          }`}
+                                          {moment(tx.time_stamp).fromNow()}
                                         </Text>
-                                      )}
-                                    </Td>
-                                    <Td textAlign={"center"}>
-                                      {tx.decode_tx.amount?.denom == "usix" ? (
-                                        <Text>{`${formatNumber(
-                                          convertUsixToSix(
-                                            parseInt(tx.decode_tx.fee_amount)
-                                          )
-                                        )} SIX`}</Text>
-                                      ) : (
-                                        <Text>{`${formatNumber(
-                                          convertAsixToSix(
-                                            parseInt(tx.decode_tx.fee_amount)
-                                          )
-                                        )} SIX`}</Text>
-                                      )}
-                                    </Td>
-                                  </Tr>
-                                ))}
+                                      </Td>
+                                      <Td textAlign={"center"}>
+                                        <Clickable
+                                          href={`/block/${tx.block_height}`}
+                                        >
+                                          <Text
+                                            style={{
+                                              color: "#5C34A2",
+                                              textDecoration: "none",
+                                              fontFamily:
+                                                "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                              fontSize: "12px",
+                                            }}
+                                          >
+                                            {tx.block_height}
+                                          </Text>
+                                        </Clickable>
+                                      </Td>
+                                      <Td textAlign={"center"}>
+                                        {toAddress ? (
+                                          <Clickable
+                                            href={`/address/${fromAddress}`}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {formatHex(fromAddress)}
+                                            </Text>
+                                          </Clickable>
+                                        ) : (
+                                          <Clickable
+                                            href={`/address/${delegatorAddress}`}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {formatHex(
+                                                delegatorAddress || fromAddress
+                                              )}
+                                            </Text>
+                                          </Clickable>
+                                        )}
+                                      </Td>
+                                      <Td textAlign={"center"}>
+                                        {toAddress ? (
+                                          <Clickable
+                                            href={`/address/${toAddress}`}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {formatHex(toAddress)}
+                                            </Text>
+                                          </Clickable>
+                                        ) : (
+                                          <Clickable
+                                            href={`/address/${validatorAddress}`}
+                                          >
+                                            <Text
+                                              style={{
+                                                color: "#5C34A2",
+                                                textDecoration: "none",
+                                                fontFamily:
+                                                  "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                                fontSize: "12px",
+                                              }}
+                                            >
+                                              {formatHex(
+                                                validatorAddress || toAddress
+                                              )}
+                                            </Text>
+                                          </Clickable>
+                                        )}
+                                      </Td>
+                                      <Td textAlign={"center"}>
+                                        {amount && (
+                                          <Text>
+                                            {`${formatCoinNumber(amount)} ${
+                                              (amount.denom ||
+                                                (Array.isArray(amount) &&
+                                                  amount[0]?.denom)) === "usix"
+                                                ? "SIX"
+                                                : amount.denom
+                                            }`}
+                                          </Text>
+                                        )}
+                                      </Td>
+                                      <Td textAlign={"center"}>
+                                        {amount?.denom === "usix" ? (
+                                          <Text>{`${formatNumber(
+                                            convertUsixToSix(
+                                              parseInt(feeAmount)
+                                            )
+                                          )} SIX`}</Text>
+                                        ) : (
+                                          <Text>{`${formatNumber(
+                                            convertAsixToSix(
+                                              parseInt(feeAmount)
+                                            )
+                                          )} SIX`}</Text>
+                                        )}
+                                      </Td>
+                                    </Tr>
+                                  );
+                                })}
                             </Tbody>
                           </Table>
                         </TableContainer>
