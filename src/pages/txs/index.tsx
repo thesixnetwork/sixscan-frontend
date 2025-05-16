@@ -124,7 +124,25 @@ export default function Address({ allTxs }: Props) {
                             <Tbody>
                               {allTxs.txs &&
                                 allTxs.txs.map((tx: any, index: any) => {
+                                  const txTypes = tx.type;
                                   const decode_tx = tx.decode_tx || {};
+                                  let feeAmount = "0";
+                                  if (
+                                    txTypes ===
+                                    "/ethermint.evm.v1.MsgEthereumTx"
+                                  ) {
+                                    feeAmount = formatNumber(
+                                      convertAsixToSix(
+                                        parseInt(decode_tx.fee_amount)
+                                      )
+                                    );
+                                  } else {
+                                    feeAmount = formatNumber(
+                                      convertUsixToSix(
+                                        parseInt(decode_tx.fee_amount)
+                                      )
+                                    );
+                                  }
                                   // fallback values
                                   const toAddress =
                                     decode_tx.toAddress ??
@@ -143,8 +161,9 @@ export default function Address({ allTxs }: Props) {
                                     decode_tx.validator_address ??
                                     "";
                                   const action = decode_tx.action ?? "";
-                                  const amount = isArray(decode_tx.amount)? decode_tx.amount[0] : decode_tx.amount;
-                                  const feeAmount = decode_tx.fee_amount ?? "0";
+                                  const amount = Array.isArray(decode_tx.amount)
+                                    ? decode_tx.amount[0]
+                                    : decode_tx.amount;
                                   return (
                                     <Tr key={index}>
                                       <Td>
@@ -293,19 +312,7 @@ export default function Address({ allTxs }: Props) {
                                         )}
                                       </Td>
                                       <Td textAlign={"center"}>
-                                        {amount?.denom === "usix" ? (
-                                          <Text>{`${formatNumber(
-                                            convertUsixToSix(
-                                              parseInt(feeAmount)
-                                            )
-                                          )} SIX`}</Text>
-                                        ) : (
-                                          <Text>{`${formatNumber(
-                                            convertAsixToSix(
-                                              parseInt(feeAmount)
-                                            )
-                                          )} SIX`}</Text>
-                                        )}
+                                        <Text>{`${feeAmount} SIX`}</Text>
                                       </Td>
                                     </Tr>
                                   );
