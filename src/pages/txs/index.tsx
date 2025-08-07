@@ -161,9 +161,7 @@ export default function Address({ allTxs }: Props) {
                                     decode_tx.validator_address ??
                                     "";
                                   const action = decode_tx.action ?? "";
-                                  const amount = Array.isArray(decode_tx.amount)
-                                    ? decode_tx.amount[0]
-                                    : decode_tx.amount;
+                                  const amount = Array.isArray(decode_tx.amount) ? decode_tx.amount[0] : decode_tx.amount;
                                   return (
                                     <Tr key={index}>
                                       <Td>
@@ -302,11 +300,7 @@ export default function Address({ allTxs }: Props) {
                                         {amount && (
                                           <Text>
                                             {`${formatCoinNumber(amount)} ${
-                                              (amount.denom ||
-                                                (Array.isArray(amount) &&
-                                                  amount[0]?.denom)) === "usix"
-                                                ? "SIX"
-                                                : amount.denom
+                                              (amount.denom || (Array.isArray(amount) && amount[0]?.denom)) === "usix" ? "SIX" : amount.denom
                                             }`}
                                           </Text>
                                         )}
