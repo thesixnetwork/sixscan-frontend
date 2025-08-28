@@ -81,7 +81,7 @@ export const UptimeGrid: React.FC<UptimeGridProps> = ({
                 </Text>
               </Tooltip>
               <Text fontSize="xs" color="gray.500">
-                Power: {(Number(validator.votingPower)/1e6).toLocaleString()}
+                Power: {(Number(validator.votingPower) / 1e6).toLocaleString()}
               </Text>
             </HStack>
 

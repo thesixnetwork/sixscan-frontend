@@ -119,7 +119,7 @@ export default function Data({
   // nftActionCount,
   blockNFTStat,
 }: // latestAction,
-  Props) {
+Props) {
   // _LOG(nftActionCount)
 
   const [isLoaded, setIsLoaded] = useState(false);
@@ -340,7 +340,7 @@ export default function Data({
                   </TableContainer>
                 </CustomCard> */}
 
-                { /* FEATUR STAT
+                {/* FEATUR STAT
                 <CustomCard>
                   <Tabs isLazy>
                     <TabList>
@@ -584,8 +584,8 @@ export default function Data({
                 </CustomCard>
               */}
                 {/*
-               * 
-              */}
+                 *
+                 */}
               </GridItem>
 
               {/*
@@ -853,51 +853,34 @@ export default function Data({
                       <Tbody>
                         {isLoaded
                           ? latestAction &&
-                          latestAction.txs.map((tx: any, index: number) => (
-                            <Tr key={index}>
-                              <Td>
-                                <Flex direction="column">
-                                  <Clickable href={`/tx/${tx.txhash}`}>
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(tx.txhash)}
-                                    </Text>
-                                  </Clickable>
-                                </Flex>
-                              </Td>
-                              <Td>
-                                <Badge
-                                  justifyContent={"center"}
-                                  display={"flex"}
-                                  width="100%"
-                                >
-                                  <Text
-                                    style={{
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "10px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    Action:
-                                  </Text>
-                                  <Tooltip
-                                    label={tx.decode_tx.action}
-                                    aria-label="A tooltip"
+                            latestAction.txs.map((tx: any, index: number) => (
+                              <Tr key={index}>
+                                <Td>
+                                  <Flex direction="column">
+                                    <Clickable href={`/tx/${tx.txhash}`}>
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(tx.txhash)}
+                                      </Text>
+                                    </Clickable>
+                                  </Flex>
+                                </Td>
+                                <Td>
+                                  <Badge
+                                    justifyContent={"center"}
+                                    display={"flex"}
+                                    width="100%"
                                   >
                                     <Text
-                                      marginLeft={"4px"}
                                       style={{
-                                        color: "#5C34A2",
                                         textDecoration: "none",
                                         fontFamily:
                                           "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
@@ -905,153 +888,179 @@ export default function Data({
                                         textAlign: "center",
                                       }}
                                     >
-                                      {formatSchemaAction(
-                                        tx.decode_tx.action
-                                      )}
+                                      Action:
                                     </Text>
-                                  </Tooltip>
-                                </Badge>
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.tokenId ? (
-                                  <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode
-                                        ? tx.decode_tx.nftSchemaCode
-                                        : tx.decode_tx.nft_schema_code
-                                      }/${tx.decode_tx.tokenId}`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
+                                    <Tooltip
+                                      label={tx.decode_tx.action}
+                                      aria-label="A tooltip"
                                     >
-                                      {tx.decode_tx.tokenId}
-                                    </Text>
-                                  </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                              <Td>
-                                <Text>{moment(tx.time_stamp).fromNow()}</Text>
-                              </Td>
-                              <Td>
-                                <Clickable href={`/block/${tx.block_height}`}>
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {tx.block_height}
-                                  </Text>
-                                </Clickable>
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.creator ? (
-                                  <Clickable
-                                    href={`/address/${tx.decode_tx.creator}`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(tx.decode_tx.creator)}
-                                    </Text>
-                                  </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                              <Td>
-                                {tx.decode_tx.nftSchemaCode ||
-                                  tx.decode_tx.nft_schema_code ? (
-                                  <Clickable
-                                    href={`/schema/${tx.decode_tx.nftSchemaCode
-                                        ? tx.decode_tx.nftSchemaCode
-                                        : tx.decode_tx.nft_schema_code
-                                      }`}
-                                  >
-                                    <Text
-                                      style={{
-                                        color: "#5C34A2",
-                                        textDecoration: "none",
-                                        fontFamily:
-                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                        fontSize: "14px",
-                                        textAlign: "center",
-                                      }}
-                                    >
-                                      {formatHex(
+                                      <Text
+                                        marginLeft={"4px"}
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "10px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatSchemaAction(
+                                          tx.decode_tx.action
+                                        )}
+                                      </Text>
+                                    </Tooltip>
+                                  </Badge>
+                                </Td>
+                                <Td>
+                                  {tx.decode_tx.tokenId ? (
+                                    <Clickable
+                                      href={`/schema/${
                                         tx.decode_tx.nftSchemaCode
                                           ? tx.decode_tx.nftSchemaCode
                                           : tx.decode_tx.nft_schema_code
-                                      )}
+                                      }/${tx.decode_tx.tokenId}`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {tx.decode_tx.tokenId}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                                <Td>
+                                  <Text>
+                                    {(() => {
+                                      const ts = Number(tx.time_stamp);
+                                      const ms =
+                                        ts < 1000000000000 ? ts * 1000 : ts;
+                                      return moment(ms).fromNow();
+                                    })()}
+                                  </Text>
+                                </Td>
+                                <Td>
+                                  <Clickable href={`/block/${tx.block_height}`}>
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {tx.block_height}
                                     </Text>
                                   </Clickable>
-                                ) : (
-                                  <Text
-                                    style={{
-                                      color: "#5C34A2",
-                                      textDecoration: "none",
-                                      fontFamily:
-                                        "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
-                                      fontSize: "14px",
-                                      textAlign: "center",
-                                    }}
-                                  >
-                                    {"Will be available"}
-                                  </Text>
-                                )}
-                              </Td>
-                            </Tr>
-                          ))
-                          : Array.from({ length: 10 }).map((_, index) => (
-                            <Tr key={index}>
-                              {Array.from({ length: 7 }).map((_, index) => (
-                                <Td key={index}>
-                                  <Skeleton width={"auto"} height={"15px"} />
                                 </Td>
-                              ))}
-                            </Tr>
-                          ))}
+                                <Td>
+                                  {tx.decode_tx.creator ? (
+                                    <Clickable
+                                      href={`/address/${tx.decode_tx.creator}`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(tx.decode_tx.creator)}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                                <Td>
+                                  {tx.decode_tx.nftSchemaCode ||
+                                  tx.decode_tx.nft_schema_code ? (
+                                    <Clickable
+                                      href={`/schema/${
+                                        tx.decode_tx.nftSchemaCode
+                                          ? tx.decode_tx.nftSchemaCode
+                                          : tx.decode_tx.nft_schema_code
+                                      }`}
+                                    >
+                                      <Text
+                                        style={{
+                                          color: "#5C34A2",
+                                          textDecoration: "none",
+                                          fontFamily:
+                                            "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                          fontSize: "14px",
+                                          textAlign: "center",
+                                        }}
+                                      >
+                                        {formatHex(
+                                          tx.decode_tx.nftSchemaCode
+                                            ? tx.decode_tx.nftSchemaCode
+                                            : tx.decode_tx.nft_schema_code
+                                        )}
+                                      </Text>
+                                    </Clickable>
+                                  ) : (
+                                    <Text
+                                      style={{
+                                        color: "#5C34A2",
+                                        textDecoration: "none",
+                                        fontFamily:
+                                          "Nunito, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol",
+                                        fontSize: "14px",
+                                        textAlign: "center",
+                                      }}
+                                    >
+                                      {"Will be available"}
+                                    </Text>
+                                  )}
+                                </Td>
+                              </Tr>
+                            ))
+                          : Array.from({ length: 10 }).map((_, index) => (
+                              <Tr key={index}>
+                                {Array.from({ length: 7 }).map((_, index) => (
+                                  <Td key={index}>
+                                    <Skeleton width={"auto"} height={"15px"} />
+                                  </Td>
+                                ))}
+                              </Tr>
+                            ))}
                       </Tbody>
                     </Table>
                   </TableContainer>

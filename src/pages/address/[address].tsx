@@ -678,7 +678,12 @@ export default function Address({
                                     </Td>
                                     <Td>
                                       <Text>
-                                        {moment(tx.time_stamp).fromNow()}
+                                        {(() => {
+                                          const ts = Number(tx.time_stamp);
+                                          const ms =
+                                            ts < 1000000000000 ? ts * 1000 : ts;
+                                          return moment(ms).fromNow();
+                                        })()}
                                       </Text>
                                     </Td>
                                     <Td>
@@ -844,7 +849,9 @@ export default function Address({
                                     <Td>
                                       <Text>{`${formatNumber(
                                         convertUsixToSix(
-                                          (parseInt(tx.decode_tx.gas_wanted) * 125)/100
+                                          (parseInt(tx.decode_tx.gas_wanted) *
+                                            125) /
+                                            100
                                         )
                                       )} SIX`}</Text>
                                     </Td>
@@ -969,7 +976,12 @@ export default function Address({
                                   </Td>
                                   <Td textAlign={"center"}>
                                     <Text>
-                                      {moment(x.time_stamp).fromNow()}
+                                      {(() => {
+                                        const ts = Number(x.time_stamp);
+                                        const ms =
+                                          ts < 1000000000000 ? ts * 1000 : ts;
+                                        return moment(ms).fromNow();
+                                      })()}
                                     </Text>
                                   </Td>
                                   <Td textAlign={"center"}>

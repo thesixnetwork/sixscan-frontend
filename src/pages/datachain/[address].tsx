@@ -316,7 +316,14 @@ export default function Address({
                                         </Td>
                                         <Td textAlign={"center"}>
                                           <Text>
-                                            {moment(tx.time_stamp).fromNow()}
+                                            {(() => {
+                                              const ts = Number(tx.time_stamp);
+                                              const ms =
+                                                ts < 1000000000000
+                                                  ? ts * 1000
+                                                  : ts;
+                                              return moment(ms).fromNow();
+                                            })()}
                                           </Text>
                                         </Td>
                                         <Td textAlign={"center"}>
