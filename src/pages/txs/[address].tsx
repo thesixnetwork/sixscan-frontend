@@ -449,7 +449,7 @@ export default function Address({
                                       <Td textAlign={"center"}>
                                         <Text>{`${formatNumber(
                                           convertUsixToSix(
-                                            parseInt(tx.decode_tx.fee_amount)
+                                            (parseInt(tx.decode_tx.gas_wanted) * 125)/100
                                           )
                                         )} SIX`}</Text>
                                       </Td>
