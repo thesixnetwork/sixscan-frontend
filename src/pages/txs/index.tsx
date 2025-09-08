@@ -129,7 +129,7 @@ export default function Address({ allTxs }: Props) {
                                   let feeAmount = "0";
                                   if (
                                     txTypes ===
-                                    "/ethermint.evm.v1.MsgEthereumTx"
+                                    "/ethermint.evm.v1.MsgEthereumTx" || txTypes === "/precompile.tokenmngr.MsgUnWrapToken"
                                   ) {
                                     feeAmount = formatNumber(
                                       convertAsixToSix(
