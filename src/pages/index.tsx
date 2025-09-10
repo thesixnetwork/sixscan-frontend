@@ -90,7 +90,7 @@ export default function Home({
   supplySixNet,
 }: Props) {
   const [price, setPrice] = useState<CoinGeckoPrice | null>(null);
-  const [priceSIXUSD, setPriceSIXUSD] = useState<number>(12673103.29);
+  const [priceSIXUSD, setPriceSIXUSD] = useState<number>(0);
   const [isMobile] = useMediaQuery("(max-width: 768px)");
 
   const [latestBlockState, setLatestBlock] = useState<Block>(latestBlock);

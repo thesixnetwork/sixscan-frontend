@@ -59,8 +59,6 @@ import {
   formatMethod,
 } from "@/libs/utils/format";
 
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
 import { _LOG } from "@/libs/utils/logHelper";

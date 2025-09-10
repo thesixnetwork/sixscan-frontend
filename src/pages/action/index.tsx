@@ -57,11 +57,6 @@ import {
 } from "@/libs/utils/format";
 import { getLatestAction } from "@/service/nftmngr/txs";
 
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
-import { getTxsFromAddress } from "@/service/txs";
-import { AccountTxs } from "@/types/Txs";
-
 interface Props {
   actions: any;
   pageNumber: string;

@@ -53,11 +53,6 @@ import { Account } from "@/types/Auth";
 import { getBalance, getBalances } from "@/service/bank";
 import { formatNumber, convertUsixToSix } from "@/libs/utils/format";
 import { getAllTransactionByAddress } from "@/service/nftmngr/txs";
-
-import { getPriceFromCoingecko } from "@/service/coingecko";
-import { CoinGeckoPrice } from "@/types/Coingecko";
-import { getTxsFromAddress } from "@/service/txs";
-import { AccountTxs } from "@/types/Txs";
 import { formatMethod } from "@/libs/utils/format";
 
 interface Props {
