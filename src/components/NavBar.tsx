@@ -120,7 +120,7 @@ export default function WithSubnavigation({
               >
                 <Box>
                   <LinkComponent
-                    href={ENV.BLOCK_SCOUT_API_URL}
+                    href={ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}
                     _hover={{ textDecoration: "none" }}
                   >
                     <Text

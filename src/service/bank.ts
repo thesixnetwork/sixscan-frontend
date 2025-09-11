@@ -11,7 +11,7 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
         id: "1",
         params: [address, "latest"],
       };
-      const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
+      const res = await axios.post(`${ENV.NEXT_PUBLIC_EVM_RPC_URL}/`, body);
       // const balances = res.data;
 
       const balances = [
@@ -27,7 +27,7 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
       return balances;
     } else {
       const res = await axios.get(
-        `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}`
+        `${ENV.NEXT_PUBLIC_API_URL}/cosmos/bank/v1beta1/balances/${address}`
       );
       const balances = res.data.balances;
       if (!balances) {
@@ -44,7 +44,7 @@ export const getBalances = async (address: string): Promise<Balance[]> => {
 export const getBalance = async (address: string): Promise<Balance | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=usix`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=usix`
     );
     const balance = res.data.balance;
     if (!balance) {
@@ -60,7 +60,7 @@ export const getBalance = async (address: string): Promise<Balance | null> => {
 export const getCoinMetadata = async (denom: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/bank/v1beta1/denoms_metadata/${denom}`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/bank/v1beta1/denoms_metadata/${denom}`
     );
     const metadata = res.data.metadata;
     if (!metadata) {
@@ -76,7 +76,7 @@ export const getCoinMetadata = async (denom: string): Promise<any> => {
 export const getSupply = async (denom: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/bank/v1beta1/supply/${denom}`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/bank/v1beta1/supply/${denom}`
     );
     const amount = res.data.amount;
     if (!amount) {

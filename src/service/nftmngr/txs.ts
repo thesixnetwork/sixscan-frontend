@@ -11,7 +11,7 @@ export const getAllTransactionByAddress = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionByAddress?address=${address}&page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionByAddress?address=${address}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -42,7 +42,7 @@ export const getAllTransactionByTokenID = async (
 
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionByTokenID?schemaCode=${encodedSchemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionByTokenID?schemaCode=${encodedSchemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -73,7 +73,7 @@ export const getAllActionByTokenID = async (
 
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllActionByTokenID?schemaCode=${encodedSchemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllActionByTokenID?schemaCode=${encodedSchemaCode}&tokenID=${tokenID}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -100,7 +100,7 @@ export const getLatestAction = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionTxs?page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionTxs?page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);

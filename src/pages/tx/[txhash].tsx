@@ -540,7 +540,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       <Flex direction="row">
                                         <LinkComponent
                                           marginRight="5px"
-                                          href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}
+                                          href={`${ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}/address/${message[key]}`}
                                         >
                                           <Text
                                             as={"span"}
@@ -648,7 +648,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       <Flex direction="row">
                                         <LinkComponent
                                           marginRight="5px"
-                                          href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}
+                                          href={`${ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}/address/${message[key]}`}
                                         >
                                           <Text
                                             as={"span"}
@@ -1571,7 +1571,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           <Flex direction="row">
                                             <LinkComponent
                                               marginRight="5px"
-                                              href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}
+                                              href={`${ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}/address/${message[key]}`}
                                             >
                                               <Text
                                                 as={"span"}
@@ -1679,7 +1679,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           <Flex direction="row">
                                             <LinkComponent
                                               marginRight="5px"
-                                              href={`${ENV.BLOCK_SCOUT_API_URL}/address/${message[key]}`}
+                                              href={`${ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}/address/${message[key]}`}
                                             >
                                               <Text
                                                 as={"span"}

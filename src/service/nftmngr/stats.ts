@@ -14,11 +14,11 @@ export const getNFTActionCountStat = async (
 
   try {
     // const res = await axios.get(
-    //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    //   `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
     let res: any;
     res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${encodedSchemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountMonthly?schemaCode=${encodedSchemaCode}&endTime=${endTime}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -31,7 +31,7 @@ export const getNFTActionCountStat = async (
 
     if (res.data.data.length === 0) {
       res = await axios.get(
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLifeTime?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
       );
       if (res.status !== 200) {
         _LOG("Error: Non-200 status code returned:", res.status);
@@ -48,7 +48,7 @@ export const getNFTActionCountStat = async (
     for (const item of actionCount.data) {
       try {
         const { data } = await axios.get(
-          `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${item._id.schema_code}/1`
+          `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${item._id.schema_code}/1`
         );
         if (data.image) {
           const fmtData = {
@@ -90,11 +90,11 @@ export const getNFTCollectionTrending = async (
 
   try {
     // const res = await axios.get(
-    //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    //   `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     // );
     let res: any;
     res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getCollectionTrending?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getCollectionTrending?schemaCode=${encodedSchemaCode}&page=${page}&limit=${pageSize}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -107,7 +107,7 @@ export const getNFTCollectionTrending = async (
 
     // if (res.data.data.length === 0) {
     //   res = await axios.get(
-    //   `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
+    //   `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountLiteTime?schemaCode=${schemaCode}&page=${page}&limit=${pageSize}`
     //   );
     //   if (res.status !== 200) {
     //     _LOG("Error: Non-200 status code returned:", res.status);
@@ -124,7 +124,7 @@ export const getNFTCollectionTrending = async (
     for (const item of actionCount.data) {
       try {
         const { data } = await axios.get(
-          `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${item._id.schema_code}/1`
+          `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${item._id.schema_code}/1`
         );
         if (data.image) {
           const fmtData = {
@@ -165,7 +165,7 @@ export const getNFTActionCountStatDaily = async (
 
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getActionCountDaily?schemaCode=${encodedSchemaCode}&endTime=${endTime}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getActionCountDaily?schemaCode=${encodedSchemaCode}&endTime=${endTime}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -189,7 +189,7 @@ export const getNFTActionCountStatDaily = async (
 export const getTotalNFTCollection = async () => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_data?pagination.offset=1&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_data?pagination.offset=1&pagination.limit=1&pagination.count_total=true`
     );
     const total = res.data.pagination;
     if (!total) {
@@ -205,7 +205,7 @@ export const getTotalNFTCollection = async () => {
 export const getTotalNFTS = async () => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema?pagination.offset=1&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema?pagination.offset=1&pagination.limit=1&pagination.count_total=true`
     );
     const total = res.data.pagination;
     if (!total) {
@@ -221,7 +221,7 @@ export const getTotalNFTS = async () => {
 export const getNFTFee = async () => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_fee_config`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_fee_config`
     );
     const total = res.data.NFTFeeConfig.schema_fee.fee_amount;
     if (!total) {

@@ -6,7 +6,7 @@ import { fromBech32, toBech32, toHex } from "@cosmjs/encoding";
 export const getValidators = async (): Promise<Validator[]> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/staking/v1beta1/validators`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/validators`
     );
     const validators = res.data.validators;
     if (!validators) {
@@ -27,7 +27,7 @@ export const getValidator = async (
   }
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/validators/${address}`
     );
     const validator = res.data.validator;
     if (!validator) {
@@ -45,7 +45,7 @@ export const getValidator = async (
 
 export const getPool = async (): Promise<Pool | null> => {
   try {
-    const res = await axios.get(`${ENV.API_URL}/cosmos/staking/v1beta1/pool`);
+    const res = await axios.get(`${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/pool`);
     const pool = res.data.pool;
     if (!pool) {
       return null;
@@ -65,7 +65,7 @@ export const getDelegationsFromValidator = async (
   }
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/staking/v1beta1/validators/${address}/delegations`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/validators/${address}/delegations`
     );
     const delegation_responses = res.data.delegation_responses;
     if (!delegation_responses) {
@@ -83,7 +83,7 @@ export const getDelegationsFromValidator = async (
 
 export const getBlockByHeight = async (height: number) => {
   try {
-    const res = await axios.get(`${ENV.RPC_URL}/block?height=${height}`);
+    const res = await axios.get(`${ENV.NEXT_PUBLIC_RPC_URL}/block?height=${height}`);
     return res.data;
   } catch (error) {
     console.error(error);
@@ -94,8 +94,8 @@ export const getBlockByHeight = async (height: number) => {
 export const uptime = async () => {
   try {
     const [validators, latestBlock] = await Promise.all([
-      axios.get(`${ENV.API_URL}/cosmos/staking/v1beta1/validators`),
-      axios.get(`${ENV.API_URL}/blocks/latest`),
+      axios.get(`${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/validators`),
+      axios.get(`${ENV.NEXT_PUBLIC_API_URL}/blocks/latest`),
     ]);
 
     const latestHeight = parseInt(latestBlock.data.block.header.height);

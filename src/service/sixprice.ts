@@ -26,7 +26,7 @@ export const getSIXPrice = async (
 ): Promise<CoinGeckoPrice | null> => {
   let lower_chainName = process.env.NEXT_PUBLIC_CHAIN_NAME?.toLowerCase()
   if (lower_chainName === "mainnet" || lower_chainName === "sixnet") {
-    const res = await axios.get(`${ENV.TXS_API_URL}/api/six-price`)
+    const res = await axios.get(`${ENV.NEXT_PUBLIC_TXS_API_URL}/api/six-price`)
     const price: SIXTokenPrice = res.data[tokenName];
     if (!price) {
       return getPriceFromCoingecko(tokenName)

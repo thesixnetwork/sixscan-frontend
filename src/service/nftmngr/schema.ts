@@ -10,7 +10,7 @@ export const getSchema = async (
   const encodedSchemaCode = encodeURIComponent(schemaCode);
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${encodedSchemaCode}`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema/${encodedSchemaCode}`
     );
     if (res.data.code && res.data.code !== 0) {
       return null;
@@ -31,7 +31,7 @@ export const getSchemaByCodeAddr = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
     );
     const schema = res.data.nFTSchemaByContract;
     const mergedSchema = schema.flatMap((item: any) => item.schemaCodes);
@@ -58,7 +58,7 @@ export const getSchemaByCodeAddr2 = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllSchemaCode?schemaCode=${schemaOrContract}&page=1&limit=5`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllSchemaCode?schemaCode=${schemaOrContract}&page=1&limit=5`
     );
     const schema = res.data.data.data;
     if (!schema) {
@@ -77,7 +77,7 @@ export const getAllSchema = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllSchemaCode?schemaCode=&page=${page}&limit=${limit}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllSchemaCode?schemaCode=&page=${page}&limit=${limit}`
     );
     const schema = res.data.data;
     if (!schema) {
@@ -93,7 +93,7 @@ export const getAllSchema = async (
 export const getAllSchemas = async (): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
     );
     const schema = res.data.nFTSchemaByContract;
     const mergedSchema = schema.flatMap((item: any) => item.schemaCodes);
@@ -117,7 +117,7 @@ export const getSchemaByAddr = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_schema_by_contract?pagination.count_total=true`
     );
     const schema = res.data.nFTSchemaByContract;
     const filteredCode = schema.filter((item: any) =>
@@ -139,7 +139,7 @@ export const getSchemaByAddress = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getSchemaCodeByContractAddress?contractAddress=${schemaOrContract}&page=1&limit=5`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getSchemaCodeByContractAddress?contractAddress=${schemaOrContract}&page=1&limit=5`
     );
     const schema = res.data.data.data;
 
@@ -160,7 +160,7 @@ export const getSchemaByContractAddress = async (
 ): Promise<any | null> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getSchemaCodeByContractAddress?contractAddress=${contract}&page=${page}&limit=${limit}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getSchemaCodeByContractAddress?contractAddress=${contract}&page=${page}&limit=${limit}`
     );
     const schema = res.data.data;
 

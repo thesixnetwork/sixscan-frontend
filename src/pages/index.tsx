@@ -150,17 +150,18 @@ export default function Home({
   }, [latestBlockState]);
 
   useEffect(() => {
-    // async function fetchPrice() {
     const fetchPrice = async () => {
-      const priceGecko: CoinGeckoPrice | null = await getSIXPrice(
-        "six-network"
-      );
-      // const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
-      setPrice(priceGecko);
-      const isSupplySixNet = Number(supplySixNet).toFixed(2);
-      setPriceSIXUSD(Number(isSupplySixNet));
+      try {
+        const response = await fetch('/api/getSIXPrice?tokenName=six-network');
+        const priceGecko: CoinGeckoPrice | null = await response.json();
+        setPrice(priceGecko);
+        const isSupplySixNet = Number(supplySixNet).toFixed(2);
+        setPriceSIXUSD(Number(isSupplySixNet));
+      } catch (error) {
+        setPrice(null);
+        setPriceSIXUSD(0);
+      }
     };
-
     fetchPrice();
   }, []);
 

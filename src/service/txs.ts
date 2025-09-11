@@ -9,7 +9,7 @@ export const getTxsFromSchema = async (
 ): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransaction?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllTransaction?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -37,7 +37,7 @@ export const getTxsFromSchemaSixNet = async (
 ): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionBySchema?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/getAllTransactionBySchema?schemaCode=${schemaCode}&page=${page}&limit=${limit}`
     );
     if (res.status !== 200) {
       _LOG("Error: Non-200 status code returned:", res.status);
@@ -65,7 +65,7 @@ export const getTxsFromAddress = async (
 ): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.TXS_API_URL}/api/all-txs-from-address?pageNumber=${page}&address=${address}&limit=${limit}`
+      `${ENV.NEXT_PUBLIC_TXS_API_URL}/api/all-txs-from-address?pageNumber=${page}&address=${address}&limit=${limit}`
     );
     const accountTxs = res.data;
     if (!accountTxs) {
@@ -81,7 +81,7 @@ export const getTxsFromAddress = async (
 export const getTxsFromBlock = async (height: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.ARCH_RPC_URL}/tx_search?query="tx.height=${height}"`
+      `${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/tx_search?query="tx.height=${height}"`
     );
     const blockTxs = res.data.result;
     // if (!blockTxs) {
@@ -97,7 +97,7 @@ export const getTxsFromBlock = async (height: string): Promise<any> => {
 export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/tx/v1beta1/txs/${txhash}`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/tx/v1beta1/txs/${txhash}`
     );
     const blockTxs = res.data;
     if (!blockTxs) {
@@ -106,7 +106,7 @@ export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
     return blockTxs;
   } catch (error) {
     const res = await axios.get(
-      `${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${txhash}`
+      `${ENV.NEXT_PUBLIC_TXS_API_URL}/api/tx-from-hash?txHash=${txhash}`
     );
 
     return res.data;
@@ -115,7 +115,7 @@ export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
 
 export const getTxByHashFromRPC = async (hash: string): Promise<any> => {
   try {
-    const res = await axios.get(`${ENV.ARCH_RPC_URL}/tx?hash=0x${hash}`);
+    const res = await axios.get(`${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/tx?hash=0x${hash}`);
     const tx = res.data.result;
     if (!tx) {
       return null;
@@ -123,7 +123,7 @@ export const getTxByHashFromRPC = async (hash: string): Promise<any> => {
     return tx;
   } catch (error) {
     const res = await axios.get(
-      `${ENV.TXS_API_URL}/api/tx-from-hash?txHash=${hash}`
+      `${ENV.NEXT_PUBLIC_TXS_API_URL}/api/tx-from-hash?txHash=${hash}`
     );
 
     return res.data;
@@ -138,7 +138,7 @@ export const getTxEVMFromHash = async (hash: string): Promise<any> => {
     params: [hash],
   };
   try {
-    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
+    const res = await axios.post(`${ENV.NEXT_PUBLIC_EVM_RPC_URL}/`, body);
     const tx = res.data.result;
     if (!tx) {
       return null;
@@ -156,7 +156,7 @@ export const getLastNTransactions = async (
 ): Promise<any> => {
   try {
     const res = await axios.get(
-      `${ENV.TXS_API_URL}/api/last-n-transactions?limit=${limit}&page=${page}`
+      `${ENV.NEXT_PUBLIC_TXS_API_URL}/api/last-n-transactions?limit=${limit}&page=${page}`
     );
     const accountTxs = res.data;
     if (!accountTxs) {

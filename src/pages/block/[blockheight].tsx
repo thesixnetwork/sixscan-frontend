@@ -279,7 +279,7 @@ export default function BlockPage({
                                         </Clickable>
                                       ) : (
                                         <Link
-                                          href={`${ENV.BLOCK_SCOUT_API_URL}/tx/${tx.hashEVM}`}
+                                          href={`${ENV.NEXT_PUBLIC_BLOCK_SCOUT_API_URL}/tx/${tx.hashEVM}`}
                                         >
                                           <Text
                                             as={"span"}

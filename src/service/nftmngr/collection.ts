@@ -15,7 +15,7 @@ export const getNftCollection = async (
     ///// Check Token ID 0 ////////
     let tokenPerPage = parseInt(numberPerPage);
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/0`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/0`
     );
     const hasTokenZero = res.data.statusCode;
     if (hasTokenZero) {
@@ -28,7 +28,7 @@ export const getNftCollection = async (
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     _LOG(total);
     const lastToken = parseInt(total);
@@ -48,7 +48,7 @@ export const getNftCollection = async (
 
     // for (let i = startingTokenId; i < startingTokenId + tokenPerPage; i++) {
     //   const { data } = await axios.get(
-    //     `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/${i}`
+    //     `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${schemaCode}/${i}`
     //   );
     //   data.token_id = i;
     //   if (data.image) {
@@ -57,79 +57,79 @@ export const getNftCollection = async (
     // }
 
     let urls = [
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 1
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 2
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 3
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 4
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 5
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 6
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 7
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 8
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 9
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 10
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 11
       }`,
     ];
 
     if (hasTokenZero) {
       urls = [
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 1
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 2
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 3
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 4
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 5
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 6
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 7
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 8
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 9
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 10
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 11
         }`,
-        `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+        `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
           startingTokenId + 12
         }`,
       ];
@@ -167,7 +167,7 @@ export const getImgCollection = async (
 
   try {
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${tokenId}`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${tokenId}`
     );
     if (!res.data.image) {
       return null;
@@ -191,7 +191,7 @@ export const getNftCollectionNoLoop = async (
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     if (!total) {
       return null;
@@ -222,7 +222,7 @@ export const getNftCollectionByClient = async (
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
 
     // IN CASE OF TOTAL COLLECTION IS LESS THAN TOKEN PER PAGE
@@ -270,7 +270,7 @@ export const getNftCollectionByClient = async (
 
     for (let i = 0; i <= tokenPerPage; i++) {
       const url = `${
-        ENV.DATA_CHAIN_TXS_API_URL
+        ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL
       }api/nft/metadata/${encodedSchemaCode}/${FIRST_TOKEN_ID + i}`;
       urls.push(url);
     }
@@ -307,7 +307,7 @@ export const getNftCollectionV2 = async (
   try {
     let tokenPerPage = 12;
     const res = await axios.get(
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/1`
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/1`
     );
     const hasTokenZero = res.data.statusCode;
     if (!hasTokenZero) {
@@ -320,7 +320,7 @@ export const getNftCollectionV2 = async (
         pagination: { total },
       },
     } = await axios.get(
-      `${ENV.API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
+      `${ENV.NEXT_PUBLIC_API_URL}/thesixnetwork/sixnft/nftmngr/nft_collection/${encodedSchemaCode}?pagination.offset=0&pagination.limit=1&pagination.count_total=true`
     );
     _LOG(total);
     const lastToken = parseInt(total);
@@ -333,38 +333,38 @@ export const getNftCollectionV2 = async (
     const promises = [];
 
     let urls = [
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${startingTokenId}`,
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 1
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 2
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 3
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 4
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 5
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 6
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 7
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 8
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 9
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 10
       }`,
-      `${ENV.DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
+      `${ENV.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL}api/nft/metadata/${encodedSchemaCode}/${
         startingTokenId + 11
       }`,
     ];

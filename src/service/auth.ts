@@ -4,7 +4,7 @@ import { Account } from "../types/Auth";
 
 export const getAccounts = async (): Promise<Account[]> => {
   try {
-    const res = await axios.get(`${ENV.API_URL}/cosmos/auth/v1beta1/accounts`);
+    const res = await axios.get(`${ENV.NEXT_PUBLIC_API_URL}/cosmos/auth/v1beta1/accounts`);
     const accounts = res.data.accounts;
     if (!accounts) {
       return [];
@@ -19,7 +19,7 @@ export const getAccounts = async (): Promise<Account[]> => {
 export const getAccount = async (address: string): Promise<Account | null> => {
   try {
     const res = await axios.get(
-      `${ENV.API_URL}/cosmos/auth/v1beta1/accounts/${address}`
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/auth/v1beta1/accounts/${address}`
     );
     const account = res.data.account;
     if (!account) {
@@ -40,7 +40,7 @@ export const getIsContract = async (address: string): Promise<any> => {
     params: [address, "latest"],
   };
   try {
-    const res = await axios.post(`${ENV.EVM_RPC_URL}/`, body);
+    const res = await axios.post(`${ENV.NEXT_PUBLIC_EVM_RPC_URL}/`, body);
     const result = res.data.result;
     if (result.length <= 2) {
       return false;
