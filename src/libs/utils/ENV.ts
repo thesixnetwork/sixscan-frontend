@@ -31,7 +31,7 @@ const ENV = {
   NEXT_PUBLIC_CHAIN_NAME: process.env.NEXT_PUBLIC_CHAIN_NAME || "",
   TXS_API_URL:
     process.env.TXS_API_URL ||
-    "https://six-protocol-get-txs-api-gateway-7kl45r91.ts.gateway.dev/",
+    "https://six-protocol-sixnet-get-txs-api-gateway-3hi29er0.an.gateway.dev",
   DATA_CHAIN_TXS_API_URL: process.env.DATA_CHAIN_TXS_API_URL || "",
   // DATA_CHAIN_TXS_API_URL: process.env.DATA_CHAIN_TXS_API_URL || "",
   EVM_RPC_URL:

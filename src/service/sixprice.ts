@@ -29,7 +29,7 @@ export const getSIXPrice = async (
     const res = await axios.get(`${ENV.TXS_API_URL}/api/six-price`)
     const price: SIXTokenPrice = res.data[tokenName];
     if (!price) {
-      return null;
+      return getPriceFromCoingecko(tokenName)
     }
 
     const convertTypePrice: CoinGeckoPrice = {
