@@ -107,7 +107,7 @@ import {
 } from "@/libs/utils/format";
 
 import { validateAddress } from "@/libs/utils/validate";
-import { getPriceFromCoingecko } from "@/service/coingecko";
+import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
@@ -187,7 +187,7 @@ export default function Address({
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      setPrice(await getPriceFromCoingecko("six-network"));
+      setPrice(await getSIXPrice("six-network"));
     };
 
     fetchPrice();

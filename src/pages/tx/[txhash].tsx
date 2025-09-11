@@ -80,7 +80,7 @@ import {
   convertAmountToSix,
   convertStringAmountToCoin,
 } from "@/libs/utils/format";
-import { getPriceFromCoingecko } from "@/service/coingecko";
+import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/libs/utils/ENV";
@@ -199,7 +199,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      setPrice(await getPriceFromCoingecko("six-network"));
+      setPrice(await getSIXPrice("six-network"));
     };
 
     fetchPrice();
@@ -209,7 +209,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      setPrice(await getPriceFromCoingecko("six-network"));
+      setPrice(await getSIXPrice("six-network"));
     };
 
     fetchPrice();

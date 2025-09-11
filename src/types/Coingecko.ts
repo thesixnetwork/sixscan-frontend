@@ -7,3 +7,10 @@ export interface CoinGeckoPrice {
   usd_market_cap: number;
   usd_24h_change: number;
 }
+
+
+export interface SIXTokenPrice {
+  usd: string;
+  usd_market_cap: string;
+  usd_24h_change: string;
+}

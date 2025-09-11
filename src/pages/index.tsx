@@ -61,7 +61,7 @@ import {
 } from "@/libs/block/block";
 // ------------------------- Helper Libs -------------------------
 import { formatNumber } from "@/libs/utils/format";
-import { getPriceFromCoingecko } from "@/service/coingecko";
+import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 interface Props {
@@ -152,7 +152,7 @@ export default function Home({
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      const priceGecko: CoinGeckoPrice | null = await getPriceFromCoingecko(
+      const priceGecko: CoinGeckoPrice | null = await getSIXPrice(
         "six-network"
       );
       // const suppySixTotal = await convertUsixToSix(parseInt(supplySixNet));
