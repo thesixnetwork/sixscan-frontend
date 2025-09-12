@@ -188,8 +188,6 @@ export default function Address({
     const fetchPrice = async () => {
       const response = await fetch('/api/getSIXPrice?tokenName=six-network');
       const priceGecko: CoinGeckoPrice = await response.json();
-
-      console.log(priceGecko)
       setPrice(priceGecko);
     };
 
