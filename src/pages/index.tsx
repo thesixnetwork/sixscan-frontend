@@ -151,7 +151,7 @@ export default function Home({
   useEffect(() => {
     const fetchPrice = async () => {
       try {
-        const response = await fetch('/api/getSIXPrice?tokenName=six-network');
+        const response = await fetch("/api/getSIXPrice?tokenName=six-network");
         const priceGecko: CoinGeckoPrice | null = await response.json();
         setPrice(priceGecko);
         const isSupplySixNet = Number(supplySixNet).toFixed(2);

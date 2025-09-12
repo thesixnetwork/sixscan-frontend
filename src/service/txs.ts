@@ -115,7 +115,9 @@ export const getTxsByHashFromAPI = async (txhash: string): Promise<any> => {
 
 export const getTxByHashFromRPC = async (hash: string): Promise<any> => {
   try {
-    const res = await axios.get(`${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/tx?hash=0x${hash}`);
+    const res = await axios.get(
+      `${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/tx?hash=0x${hash}`
+    );
     const tx = res.data.result;
     if (!tx) {
       return null;

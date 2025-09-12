@@ -66,7 +66,9 @@ export default function UptimePage() {
           if (latestHeight - i <= 0) break;
           blockPromises.push(
             axios
-              .get(`${ENV.NEXT_PUBLIC_RPC_URL}/block?height=${latestHeight - i}`)
+              .get(
+                `${ENV.NEXT_PUBLIC_RPC_URL}/block?height=${latestHeight - i}`
+              )
               .then((res) => res.data)
           );
         }

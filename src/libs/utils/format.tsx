@@ -322,10 +322,10 @@ export const convertTXAmountToSix = (amount: TXCoin): number => {
   if (amount.denom === "usix") {
     return convertUsixToSix(Number(amount.amount));
   } else if (amount.denom === "asix") {
-    console.log(convertAsixToSix(Number(amount.amount)))
+    console.log(convertAsixToSix(Number(amount.amount)));
     return convertAsixToSix(Number(amount.amount));
-  }else{
-    return 0
+  } else {
+    return 0;
   }
 };
 
@@ -479,7 +479,7 @@ export const formatSchemaAction = (action: any) => {
   }
 };
 
-export const calculateTxFee = (tx:any) => {
+export const calculateTxFee = (tx: any) => {
   const { decode_tx, type, original_type } = tx;
 
   if (!decode_tx) {
@@ -488,7 +488,9 @@ export const calculateTxFee = (tx:any) => {
 
   if (decode_tx.fee_amount) {
     const feeAmount = parseInt(decode_tx.fee_amount, 10);
-    const isEvmTx = type === "/ethermint.evm.v1.MsgEthereumTx" || original_type === "/ethermint.evm.v1.MsgEthereumTx";
+    const isEvmTx =
+      type === "/ethermint.evm.v1.MsgEthereumTx" ||
+      original_type === "/ethermint.evm.v1.MsgEthereumTx";
 
     if (isEvmTx) {
       return feeAmount / 1e18;

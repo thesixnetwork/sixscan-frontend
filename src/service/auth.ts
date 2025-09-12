@@ -4,7 +4,9 @@ import { Account } from "../types/Auth";
 
 export const getAccounts = async (): Promise<Account[]> => {
   try {
-    const res = await axios.get(`${ENV.NEXT_PUBLIC_API_URL}/cosmos/auth/v1beta1/accounts`);
+    const res = await axios.get(
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/auth/v1beta1/accounts`
+    );
     const accounts = res.data.accounts;
     if (!accounts) {
       return [];

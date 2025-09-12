@@ -8,7 +8,6 @@ export interface CoinGeckoPrice {
   usd_24h_change: number;
 }
 
-
 export interface SIXTokenPrice {
   usd: string;
   usd_market_cap: string;

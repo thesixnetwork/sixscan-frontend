@@ -79,13 +79,19 @@ import {
   formatBank,
   convertAmountToSix,
   convertStringAmountToCoin,
-  convertTXAmountToSix
 } from "@/libs/utils/format";
+import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/libs/utils/ENV";
 import { _LOG } from "@/libs/utils/logHelper";
 import dynamic from "next/dynamic";
+import { FaKeybase } from "react-icons/fa";
+
+// const ReactJsonViewer = dynamic(
+//   () => import('react-json-viewer-cool'),
+//   { ssr: false }
+// );
 
 const DynamicReactJson = dynamic(() => import("react-json-view"), {
   ssr: false,
@@ -100,7 +106,6 @@ interface Props {
 }
 
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
-  console.log(txs.tx.auth_info.fee.amount)
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
   const [isDecode, setIsDecode] = useState("Default");
@@ -108,19 +113,20 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value);
   };
+  _LOG(isDecode);
 
   // add key to object of reward to message if type is MsgWithdrawDelegatorReward
   if (
     txs.tx &&
     txs.tx.body.messages[0]["@type"] ===
-      "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+    "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
   ) {
     txs.tx.body.messages[0].rewards =
       txs.tx_response.logs[0].events[0].attributes[1].value;
   } else if (
     txs.messages &&
     txs.messages[0]["@type"] ===
-      "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
+    "/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward"
   ) {
     txs.messages[0].rewards =
       txs.tx_response.logs[0].events[0].attributes[1].value;
@@ -152,8 +158,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const message = txs.tx
     ? txs.tx.body.messages[0]
     : txs.messages
-    ? txs.messages[0]
-    : txs.decode_tx;
+      ? txs.messages[0]
+      : txs.decode_tx;
 
   // const txSuccess = txs.tx_response.code == 0 ? true : false;
   let txSuccess = false;
@@ -193,9 +199,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      const response = await fetch('/api/getSIXPrice?tokenName=six-network');
-      const priceGecko: CoinGeckoPrice = await response.json();
-      setPrice(priceGecko);
+      setPrice(await getSIXPrice("six-network"));
     };
 
     fetchPrice();
@@ -205,9 +209,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      const response = await fetch('/api/getSIXPrice?tokenName=six-network');
-      const priceGecko: CoinGeckoPrice = await response.json();
-      setPrice(priceGecko);
+      setPrice(await getSIXPrice("six-network"));
     };
 
     fetchPrice();
@@ -353,9 +355,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                 <Flex direction="column">
                                   <Text>
                                     <Clickable
-                                      href={`/block/${
-                                        tx.height ? tx.height : txs.block_height
-                                      }`}
+                                      href={`/block/${tx.height ? tx.height : txs.block_height
+                                        }`}
                                     >
                                       {txs.tx_response
                                         ? txs.tx_response.height
@@ -469,6 +470,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   </Tr>
                                 );
                               } else if (key == "amount") {
+                                const sixAmount = convertAmountToSix(
+                                  message[key][0]?.amount?.[0]
+                                    ? message[key][0]
+                                    : message[key]
+                                );
                                 return (
                                   <Tr key={index}>
                                     <Td borderBottom="none">
@@ -485,36 +491,25 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           width={20}
                                           style={{ marginRight: "5px" }}
                                         />
-                                        {message[key][0]?.amount?.[0] !==
-                                        undefined ? (
+                                        {
                                           <Text style={{ marginRight: "5px" }}>
-                                            {convertAmountToSix(
-                                              message[key][0]
-                                            )}{" "}
-                                            {message[key][0].denom === "usix" ||
-                                            "asix"
-                                              ? "SIX"
-                                              : message[key][0].denom}
-                                          </Text>
-                                        ) : (
-                                          <Text style={{ marginRight: "5px" }}>
-                                            {convertAmountToSix(message[key])}{" "}
+                                            {sixAmount}{" "}
                                             {message[key].denom === "usix" ||
-                                            "asix"
+                                              "asix"
                                               ? "SIX"
                                               : message[key].denom}
                                           </Text>
-                                        )}
+                                        }
                                         {/* <Text style={{ marginRight: '5px' }}>{ message[key][0]?.amount[0] !== undefined? convertAmountToSix(message[key][0]): convertAmountToSix(message[key])} SIX</Text> */}
                                         <Text style={{ color: "#6c757d" }}>
                                           {(message[key].denom ||
                                             message[key][0].denom == "usix" ||
                                             "asix") &&
-                                          price &&
-                                          price.usd
+                                            price &&
+                                            price.usd
                                             ? `($${formatNumber(
-                                                5 * price.usd
-                                              )})`
+                                              sixAmount * price.usd
+                                            )})`
                                             : `(#NA)`}
                                         </Text>
                                       </Flex>
@@ -839,11 +834,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                           {typeof message[key] === "string"
                                             ? message[key]
                                             : message[key]
-                                                .filter(
-                                                  (item: any) =>
-                                                    item !== "" && item !== "[]"
-                                                )
-                                                .toString()}
+                                              .filter(
+                                                (item: any) =>
+                                                  item !== "" && item !== "[]"
+                                              )
+                                              .toString()}
                                         </Text>
                                       </Flex>
                                     </Td>
@@ -969,6 +964,13 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                         <Text style={{ marginRight: "5px" }}>
                                           {sixAmount.amount} {sixAmount.denom}
                                         </Text>
+                                        <Text style={{ color: "#6c757d" }}>
+                                          {price && price.usd && sixAmount.denom === "SIX"
+                                            ? `($${formatNumber(
+                                              sixAmount.amount * price.usd
+                                            )})`
+                                            : ""}
+                                        </Text>
                                       </Flex>
                                     </Td>
                                   </Tr>
@@ -1040,25 +1042,31 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="row">
                                   <Text style={{ marginRight: "5px" }}>
-                                    {
-                                    txs.tx.auth_info.fee.amount? convertTXAmountToSix(txs.tx.auth_info.fee.amount[0]):
-                                    convertUsixToSix(
-                                      (
-                                        parseInt(
+                                    {convertUsixToSix(
+                                      (parseInt(
                                         txs.tx_response
                                           ? txs.tx_response.gas_wanted
                                           : txs.decode_tx.gas_wanted
                                       ) *
                                         125) /
-                                        100
+                                      100
                                     )}{" "}
                                     SIX{" "}
+                                  </Text>
+                                  <Text style={{ color: "#6c757d" }}>
                                     {price && price.usd
                                       ? `($${formatNumber(
-                                          convertUsixToSix(
-                                            (parseInt(txs.tx_response? txs.tx_response.gas_wanted: txs.decode_tx.gas_wanted) *125) /100) * price.usd
-                                        )})`
-                                      : `($999)`}
+                                        convertUsixToSix(
+                                          (parseInt(
+                                            txs.tx_response
+                                              ? txs.tx_response.gas_wanted
+                                              : txs.decode_tx.gas_wanted
+                                          ) *
+                                            125) /
+                                          100
+                                        ) * price.usd
+                                      )})`
+                                      : ""}
                                   </Text>
                                 </Flex>
                               </Td>
@@ -1158,8 +1166,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                         </Clickable>
                                                       </Text>
                                                     ) : attr.value.endsWith(
-                                                        "usix"
-                                                      ) ? (
+                                                      "usix"
+                                                    ) ? (
                                                       <Text
                                                         style={{
                                                           display: "flex",
@@ -1182,8 +1190,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                         </Text>
                                                       </Text>
                                                     ) : attr.value.endsWith(
-                                                        "asix"
-                                                      ) ? (
+                                                      "asix"
+                                                    ) ? (
                                                       <Text
                                                         style={{
                                                           display: "flex",
@@ -1192,7 +1200,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                         {convertAsixToSix(
                                                           parseInt(
                                                             attr.value.split(
-                                                              "usix"
+                                                              "asix"
                                                             )[0]
                                                           )
                                                         )}
@@ -1333,7 +1341,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                           <Tab>
                             Logs(
                             {Array.isArray(_Logs) &&
-                            _Logs[0].events !== undefined
+                              _Logs[0].events !== undefined
                               ? _Logs[0].events.length
                               : "1"}
                             )
@@ -1511,6 +1519,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                       </Tr>
                                     );
                                   } else if (key == "amount") {
+                                    const sixAmount = convertAmountToSix(
+                                      message[key][0]
+                                        ? message[key][0]
+                                        : message[key]
+                                    );
                                     return (
                                       <Tr key={index}>
                                         <Td borderBottom="none">
@@ -1530,19 +1543,15 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             <Text
                                               style={{ marginRight: "5px" }}
                                             >
-                                              {convertAmountToSix(
-                                                message[key][0]
-                                                  ? message[key][0]
-                                                  : message[key]
-                                              )}{" "}
+                                              {sixAmount}{" "}
                                               SIX{" "}
                                             </Text>
                                             <Text style={{ color: "#6c757d" }}>
                                               {price && price.usd
                                                 ? `($${formatNumber(
-                                                    5 * price.usd
-                                                  )})`
-                                                : `($999)`}
+                                                  sixAmount * price.usd
+                                                )})`
+                                                : ""}
                                             </Text>
                                           </Flex>
                                         </Td>
@@ -1877,12 +1886,12 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                               {typeof message[key] === "string"
                                                 ? message[key]
                                                 : message[key]
-                                                    .filter(
-                                                      (item: any) =>
-                                                        item !== "" &&
-                                                        item !== "[]"
-                                                    )
-                                                    .toString()}
+                                                  .filter(
+                                                    (item: any) =>
+                                                      item !== "" &&
+                                                      item !== "[]"
+                                                  )
+                                                  .toString()}
                                             </Text>
                                           </Flex>
                                         </Td>
@@ -1950,11 +1959,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                 style={{ marginRight: "5px" }}
                                               >
                                                 {typeof message[key] ===
-                                                "string"
+                                                  "string"
                                                   ? message[key]
                                                   : JSON.stringify(
-                                                      message[key]
-                                                    )}
+                                                    message[key]
+                                                  )}
                                               </Text>
                                             )}
                                             {isDecode === "Decode" && (
@@ -2072,20 +2081,22 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                             txs.tx_response.gas_wanted
                                           ) *
                                             125) /
-                                            100
+                                          100
                                         )}{" "}
                                         SIX{" "}
+                                      </Text>
+                                      <Text style={{ color: "#6c757d" }}>
                                         {price && price.usd
                                           ? `($${formatNumber(
-                                              convertUsixToSix(
-                                                (parseInt(
-                                                  txs.tx_response.gas_wanted
-                                                ) *
-                                                  125) /
-                                                  100
-                                              ) * price.usd
-                                            )})`
-                                          : `($999)`}
+                                            convertUsixToSix(
+                                              (parseInt(
+                                                txs.tx_response.gas_wanted
+                                              ) *
+                                                125) /
+                                              100
+                                            ) * price.usd
+                                          )})`
+                                          : ""}
                                       </Text>
                                     </Flex>
                                   </Td>
@@ -2187,8 +2198,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                             </Clickable>
                                                           </Text>
                                                         ) : attr.value.endsWith(
-                                                            "usix"
-                                                          ) ? (
+                                                          "usix"
+                                                        ) ? (
                                                           <Text
                                                             style={{
                                                               display: "flex",
@@ -2212,8 +2223,8 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                                             </Text>
                                                           </Text>
                                                         ) : attr.value.endsWith(
-                                                            "asix"
-                                                          ) ? (
+                                                          "asix"
+                                                        ) ? (
                                                           <Text
                                                             style={{
                                                               display: "flex",
@@ -2501,10 +2512,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                             <Text style={{ color: "#6c757d" }}>
                               {price && price.usd
                                 ? `($${formatNumber(
-                                    convertAsixToSix(
-                                      parseInt(tx_evm.value, 16)
-                                    ) * price.usd
-                                  )})`
+                                  convertAsixToSix(
+                                    parseInt(tx_evm.value, 16)
+                                  ) * price.usd
+                                )})`
                                 : ""}
                             </Text>
                           </Flex>
@@ -2521,18 +2532,18 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                             <Text style={{ marginRight: "5px" }}>
                               {convertAsixToSix(
                                 parseInt(tx_evm.gas, 16) *
-                                  parseInt(tx_evm.gasPrice, 16)
+                                parseInt(tx_evm.gasPrice, 16)
                               )}{" "}
                               SIX{" "}
                             </Text>
                             <Text style={{ color: "#6c757d" }}>
                               {price && price.usd
                                 ? `(${formatNumber(
-                                    convertAsixToSix(
-                                      parseInt(tx_evm.gas, 16) *
-                                        parseInt(tx_evm.gasPrice, 16)
-                                    ) * price?.usd
-                                  )})`
+                                  convertAsixToSix(
+                                    parseInt(tx_evm.gas, 16) *
+                                    parseInt(tx_evm.gasPrice, 16)
+                                  ) * price?.usd
+                                )})`
                                 : ""}
                             </Text>
                           </Flex>
@@ -2585,10 +2596,10 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                   <Text style={{ color: "#6c757d" }}>
                                     {price && price.usd
                                       ? `(${formatNumber(
-                                          convertAsixToSix(
-                                            parseInt(tx_evm.gasPrice, 16)
-                                          ) * price?.usd
-                                        )})`
+                                        convertAsixToSix(
+                                          parseInt(tx_evm.gasPrice, 16)
+                                        ) * price?.usd
+                                      )})`
                                       : ""}
                                   </Text>
                                 </Flex>

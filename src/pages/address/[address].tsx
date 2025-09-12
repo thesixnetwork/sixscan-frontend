@@ -186,7 +186,7 @@ export default function Address({
   useEffect(() => {
     // async function fetchPrice() {
     const fetchPrice = async () => {
-      const response = await fetch('/api/getSIXPrice?tokenName=six-network');
+      const response = await fetch("/api/getSIXPrice?tokenName=six-network");
       const priceGecko: CoinGeckoPrice = await response.json();
       setPrice(priceGecko);
     };

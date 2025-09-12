@@ -67,7 +67,9 @@ export const getBlocksResult = async (
 
 export const getBlock = async (height: string): Promise<Block | null> => {
   try {
-    const res = await axios.get(`${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/block?height=${height}`);
+    const res = await axios.get(
+      `${ENV.NEXT_PUBLIC_ARCH_RPC_URL}/block?height=${height}`
+    );
     const result = res.data.result;
     if (!result) {
       return null;

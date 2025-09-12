@@ -45,7 +45,9 @@ export const getValidator = async (
 
 export const getPool = async (): Promise<Pool | null> => {
   try {
-    const res = await axios.get(`${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/pool`);
+    const res = await axios.get(
+      `${ENV.NEXT_PUBLIC_API_URL}/cosmos/staking/v1beta1/pool`
+    );
     const pool = res.data.pool;
     if (!pool) {
       return null;
@@ -83,7 +85,9 @@ export const getDelegationsFromValidator = async (
 
 export const getBlockByHeight = async (height: number) => {
   try {
-    const res = await axios.get(`${ENV.NEXT_PUBLIC_RPC_URL}/block?height=${height}`);
+    const res = await axios.get(
+      `${ENV.NEXT_PUBLIC_RPC_URL}/block?height=${height}`
+    );
     return res.data;
   } catch (error) {
     console.error(error);

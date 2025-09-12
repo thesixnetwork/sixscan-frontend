@@ -32,12 +32,16 @@ const ENV = {
   NEXT_PUBLIC_TXS_API_URL:
     process.env.NEXT_PUBLIC_TXS_API_URL ||
     "https://six-protocol-sixnet-get-txs-api-gateway-3hi29er0.an.gateway.dev",
-  NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL: process.env.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL || "",
+  NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL:
+    process.env.NEXT_PUBLIC_DATA_CHAIN_TXS_API_URL || "",
   NEXT_PUBLIC_EVM_RPC_URL:
-    process.env.NEXT_PUBLIC_EVM_RPC_URL || "https://rpc-evm.fivenet.sixprotocol.net:443",
+    process.env.NEXT_PUBLIC_EVM_RPC_URL ||
+    "https://rpc-evm.fivenet.sixprotocol.net:443",
   NEXT_PUBLIC_BLOCK_SCOUT_API_URL: dufaultScanUrl,
-  NEXT_PUBLIC_CONSOLE_LOG_ENABLE: process.env.NEXT_PUBLIC_CONSOLE_LOG_ENABLE || "true",
-  NEXT_PUBLIC_CONSOLE_TIME_ENABLE: process.env.NEXT_PUBLIC_CONSOLE_TIME_ENABLE || "false",
+  NEXT_PUBLIC_CONSOLE_LOG_ENABLE:
+    process.env.NEXT_PUBLIC_CONSOLE_LOG_ENABLE || "true",
+  NEXT_PUBLIC_CONSOLE_TIME_ENABLE:
+    process.env.NEXT_PUBLIC_CONSOLE_TIME_ENABLE || "false",
 };
 
 export default ENV;
