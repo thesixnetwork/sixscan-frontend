@@ -61,7 +61,6 @@ import {
 } from "@/libs/block/block";
 // ------------------------- Helper Libs -------------------------
 import { formatNumber } from "@/libs/utils/format";
-import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 interface Props {
