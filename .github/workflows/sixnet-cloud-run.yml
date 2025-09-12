@@ -1,4 +1,4 @@
-name: nextjs-cloud-run
+name: sixnet-nextjs-cloud-run
 
 on:
   push:

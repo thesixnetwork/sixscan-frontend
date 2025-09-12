@@ -1,4 +1,4 @@
-name: nextjs-cloud-run
+name: fivenet-nextjs-cloud-run
 
 on:
   push:
