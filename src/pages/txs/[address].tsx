@@ -39,7 +39,7 @@ import CustomCard from "@/components/CustomCard";
 import { Clickable } from "@/components/Clickable";
 import { LinkComponent } from "@/components/Chakralink";
 
-import { formatHex } from "@/libs/utils/format";
+import { calculateTxFee, formatHex } from "@/libs/utils/format";
 import { validateAddress } from "@/libs/utils/validate";
 import { useEffect, useState } from "react";
 import { getValidator } from "@/service/staking";
@@ -453,11 +453,7 @@ export default function Address({
                                       </Td>
                                       <Td textAlign={"center"}>
                                         <Text>{`${formatNumber(
-                                          convertUsixToSix(
-                                            (parseInt(tx.decode_tx.gas_wanted) *
-                                              125) /
-                                              100
-                                          )
+                                          calculateTxFee(tx)
                                         )} SIX`}</Text>
                                       </Td>
                                     </Tr>

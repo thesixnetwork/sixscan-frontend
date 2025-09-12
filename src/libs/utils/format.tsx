@@ -322,9 +322,11 @@ export const convertTXAmountToSix = (amount: TXCoin): number => {
   if (amount.denom === "usix") {
     return convertUsixToSix(Number(amount.amount));
   } else if (amount.denom === "asix") {
+    console.log(convertAsixToSix(Number(amount.amount)))
     return convertAsixToSix(Number(amount.amount));
+  }else{
+    return 0
   }
-  return Number(amount.amount);
 };
 
 export const convertAmountToSix = (amount: Coin): number => {
@@ -475,4 +477,31 @@ export const formatSchemaAction = (action: any) => {
   } else {
     return "";
   }
+};
+
+export const calculateTxFee = (tx:any) => {
+  const { decode_tx, type, original_type } = tx;
+
+  if (!decode_tx) {
+    return 0;
+  }
+
+  if (decode_tx.fee_amount) {
+    const feeAmount = parseInt(decode_tx.fee_amount, 10);
+    const isEvmTx = type === "/ethermint.evm.v1.MsgEthereumTx" || original_type === "/ethermint.evm.v1.MsgEthereumTx";
+
+    if (isEvmTx) {
+      return feeAmount / 1e18;
+    } else {
+      return feeAmount / 1e6;
+    }
+  }
+
+  if (decode_tx.gas_wanted) {
+    // This logic remains the same as your original fallback
+    const estimatedFeeInUsix = (parseInt(decode_tx.gas_wanted, 10) * 125) / 100;
+    return convertUsixToSix(estimatedFeeInUsix);
+  }
+
+  return 0;
 };

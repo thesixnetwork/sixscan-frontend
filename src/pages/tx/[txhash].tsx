@@ -79,18 +79,13 @@ import {
   formatBank,
   convertAmountToSix,
   convertStringAmountToCoin,
+  convertTXAmountToSix
 } from "@/libs/utils/format";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 
 import ENV from "@/libs/utils/ENV";
 import { _LOG } from "@/libs/utils/logHelper";
 import dynamic from "next/dynamic";
-import { FaKeybase } from "react-icons/fa";
-
-// const ReactJsonViewer = dynamic(
-//   () => import('react-json-viewer-cool'),
-//   { ssr: false }
-// );
 
 const DynamicReactJson = dynamic(() => import("react-json-view"), {
   ssr: false,
@@ -105,6 +100,7 @@ interface Props {
 }
 
 export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
+  console.log(txs.tx.auth_info.fee.amount)
   const router = useRouter();
   const [totalValue, setTotalValue] = useState(0);
   const [isDecode, setIsDecode] = useState("Default");
@@ -112,7 +108,6 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
   const handleChange_verify = async (e: any) => {
     setIsDecode(e.target.value);
   };
-  _LOG(isDecode);
 
   // add key to object of reward to message if type is MsgWithdrawDelegatorReward
   if (
@@ -1045,8 +1040,11 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                               <Td borderBottom="none">
                                 <Flex direction="row">
                                   <Text style={{ marginRight: "5px" }}>
-                                    {convertUsixToSix(
-                                      (parseInt(
+                                    {
+                                    txs.tx.auth_info.fee.amount? convertTXAmountToSix(txs.tx.auth_info.fee.amount[0]):
+                                    convertUsixToSix(
+                                      (
+                                        parseInt(
                                         txs.tx_response
                                           ? txs.tx_response.gas_wanted
                                           : txs.decode_tx.gas_wanted
@@ -1058,14 +1056,7 @@ export default function Tx({ tx, txs, block_evm, tx_evm, isContract }: Props) {
                                     {price && price.usd
                                       ? `($${formatNumber(
                                           convertUsixToSix(
-                                            (parseInt(
-                                              txs.tx_response
-                                                ? txs.tx_response.gas_wanted
-                                                : txs.decode_tx.gas_wanted
-                                            ) *
-                                              125) /
-                                              100
-                                          ) * price.usd
+                                            (parseInt(txs.tx_response? txs.tx_response.gas_wanted: txs.decode_tx.gas_wanted) *125) /100) * price.usd
                                         )})`
                                       : `($999)`}
                                   </Text>

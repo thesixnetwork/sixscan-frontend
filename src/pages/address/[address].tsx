@@ -82,7 +82,7 @@ import {
 import CustomCard from "@/components/CustomCard";
 import { LinkComponent } from "@/components/Chakralink";
 import { Clickable } from "@/components/Clickable";
-import { formatHex, formatMethod } from "@/libs/utils/format";
+import { calculateTxFee, formatHex, formatMethod } from "@/libs/utils/format";
 import { useEffect, useState } from "react";
 import {
   getDelegationsFromValidator,
@@ -849,11 +849,7 @@ export default function Address({
                                     </Td>
                                     <Td>
                                       <Text>{`${formatNumber(
-                                        convertUsixToSix(
-                                          (parseInt(tx.decode_tx.gas_wanted) *
-                                            125) /
-                                            100
-                                        )
+                                        calculateTxFee(tx)
                                       )} SIX`}</Text>
                                     </Td>
                                   </Tr>
