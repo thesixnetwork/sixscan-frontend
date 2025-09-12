@@ -107,7 +107,6 @@ import {
 } from "@/libs/utils/format";
 
 import { validateAddress } from "@/libs/utils/validate";
-import { getSIXPrice } from "@/service/sixprice";
 import { CoinGeckoPrice } from "@/types/Coingecko";
 import { getTxsFromAddress } from "@/service/txs";
 import { AccountTxs } from "@/types/Txs";
@@ -189,6 +188,8 @@ export default function Address({
     const fetchPrice = async () => {
       const response = await fetch('/api/getSIXPrice?tokenName=six-network');
       const priceGecko: CoinGeckoPrice = await response.json();
+
+      console.log(priceGecko)
       setPrice(priceGecko);
     };
 
